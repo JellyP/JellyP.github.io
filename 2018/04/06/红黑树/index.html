@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  数据结构（四）—— 红黑树 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		数据结构（四）—— 红黑树
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/04/06 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/数据结构/">数据结构</a> <a class="tag-link" href="/tags/红黑树/">红黑树</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		4764
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	
+    <script type="text/x-mathjax-config">
+        var post = document.getElementsByClassName("post")[0];  
+        MathJax.Hub.Config({
+            showProcessingMessages: false,
+            messageStyle: "none",    
+            tex2jax: {
+                inlineMath:  [ ["$", "$"] , ["\\(","\\)"]],
+                displayMath: [ ["$$","$$"] , ["\\[","\\]"]],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+            },
+            "HTML-CSS": {            
+                showMathMenu: false
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub,post]);
+    </script>
+    <style>.MathJax{outline:0;}</style>
+
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>如前面所述，二叉搜索树的高度越低，集合的操作执行的较快。然而如果树的高度较高的时候，这些例如查找删除的操作就不如在链表上执行。<strong>红黑树</strong>就是一个可以保证在<strong>最坏情况下</strong>基本动态集合操作的时间复杂度为$O(\lg n)$。</p>
+<h3 id="红黑树的性质"><a href="#红黑树的性质" class="headerlink" title="红黑树的性质"></a>红黑树的性质</h3><p>红黑树是一颗二叉搜索树，他在每节点上增加了一个存储位来表示节点的颜色，可以是RED或BLACK。通过对任何一条从根到叶子的简单路径上的颜色进行约束，使得红黑树没有一条路径会比其他路径长出两倍，可以说是近似平衡的。</p>
+<p>树中每个节点包含5个属性：$color,key,left,right$和$p$。</p>
+<p>红黑树是满足下面红黑性质的二叉搜索树：</p>
+<ul>
+<li>每个节点是红色或者黑色。</li>
+<li>根节点是黑色的。</li>
+<li>每个叶节点(NULL)是黑色的。</li>
+<li>如果一个节点是黑红色的，则他两个子结点都是黑色的。</li>
+<li>对于每个节点，从该节点到其所有后代叶节点的简单路径上，均包含相同数目的黑色节点。</li>
+</ul>
+<p>引理：一棵有n个内部节点的红黑树高度至多为$2\lg(n+1)$。</p>
+<h3 id="红黑树的旋转"><a href="#红黑树的旋转" class="headerlink" title="红黑树的旋转"></a>红黑树的旋转</h3><p>搜索树的插入和删除操作在含n个关键字的红黑树上，运行花费的时间为$O(\lg n)$。由于这两个操作对树进行了修改，所以可能违反红黑树的性质，为了维持这些性质，就需要使用旋转来修改树中某些节点的颜色和指针结构。旋转包括左旋和右旋。</p>
+<p><img src="红黑树\1.png" alt="1"></p>
+<ul>
+<li><p>左旋：如上图所示，如果是以$x$为轴，对树$T$进行旋转，可以发现<strong>$x$的左子树</strong>和<strong>$y$的右子树</strong>是不变的，那么进行的操作就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">y=x.right，取出x的右节点。</span><br><span class="line">x.right=y.left，x的右节点变成y的左节点。</span><br><span class="line">y.left.parent=x，把y的左节点的父亲更新为x</span><br><span class="line">y.parent=x.parent，把y的父节点置为x的父节点</span><br><span class="line">x.parent.left/right=y,把x的父节点的左子树或者右子树置成y</span><br><span class="line">x.parent=y，把x的parent置成y</span><br><span class="line">y.left=x，更新y的左节点为x</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>右旋：如上图所示，如果是以$y$为轴，对树$T$进行旋转，可以发现<strong>$x$的左子树</strong>和<strong>$y$的右子树</strong>是不变的，那么进行的操作就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x=y.left，取出x的左子树</span><br><span class="line">y.left=x.right，把y的左节点变成x的右节点</span><br><span class="line">x.right.parent=y，x的右节点的父亲是y</span><br><span class="line">x.parent=y.parent，x的父节点是y的父节点</span><br><span class="line">y.parent.left/right=x，y的父节点的左节点或者右节点置成x</span><br><span class="line">y.parent=x，y的父节点是x</span><br><span class="line">x.right=y，x的右节点是y</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">LEFT-ROTATE(T,x)</span><br><span class="line">	y=x.right</span><br><span class="line">	x.right=y.left</span><br><span class="line">	<span class="keyword">if</span> x.left!=<span class="literal">NULL</span></span><br><span class="line">		y.left.p=x</span><br><span class="line">	y.p=x.p</span><br><span class="line">	<span class="keyword">if</span> x.p==<span class="literal">NULL</span></span><br><span class="line">		T.root=y</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> x==x.p.left</span><br><span class="line">		x.p.left=y</span><br><span class="line">	<span class="keyword">else</span> x.p.right=y</span><br><span class="line">	y.left=x</span><br><span class="line">	x.p=y</span><br><span class="line"></span><br><span class="line">RIGHT-ROTATE(T,y)</span><br><span class="line">	x=y.left</span><br><span class="line">	y.left=x.right</span><br><span class="line">	<span class="keyword">if</span> x.right!=<span class="literal">NULL</span></span><br><span class="line">		x.right.parent=y</span><br><span class="line">	x.p=y.p</span><br><span class="line">	<span class="keyword">if</span> y.p==<span class="literal">NULL</span></span><br><span class="line">		T.root=x</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> y==y.p.left</span><br><span class="line">		y.p.left=x</span><br><span class="line">	esle y.p.right=x</span><br><span class="line">	x.right=y</span><br><span class="line">	y.p=x</span><br></pre></td></tr></table></figure>
+<h3 id="红黑树的插入"><a href="#红黑树的插入" class="headerlink" title="红黑树的插入"></a>红黑树的插入</h3><p>首先和二叉搜索树一样，我们可以对一棵树进行插入操作，但是由于插入的时候可能会不满足红黑性质，所以需要利用一个新的函数来重新对节点进行着色并旋转。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">RB-INSERT(T,z)</span><br><span class="line">	y=<span class="literal">NULL</span>;</span><br><span class="line">	X=T.root</span><br><span class="line">	where x!=<span class="literal">NULL</span></span><br><span class="line">		y=x</span><br><span class="line">		<span class="keyword">if</span> z.key&lt;x.key</span><br><span class="line">			x=x.left</span><br><span class="line">		<span class="keyword">else</span> x=x.right</span><br><span class="line">	z.p=y</span><br><span class="line">	<span class="keyword">if</span> y==<span class="literal">NULL</span></span><br><span class="line">		T.root=z</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> z.key&lt;y.key</span><br><span class="line">		y.left=z</span><br><span class="line">	<span class="keyword">else</span> y.right=z</span><br><span class="line">	z.left=<span class="literal">NULL</span></span><br><span class="line">	z.right=<span class="literal">NULL</span></span><br><span class="line">	z.color=RED</span><br><span class="line">	RB-INSESRT-FIXUP(T,z) <span class="comment">//保持红黑性质</span></span><br></pre></td></tr></table></figure>
+<p>  如果是第一次插入，由于原树为空，所以只会违反红-黑树的规则2，所以只要把根节点涂黑即可；如果插入节点的父节点是黑色的，那不会违背红-黑树的规则，什么也不需要做。如果z的父亲是z的祖父的左子树，要调整的情况有以下三种</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 插入节点的父节点和其叔叔节点（祖父节点的另一个子节点）均为红色的；</span><br><span class="line">   -把父节点和叔节点转换成黑色，祖父节点变成红色，把当前节点变成祖父节点。</span><br><span class="line">2. 插入节点的父节点是红色，叔叔节点是黑色，且插入节点是其父节点的右子节点；</span><br><span class="line">   - 以z的父节点为轴，进行左旋，并把z变成z的父节点。</span><br><span class="line">3. 插入节点的父节点是红色，叔叔节点是黑色，且插入节点是其父节点的左子节点。</span><br><span class="line">   - 父节点变成黑色，祖父节点变成红色，以祖父节点为轴进行右旋。</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">RB-INSERT-FIXUP(T,z)</span><br><span class="line">	<span class="keyword">while</span> z.p.color==RED <span class="comment">//父节点是红色</span></span><br><span class="line">   		<span class="keyword">if</span> z.p==z.p.p.left <span class="comment">//z的父亲是z的祖父的左子树</span></span><br><span class="line">        	y=z.p.p.right <span class="comment">//y是z的叔节点</span></span><br><span class="line">        	<span class="keyword">if</span> y.color==RED <span class="comment">//当叔节点也是红色，第一种情况，</span></span><br><span class="line">                y.color=BLACK</span><br><span class="line">                z.p.color=BLACK</span><br><span class="line">                z.p.p.color=RED</span><br><span class="line">                z=z.p.p</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        	<span class="keyword">else</span> <span class="keyword">if</span> z=z.p.right <span class="comment">//z是父节点的右边子结点，第二种情况</span></span><br><span class="line">                z=z.p</span><br><span class="line">                LEFT-ROTATE(T,z)</span><br><span class="line">        	z.p.color=BLACK <span class="comment">//第三种情况，当前节点是其父的左节点，且父节点为红色。</span></span><br><span class="line">        	z.p.p.color=RED </span><br><span class="line">        	RIGHT-ROTATE(T,z.p.p)</span><br><span class="line">   		<span class="keyword">else</span> <span class="comment">//父节点是祖父的右节点</span></span><br><span class="line">        	y=z.p.p.left<span class="comment">//y是叔节点</span></span><br><span class="line">        	<span class="keyword">if</span> y.color==RED</span><br><span class="line">                y.color=BLACK</span><br><span class="line">                z.p.color=BLACK</span><br><span class="line">                z.p.p.color=RED</span><br><span class="line">                z=z.p.p</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        	<span class="keyword">else</span> <span class="keyword">if</span> z=z.p.right</span><br><span class="line">            	z=z.p</span><br><span class="line">              	RIGHT-ROTATE(T,z)</span><br><span class="line">            z.p.color=BLACK</span><br><span class="line">            z.p.p.color=RED</span><br><span class="line">            LEFT-ROTATE(T,z.p.p)</span><br><span class="line">	T.root.color=BLACK</span><br></pre></td></tr></table></figure>
+<h3 id="红黑树的删除"><a href="#红黑树的删除" class="headerlink" title="红黑树的删除"></a>红黑树的删除</h3><p>与n个节点的红黑树在其他的基本操作一样，删除一个节点需要花费的$O(\lg n)$的时间。</p>
+<p>这里需要一个新的TRANSPLANT函数，来将u变成v</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RB-TRANSPLANT(T,u,v)</span><br><span class="line">	<span class="keyword">if</span> u.p==<span class="literal">NULL</span></span><br><span class="line">    	T.root=v</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> u=u.p.left</span><br><span class="line">    	u.p.left=v</span><br><span class="line">    <span class="keyword">else</span> u.p.right=v</span><br><span class="line">    v.p=u.p</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">RB-DELETE(T,z) <span class="comment">//x就是z的后继节点，删除参考二叉搜索树</span></span><br><span class="line">	y=z</span><br><span class="line">	y_original_color=y.color</span><br><span class="line">	<span class="keyword">if</span> z.left==<span class="literal">NULL</span></span><br><span class="line">    	x=z.right</span><br><span class="line">    	RB-TRANSPLANT(T,z,z.right)</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> z.right==<span class="literal">NULL</span></span><br><span class="line">    	x=z.left</span><br><span class="line">    	RB-TRANSPLANT(T,z,z.right)</span><br><span class="line">    <span class="keyword">else</span> y=TREE-MINIMUM(z.right)</span><br><span class="line">    	y_original_color=y.color</span><br><span class="line">    	x=y.right <span class="comment">//x是后继的右节点</span></span><br><span class="line">    	<span class="keyword">if</span> y.p==z </span><br><span class="line">        	x.p=y</span><br><span class="line">    	<span class="keyword">else</span></span><br><span class="line">        	RB-TRANSPLANT(T,y,y.right)</span><br><span class="line">        	y.right=z.right</span><br><span class="line">          	y.right.p=y</span><br><span class="line">    	RB-TRANSPLANT(T,z,y)</span><br><span class="line">    	y.left=z.left</span><br><span class="line">    	y.left.p=y</span><br><span class="line">    	y.color=z.color</span><br><span class="line">    <span class="keyword">if</span> y_original_color==BLACK</span><br><span class="line">    	RB-DELETE-FIXUP(T,x)</span><br></pre></td></tr></table></figure>
+<p> 删除操作后，如果当前节点是黑色的根节点，那么不用任何操作，因为并没有破坏树的平衡性，即没有违背红-黑树的规则，这很好理解。如果当前节点是红色的，说明刚刚移走的后继节点是黑色的，那么不管后继节点的父节点是啥颜色，我们只要将当前节点涂黑就可以了，红-黑树的平衡性就可以恢复。但是如果遇到以下四种情况，我们就需要通过变色或旋转来恢复红-黑树的平衡了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. x的兄弟节点w是红色的</span><br><span class="line">   - w的颜色变黑，x的父节点变红，以x的父节点为轴进行左旋。左旋之后，兄弟节点就是x的父节点的右节点。</span><br><span class="line">2. x的兄弟节点w是黑色的，而且w的两个子结点都是黑色的</span><br><span class="line">   - 将兄弟节点（w）涂红，将当前节点指向其父节点，将其父节点指向当前节点的祖父节点，不需要旋转。</span><br><span class="line">3. x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span><br><span class="line">   - 交换w和其左节点的颜色，然后对w进行右旋。</span><br><span class="line">4. x的兄弟节点w是黑色的，w的右边孩子是红色的</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">RB-DELETE-FIXUP(T,x)</span><br><span class="line">	<span class="keyword">while</span> x!=T.root <span class="keyword">and</span> x.color==BLACK</span><br><span class="line">    	<span class="keyword">if</span> x==x.p.left</span><br><span class="line">        	w=x.p.right<span class="comment">//兄弟节点</span></span><br><span class="line">        	<span class="keyword">if</span> w.color==RED <span class="comment">//x的兄弟节点w是红色的</span></span><br><span class="line">            	w.color=BLACK </span><br><span class="line">              	x.p.color=RED</span><br><span class="line">              	LEFT-ROTATE(T,x.p)</span><br><span class="line">              	w=x.p.right <span class="comment">//左旋之后,兄弟节点是x.p.right</span></span><br><span class="line">        	<span class="keyword">if</span> w.left.color==BLACK <span class="keyword">and</span> w.right.color==BLACK <span class="comment">//w的左右节点为黑色</span></span><br><span class="line">            	w.color=RED</span><br><span class="line">              	x=x.p</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> w.right.color==BLACK <span class="comment">//x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span></span><br><span class="line">            	w.left.color=BLACK</span><br><span class="line">            	w.color=RED</span><br><span class="line">            	RIGHT-ROTATE(T,w)</span><br><span class="line">              	w=x.p.right</span><br><span class="line">            w.color=x.p.color <span class="comment">//x的兄弟节点w是黑色的，w的右边孩子是红色的</span></span><br><span class="line">            x.p.color=BLACK</span><br><span class="line">            w.right.color=BLACK</span><br><span class="line">            LEFT-ROTATE(T,x.p)</span><br><span class="line">            x=T.root</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    	<span class="keyword">else</span></span><br><span class="line">        	w=x.p.left <span class="comment">//兄弟节点</span></span><br><span class="line">          	<span class="keyword">if</span> w.color==RED</span><br><span class="line">            	w.color=BLACK</span><br><span class="line">              	x.p.color=RED</span><br><span class="line">              	LEFT-ROTATE(T,x.p)</span><br><span class="line">              	w=x.p.left <span class="comment">//左旋之后,兄弟节点是x.p.left</span></span><br><span class="line">        	<span class="keyword">if</span> w.left.color==BLACK <span class="keyword">and</span> w.right.color==BLACK <span class="comment">//w的左右节点为黑色</span></span><br><span class="line">            	w.color=RED</span><br><span class="line">              	x=x.p</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> w.right.color==BLACK <span class="comment">//x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span></span><br><span class="line">            	w.left.color=BLACK</span><br><span class="line">            	w.color=RED</span><br><span class="line">            	RIGHT-ROTATE(T,w)</span><br><span class="line">              	w=x.p.left</span><br><span class="line">              </span><br><span class="line">            w.color=x.p.color <span class="comment">//x的兄弟节点w是黑色的，w的右边孩子是红色的</span></span><br><span class="line">            x.p.color=BLACK</span><br><span class="line">            w.left.color=BLACK</span><br><span class="line">            RIGHT-ROTATE(T,x.p)</span><br><span class="line">            x=T.root</span><br><span class="line">   x.color=BLACK</span><br></pre></td></tr></table></figure>
+<p>​                     </p>
+<h3 id="REFERENCE"><a href="#REFERENCE" class="headerlink" title="REFERENCE"></a>REFERENCE</h3><p><a href="https://blog.csdn.net/eson_15/article/details/51144079" target="_blank" rel="noopener"><a href="https://blog.csdn.net/eson_15/article/details/51144079" target="_blank" rel="noopener">【数据结构和算法05】 红-黑树（看完包懂~）</a></a></p>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/05/19/day1-ios学习笔记-1/">          
+
+     <span class="left" data-hover="day1:ios学习笔记">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/04/06/二叉搜索树/">         
+
+    <span class="right" data-hover="数据结构（三）—— 二叉搜索树">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

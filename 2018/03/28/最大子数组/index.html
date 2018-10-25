@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  最大子数组 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		最大子数组
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/03/28 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/分治/">分治</a> <a class="tag-link" href="/tags/算法/">算法</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2732
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	
+    <script type="text/x-mathjax-config">
+        var post = document.getElementsByClassName("post")[0];  
+        MathJax.Hub.Config({
+            showProcessingMessages: false,
+            messageStyle: "none",    
+            tex2jax: {
+                inlineMath:  [ ["$", "$"] , ["\\(","\\)"]],
+                displayMath: [ ["$$","$$"] , ["\\[","\\]"]],
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre','code','a'],
+            },
+            "HTML-CSS": {            
+                showMathMenu: false
+            }
+        });
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub,post]);
+    </script>
+    <style>.MathJax{outline:0;}</style>
+
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.2/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+ 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>假定给定你股票的每日价格，让你只能购买一次，并且出售一次，要求你获得的利润最大，那么这个问题其实就是最大子数组问题了。</p>
+<h3 id="问题转换："><a href="#问题转换：" class="headerlink" title="问题转换："></a>问题转换：</h3><p>也即：给定一个序列（至少含有 1 个数），从该序列中寻找一个连续的子序列，使得子序列的和最大。</p>
+<h4 id="解法讲述："><a href="#解法讲述：" class="headerlink" title="解法讲述："></a>解法讲述：</h4><p>其实这个可以看成是分治法，为了求解最大子数组问题，假定我们要寻找子数组$A[low,\cdots,high]$的最大子数组，首先需要将整个子数组划分成两个规模尽量相等的子数组，即找到子数组的中间位置，例如$mid$，然后考虑求解两个子数组$A[low,\cdots,mid]$和$A[mid+1,\cdots,high]$，那么$A[low,\cdots,high]$的最大子数组$A[i,\cdots,j]$必然满足一下情况：</p>
+<ul>
+<li>完全位于子数组$A[low,\cdots,mid]$中，因此$low\le i\le j\ \le mid$。</li>
+<li>完全位于子数组$A[mid+1,\cdots,high]$，因此$mid&lt; i\le j\ \le high$。</li>
+<li>跨越了中点，因此$low\le i\le mid \le j \le high$。</li>
+</ul>
+<p>我们对两个分解的子数组，我们可以发现其实也是同样的分解方式，这两个子问题仍然是最大子数组问题，因此我们的工作就是寻找跨越中点的最大子数组，然后在三种情况中选取最大值。</p>
+<p>伪代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">FIND-MAX-CROSSING-SUBARRAY(A,low,mid,high)</span><br><span class="line">	left-sum=-inf</span><br><span class="line">	sum=<span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i=mid downto low</span><br><span class="line">    	sum=sum+A[i]</span><br><span class="line">    	<span class="keyword">if</span> sum&gt;left-sum</span><br><span class="line">        	left-sum=sum</span><br><span class="line">        	max-left=i</span><br><span class="line">	right-sum=-inf</span><br><span class="line"> 	sum=<span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j=mid+<span class="number">1</span> to high</span><br><span class="line">    	sum=sum+a[j]</span><br><span class="line">    	<span class="keyword">if</span> sum&gt;right-sum</span><br><span class="line">        	right-sum=sum</span><br><span class="line">        	max-right=j</span><br><span class="line">	<span class="keyword">return</span> (max-left,max-right,left-sum+right-sum)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FIND-MAXIMUM-SUBARRAY(A,low,high)</span><br><span class="line">	<span class="keyword">if</span> high==low</span><br><span class="line">    	<span class="keyword">return</span> (low,high,A[low]) <span class="comment">//只有一个元素</span></span><br><span class="line">	<span class="keyword">else</span> mid=<span class="built_in">floor</span>((low+high)/<span class="number">2</span>)</span><br><span class="line">    	(left-low,left-high,left-sum)=FIND-MAXIMUM-SUBARRAY(A,low,mid)</span><br><span class="line">    	(right-low,right-high,right-sum)=FIND-MAXIMUM-SUBARRAY(A,mid+<span class="number">1</span>,high)</span><br><span class="line">    	(cross-low,cross-high,cross-sum)=FIND-MAX-CROSSING-SUBARRAY(A,low,mid,high)</span><br><span class="line">    	<span class="keyword">if</span> left-sum&gt;=right-sum <span class="keyword">and</span> left-sum&gt;=cross-sum</span><br><span class="line">        	<span class="keyword">return</span> (left-low,left-high,left-sum)</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> right-sum&gt;=left-sum <span class="keyword">and</span> right-sum&gt;=cross-sum</span><br><span class="line">        	<span class="keyword">return</span> (right-low,right-high,right-sum)</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> (cross-low,cross-high,cross-sum)</span><br></pre></td></tr></table></figure>
+<h3 id="leetcode实战"><a href="#leetcode实战" class="headerlink" title="leetcode实战"></a>leetcode实战</h3><p><a href="https://leetcode-cn.com/problems/maximum-subarray/description/" target="_blank" rel="noopener">53.最大子序列</a></p>
+<p>给定一个序列（至少含有 1 个数），从该序列中寻找一个连续的子序列，使得子序列的和最大。</p>
+<p>例如，给定序列 <code>[-2,1,-3,4,-1,2,1,-5,4]</code>，<br>连续子序列 <code>[4,-1,2,1]</code> 的和最大，为 <code>6</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findMaxCrossingSum</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A,<span class="keyword">int</span> low,<span class="keyword">int</span> mid,<span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> left_sum=INT_MIN;</span><br><span class="line">        <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=mid;i&gt;=low;i--)</span><br><span class="line">        &#123;</span><br><span class="line">            sum=sum+A[i];</span><br><span class="line">            <span class="keyword">if</span>(sum&gt;=left_sum)</span><br><span class="line">            &#123;</span><br><span class="line">                left_sum=sum;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> right_sum=INT_MIN;</span><br><span class="line">        sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=mid+<span class="number">1</span>;j&lt;=high;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            sum=sum+A[j];</span><br><span class="line">            <span class="keyword">if</span>(sum&gt;=right_sum)</span><br><span class="line">            &#123;</span><br><span class="line">                right_sum=sum;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> left_sum+right_sum;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findMaxSum</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A,<span class="keyword">int</span> low,<span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(high==low) <span class="keyword">return</span> A[low];</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> mid=(low+high)/<span class="number">2</span>;</span><br><span class="line">            <span class="keyword">int</span> left_sum=findMaxSum(A,low,mid);</span><br><span class="line">            <span class="keyword">int</span> right_sum=findMaxSum(A,mid+<span class="number">1</span>,high);</span><br><span class="line">            <span class="keyword">int</span> cross_sum=findMaxCrossingSum(A,low,mid,high);</span><br><span class="line">            <span class="keyword">if</span>(left_sum&gt;=right_sum&amp;&amp;left_sum&gt;=cross_sum) <span class="keyword">return</span> left_sum;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(right_sum&gt;=left_sum&amp;&amp;right_sum&gt;=cross_sum) <span class="keyword">return</span> right_sum;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> cross_sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> findMaxSum(nums,<span class="number">0</span>,nums.size()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>附上另一种解法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> ans = nums[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">int</span> sum= <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> s : nums)&#123;</span><br><span class="line">            sum += s;</span><br><span class="line">            ans = max(sum, ans);</span><br><span class="line">            sum = max(sum , <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/03/30/数据结构/">          
+
+     <span class="left" data-hover="数据结构（一）—— 栈和队列">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/03/22/使用VBA来帮助在excel中录入数据/">         
+
+    <span class="right" data-hover="使用VBA来帮助在excel中录入数据">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

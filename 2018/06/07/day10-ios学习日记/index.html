@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Day10:ios学习日记 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		day10:ios学习日记
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/06/07 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		4478
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>day10: ios学习日记</p>
+<p>第21章</p>
+<ul>
+<li><p>Core Data是一个可以管理模型对象之间关系的框架，可以保存或者读取一部分数据，它会管理这些对象的生命周期，并且更新对象之间的关系。Core Dkata能够在保存/加载对象的时候保持对象的一致性。Core Data会把对象保存在SQLite数据库中。</p>
+</li>
+<li><p>可变属性：当不存在于Core Data的类型，可以选择可变类型<code>transformable</code>，Core Data可以将对象转换成可存储的内容，然后读取时再转换回来。利用NSValueTransformer来进行转换。</p>
+</li>
+<li><p>生成NSManagedObject 的子类的时候，xcode8会默认在缓存文件中生成，如果需要自己手动生成的话，需要将codegen改成Manual/None。</p>
+</li>
+<li><p>navigation的时候，App的初始化一般是:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> rootViewController = window!.rootViewController <span class="keyword">as</span>! <span class="type">UINavigationController</span></span><br><span class="line"><span class="keyword">let</span> photosViewController = rootViewController.topViewController <span class="keyword">as</span>! <span class="type">PhotoViewController</span>(一开始显示在桌面的controller)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Core Data Stack是由实体相关的类和描述实体如何读/写的模型文件组成，模型文件可以使用NSManagedObjectModel对象表示。</p>
+</li>
+<li><p>Core Data的几种数据类型</p>
+<p>|  SQLite   | 数据使用SQLite数据库保存到硬盘上（通常方法） |<br>| :——-: | :———————–: |<br>|  Atomic   |      数据使用二进制格式存储到硬盘上      |<br>|    XML    |          ios上不支持          |<br>| In-Memory |       保存在内存中而不是硬盘中        |</p>
+<p>对象图和数据之间是通过<code>NSPersistentStoreCoordinator</code>对象来管理的。</p>
+<p>创建<code>NSPersistentStoreCoordinator</code>对象，需要创建url，然后创建NSPersistentStoreCoordinator对象，创建了coordinator之后，需要指定一个store，运行时，store需要知道存储类型和数据存储的位置。</p>
+</li>
+<li><p>NSManagedObjectContext是与一个指定的NSPersistantCoordinator相关。NSManagedObjectContext的作用：</p>
+<ul>
+<li>当需要获取对象的时候，NSManagedObjectContext会通过NSPersistentStoreCoordinator把数据拷贝到内存中。</li>
+<li>当需要保存对象的时候，可以调用NSManagedObjectContext的保存方法将数据保存到文件中。当调用保存方法之前，文件系统中的数据还是之前的数据。</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">lazy</span> <span class="keyword">var</span> mainQueueContext : <span class="type">NSManagedObjectContext</span> = &#123;</span><br><span class="line">    <span class="keyword">let</span>  moc = <span class="type">NSManagedObjectContext</span>(concurrencyType: .mainQueueConcurrencyType)</span><br><span class="line">    moc.persistentStoreCoordinator = <span class="keyword">self</span>.persistentStoreCoordinator</span><br><span class="line">    moc.name = <span class="string">"Main Queue Context (UI Context)"</span></span><br><span class="line">    <span class="keyword">return</span> moc</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建数据之后，需要把数据放入NSManagedObjectContext中，保存修改需要去监测NSManagedObjectContext是否有改变，当发生改变了之后，需要调用save函数。</p>
+</li>
+<li><p>要从NSMangedObjectContext中获取保存的数据，需要创建一个NSFetchRequest对象，获取请求执行之后，会得到符合请求参数的对象数组。利用NSPredicate来创建请求，然后借助sortDescriptors来实现排列顺序，最后通过NSMangedObjectContext来创建请求。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fetchMainQueuePhotots</span><span class="params">(predicate: NSPredicate? = <span class="literal">nil</span>, sortDscriptors : [NSSortDescriptor]? = <span class="literal">nil</span> )</span></span> <span class="keyword">throws</span> -&gt; [<span class="type">Photo</span>] &#123;</span><br><span class="line">        <span class="keyword">let</span> fetchRequest = <span class="type">NSFetchRequest</span>&lt;<span class="type">NSFetchRequestResult</span>&gt;(entityName: <span class="string">"Photo"</span>)</span><br><span class="line">        fetchRequest.sortDescriptors = sortDscriptors</span><br><span class="line">        fetchRequest.predicate = predicate</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> mainQueueContext = <span class="keyword">self</span>.coreDataStack.mainQueueContext</span><br><span class="line">        <span class="keyword">var</span> mainQueuePhotos : [<span class="type">Photo</span>]?</span><br><span class="line">        <span class="keyword">var</span> fetchRequestError : <span class="type">Error</span>?</span><br><span class="line">        mainQueueContext.performAndWait() &#123;</span><br><span class="line">            <span class="keyword">do</span>&#123;</span><br><span class="line">                <span class="comment">//mainQueuePhotos = try mainQueueContext.execute(fetchRequest) as? [Photo]</span></span><br><span class="line">                mainQueuePhotos = <span class="keyword">try</span> mainQueueContext.fetch(fetchRequest) <span class="keyword">as</span>? [<span class="type">Photo</span>]</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> <span class="keyword">let</span> error &#123;</span><br><span class="line">                fetchRequestError = error</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> photos = mainQueuePhotos <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> fetchRequestError!</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> photos</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在硬盘上保存数据。利用imageStore类（在Homepwner中实现过的），来在照片存储类中添加一个容器，用来保存数据。</p>
+</li>
+</ul>
+<p>第22章</p>
+<ul>
+<li><p>DataSource类: 实现UITableViewDataSource方法。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> UIKit</span><br><span class="line"><span class="keyword">import</span> CoreData</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TagDataSource</span> : <span class="title">NSObject</span>, <span class="title">UITableViewDataSource</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> tags : [<span class="type">NSManagedObject</span>] = []</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(<span class="number">_</span> tableView: UITableView, numberOfRowsInSection section: Int)</span></span> -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> tags.<span class="built_in">count</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(<span class="number">_</span> tableView: UITableView, cellForRowAt indexPath: IndexPath)</span></span> -&gt; <span class="type">UITableViewCell</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> cell = tableView.dequeueReusableCell(withIdentifier: <span class="string">"UITableViewCell"</span>, <span class="keyword">for</span>: indexPath)</span><br><span class="line">        <span class="keyword">let</span> tag = tags[indexPath.row]</span><br><span class="line">        <span class="keyword">let</span> name = tag.value(forKey: <span class="string">"name"</span>) <span class="keyword">as</span>! <span class="type">String</span></span><br><span class="line">        cell.textLabel?.text = name</span><br><span class="line">        <span class="keyword">return</span> cell</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加展示UIAlertController，即弹出对话框:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@IBAction</span> <span class="function"><span class="keyword">func</span> <span class="title">addNewTag</span><span class="params">(sender : AnyObject)</span></span> &#123;</span><br><span class="line">    <span class="keyword">let</span> alertController = <span class="type">UIAlertController</span>(title: <span class="string">"Add a Tag"</span>, message: <span class="literal">nil</span>, preferredStyle: .alert)</span><br><span class="line">    alertController.addTextField(configurationHandler: &#123;</span><br><span class="line">        (textField) -&gt; <span class="type">Void</span> <span class="keyword">in</span></span><br><span class="line">        textField.placeholder = <span class="string">"tag name"</span></span><br><span class="line">       <span class="comment">// textField.autocapitalizationType =</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">let</span> okAction = <span class="type">UIAlertAction</span>(title: <span class="string">"ok"</span>, style: .<span class="keyword">default</span>, handler: &#123;</span><br><span class="line">        (action) -&gt; <span class="type">Void</span> <span class="keyword">in</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> tagName = alertController.textFields?.first?.text &#123;</span><br><span class="line">            <span class="keyword">let</span> context = <span class="keyword">self</span>.store.coreDataStack.mainQueueContext</span><br><span class="line">            <span class="keyword">let</span> newTag = <span class="type">NSEntityDescription</span>.insertNewObject(forEntityName: <span class="string">"Tag"</span>, into: context)</span><br><span class="line">            newTag.setValue(tagName, forKey: <span class="string">"name"</span>)</span><br><span class="line">            <span class="keyword">do</span>&#123;</span><br><span class="line">                <span class="keyword">try</span> <span class="keyword">self</span>.store.coreDataStack.saveChanges()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> <span class="keyword">let</span> error &#123;</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">"core data save failed :<span class="subst">\(error)</span>"</span>)</span><br><span class="line">                </span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">self</span>.updateTags()</span><br><span class="line">            <span class="keyword">self</span>.tableView.reloadRows(at: [<span class="type">IndexPath</span>.<span class="keyword">init</span>(index: <span class="number">0</span>)], with: .automatic)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    alertController.addAction(okAction) </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> cancelAction = <span class="type">UIAlertAction</span>(title: <span class="string">"cancel"</span>, style: .cancel, handler: <span class="literal">nil</span>)</span><br><span class="line">    alertController.addAction(cancelAction)</span><br><span class="line">    present(alertController, animated: <span class="literal">true</span>, completion: <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>父子NSManagedObjectContext，不能在主线程中计算大量的工作，否则会阻塞主线程，导致应用无法响应。通常使用多个NSManagedObjectContex。</p>
+<p>定义一个后台线程：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">lazy</span> <span class="keyword">var</span> privateQueueContext : <span class="type">NSManagedObjectContext</span> = &#123;</span><br><span class="line">    <span class="keyword">let</span> moc = <span class="type">NSManagedObjectContext</span>(concurrencyType: .privateQueueConcurrencyType)</span><br><span class="line">    moc.parent = <span class="keyword">self</span>.mainQueueContext</span><br><span class="line">    moc.name = <span class="string">"primary private queue context"</span></span><br><span class="line">    <span class="keyword">return</span> moc</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+    
+  
+
+  
+
+  <a href="/2018/06/07/day9-ios学习日记/">         
+
+    <span class="right" data-hover="day9:ios学习日记">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

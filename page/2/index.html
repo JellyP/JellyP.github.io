@@ -1,0 +1,1244 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        
+
+
+<div class="profile sildeUpMin">
+
+	<img class="avatar" src="/images/header.jpg"  alt="No Avatar.">
+					
+		<p class="author">PengGuodong</p>
+
+		
+			<p class="location"><span class="iconfont icon-location"></span>GuangZhou CN</p>
+		
+	
+		<div class="social">
+   		   
+   		<span data-hover="Github">
+		<a class="iconfont icon-Github" target="_blank" href="https://github.com/JellyP" >		
+		</a></span>
+	    
+    </div>		
+</div>
+
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/04/06/红黑树/">数据结构（四）—— 红黑树</a>  
+	       
+		 
+
+		 <time>2018-04-06 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>如前面所述，二叉搜索树的高度越低，集合的操作执行的较快。然而如果树的高度较高的时候，这些例如查找删除的操作就不如在链表上执行。<strong>红黑树</strong>就是一个可以保证在<strong>最坏情况下</strong>基本动态集合操作的时间复杂度为$O(\lg n)$。</p>
+<h3 id="红黑树的性质"><a href="#红黑树的性质" class="headerlink" title="红黑树的性质"></a>红黑树的性质</h3><p>红黑树是一颗二叉搜索树，他在每节点上增加了一个存储位来表示节点的颜色，可以是RED或BLACK。通过对任何一条从根到叶子的简单路径上的颜色进行约束，使得红黑树没有一条路径会比其他路径长出两倍，可以说是近似平衡的。</p>
+<p>树中每个节点包含5个属性：$color,key,left,right$和$p$。</p>
+<p>红黑树是满足下面红黑性质的二叉搜索树：</p>
+<ul>
+<li>每个节点是红色或者黑色。</li>
+<li>根节点是黑色的。</li>
+<li>每个叶节点(NULL)是黑色的。</li>
+<li>如果一个节点是黑红色的，则他两个子结点都是黑色的。</li>
+<li>对于每个节点，从该节点到其所有后代叶节点的简单路径上，均包含相同数目的黑色节点。</li>
+</ul>
+<p>引理：一棵有n个内部节点的红黑树高度至多为$2\lg(n+1)$。</p>
+<h3 id="红黑树的旋转"><a href="#红黑树的旋转" class="headerlink" title="红黑树的旋转"></a>红黑树的旋转</h3><p>搜索树的插入和删除操作在含n个关键字的红黑树上，运行花费的时间为$O(\lg n)$。由于这两个操作对树进行了修改，所以可能违反红黑树的性质，为了维持这些性质，就需要使用旋转来修改树中某些节点的颜色和指针结构。旋转包括左旋和右旋。</p>
+<p><img src="红黑树\1.png" alt="1"></p>
+<ul>
+<li><p>左旋：如上图所示，如果是以$x$为轴，对树$T$进行旋转，可以发现<strong>$x$的左子树</strong>和<strong>$y$的右子树</strong>是不变的，那么进行的操作就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">y=x.right，取出x的右节点。</span><br><span class="line">x.right=y.left，x的右节点变成y的左节点。</span><br><span class="line">y.left.parent=x，把y的左节点的父亲更新为x</span><br><span class="line">y.parent=x.parent，把y的父节点置为x的父节点</span><br><span class="line">x.parent.left/right=y,把x的父节点的左子树或者右子树置成y</span><br><span class="line">x.parent=y，把x的parent置成y</span><br><span class="line">y.left=x，更新y的左节点为x</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>右旋：如上图所示，如果是以$y$为轴，对树$T$进行旋转，可以发现<strong>$x$的左子树</strong>和<strong>$y$的右子树</strong>是不变的，那么进行的操作就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x=y.left，取出x的左子树</span><br><span class="line">y.left=x.right，把y的左节点变成x的右节点</span><br><span class="line">x.right.parent=y，x的右节点的父亲是y</span><br><span class="line">x.parent=y.parent，x的父节点是y的父节点</span><br><span class="line">y.parent.left/right=x，y的父节点的左节点或者右节点置成x</span><br><span class="line">y.parent=x，y的父节点是x</span><br><span class="line">x.right=y，x的右节点是y</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">LEFT-ROTATE(T,x)</span><br><span class="line">	y=x.right</span><br><span class="line">	x.right=y.left</span><br><span class="line">	<span class="keyword">if</span> x.left!=<span class="literal">NULL</span></span><br><span class="line">		y.left.p=x</span><br><span class="line">	y.p=x.p</span><br><span class="line">	<span class="keyword">if</span> x.p==<span class="literal">NULL</span></span><br><span class="line">		T.root=y</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> x==x.p.left</span><br><span class="line">		x.p.left=y</span><br><span class="line">	<span class="keyword">else</span> x.p.right=y</span><br><span class="line">	y.left=x</span><br><span class="line">	x.p=y</span><br><span class="line"></span><br><span class="line">RIGHT-ROTATE(T,y)</span><br><span class="line">	x=y.left</span><br><span class="line">	y.left=x.right</span><br><span class="line">	<span class="keyword">if</span> x.right!=<span class="literal">NULL</span></span><br><span class="line">		x.right.parent=y</span><br><span class="line">	x.p=y.p</span><br><span class="line">	<span class="keyword">if</span> y.p==<span class="literal">NULL</span></span><br><span class="line">		T.root=x</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> y==y.p.left</span><br><span class="line">		y.p.left=x</span><br><span class="line">	esle y.p.right=x</span><br><span class="line">	x.right=y</span><br><span class="line">	y.p=x</span><br></pre></td></tr></table></figure>
+<h3 id="红黑树的插入"><a href="#红黑树的插入" class="headerlink" title="红黑树的插入"></a>红黑树的插入</h3><p>首先和二叉搜索树一样，我们可以对一棵树进行插入操作，但是由于插入的时候可能会不满足红黑性质，所以需要利用一个新的函数来重新对节点进行着色并旋转。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">RB-INSERT(T,z)</span><br><span class="line">	y=<span class="literal">NULL</span>;</span><br><span class="line">	X=T.root</span><br><span class="line">	where x!=<span class="literal">NULL</span></span><br><span class="line">		y=x</span><br><span class="line">		<span class="keyword">if</span> z.key&lt;x.key</span><br><span class="line">			x=x.left</span><br><span class="line">		<span class="keyword">else</span> x=x.right</span><br><span class="line">	z.p=y</span><br><span class="line">	<span class="keyword">if</span> y==<span class="literal">NULL</span></span><br><span class="line">		T.root=z</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> z.key&lt;y.key</span><br><span class="line">		y.left=z</span><br><span class="line">	<span class="keyword">else</span> y.right=z</span><br><span class="line">	z.left=<span class="literal">NULL</span></span><br><span class="line">	z.right=<span class="literal">NULL</span></span><br><span class="line">	z.color=RED</span><br><span class="line">	RB-INSESRT-FIXUP(T,z) <span class="comment">//保持红黑性质</span></span><br></pre></td></tr></table></figure>
+<p>  如果是第一次插入，由于原树为空，所以只会违反红-黑树的规则2，所以只要把根节点涂黑即可；如果插入节点的父节点是黑色的，那不会违背红-黑树的规则，什么也不需要做。如果z的父亲是z的祖父的左子树，要调整的情况有以下三种</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 插入节点的父节点和其叔叔节点（祖父节点的另一个子节点）均为红色的；</span><br><span class="line">   -把父节点和叔节点转换成黑色，祖父节点变成红色，把当前节点变成祖父节点。</span><br><span class="line">2. 插入节点的父节点是红色，叔叔节点是黑色，且插入节点是其父节点的右子节点；</span><br><span class="line">   - 以z的父节点为轴，进行左旋，并把z变成z的父节点。</span><br><span class="line">3. 插入节点的父节点是红色，叔叔节点是黑色，且插入节点是其父节点的左子节点。</span><br><span class="line">   - 父节点变成黑色，祖父节点变成红色，以祖父节点为轴进行右旋。</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">RB-INSERT-FIXUP(T,z)</span><br><span class="line">	<span class="keyword">while</span> z.p.color==RED <span class="comment">//父节点是红色</span></span><br><span class="line">   		<span class="keyword">if</span> z.p==z.p.p.left <span class="comment">//z的父亲是z的祖父的左子树</span></span><br><span class="line">        	y=z.p.p.right <span class="comment">//y是z的叔节点</span></span><br><span class="line">        	<span class="keyword">if</span> y.color==RED <span class="comment">//当叔节点也是红色，第一种情况，</span></span><br><span class="line">                y.color=BLACK</span><br><span class="line">                z.p.color=BLACK</span><br><span class="line">                z.p.p.color=RED</span><br><span class="line">                z=z.p.p</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        	<span class="keyword">else</span> <span class="keyword">if</span> z=z.p.right <span class="comment">//z是父节点的右边子结点，第二种情况</span></span><br><span class="line">                z=z.p</span><br><span class="line">                LEFT-ROTATE(T,z)</span><br><span class="line">        	z.p.color=BLACK <span class="comment">//第三种情况，当前节点是其父的左节点，且父节点为红色。</span></span><br><span class="line">        	z.p.p.color=RED </span><br><span class="line">        	RIGHT-ROTATE(T,z.p.p)</span><br><span class="line">   		<span class="keyword">else</span> <span class="comment">//父节点是祖父的右节点</span></span><br><span class="line">        	y=z.p.p.left<span class="comment">//y是叔节点</span></span><br><span class="line">        	<span class="keyword">if</span> y.color==RED</span><br><span class="line">                y.color=BLACK</span><br><span class="line">                z.p.color=BLACK</span><br><span class="line">                z.p.p.color=RED</span><br><span class="line">                z=z.p.p</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        	<span class="keyword">else</span> <span class="keyword">if</span> z=z.p.right</span><br><span class="line">            	z=z.p</span><br><span class="line">              	RIGHT-ROTATE(T,z)</span><br><span class="line">            z.p.color=BLACK</span><br><span class="line">            z.p.p.color=RED</span><br><span class="line">            LEFT-ROTATE(T,z.p.p)</span><br><span class="line">	T.root.color=BLACK</span><br></pre></td></tr></table></figure>
+<h3 id="红黑树的删除"><a href="#红黑树的删除" class="headerlink" title="红黑树的删除"></a>红黑树的删除</h3><p>与n个节点的红黑树在其他的基本操作一样，删除一个节点需要花费的$O(\lg n)$的时间。</p>
+<p>这里需要一个新的TRANSPLANT函数，来将u变成v</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RB-TRANSPLANT(T,u,v)</span><br><span class="line">	<span class="keyword">if</span> u.p==<span class="literal">NULL</span></span><br><span class="line">    	T.root=v</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> u=u.p.left</span><br><span class="line">    	u.p.left=v</span><br><span class="line">    <span class="keyword">else</span> u.p.right=v</span><br><span class="line">    v.p=u.p</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">RB-DELETE(T,z) <span class="comment">//x就是z的后继节点，删除参考二叉搜索树</span></span><br><span class="line">	y=z</span><br><span class="line">	y_original_color=y.color</span><br><span class="line">	<span class="keyword">if</span> z.left==<span class="literal">NULL</span></span><br><span class="line">    	x=z.right</span><br><span class="line">    	RB-TRANSPLANT(T,z,z.right)</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> z.right==<span class="literal">NULL</span></span><br><span class="line">    	x=z.left</span><br><span class="line">    	RB-TRANSPLANT(T,z,z.right)</span><br><span class="line">    <span class="keyword">else</span> y=TREE-MINIMUM(z.right)</span><br><span class="line">    	y_original_color=y.color</span><br><span class="line">    	x=y.right <span class="comment">//x是后继的右节点</span></span><br><span class="line">    	<span class="keyword">if</span> y.p==z </span><br><span class="line">        	x.p=y</span><br><span class="line">    	<span class="keyword">else</span></span><br><span class="line">        	RB-TRANSPLANT(T,y,y.right)</span><br><span class="line">        	y.right=z.right</span><br><span class="line">          	y.right.p=y</span><br><span class="line">    	RB-TRANSPLANT(T,z,y)</span><br><span class="line">    	y.left=z.left</span><br><span class="line">    	y.left.p=y</span><br><span class="line">    	y.color=z.color</span><br><span class="line">    <span class="keyword">if</span> y_original_color==BLACK</span><br><span class="line">    	RB-DELETE-FIXUP(T,x)</span><br></pre></td></tr></table></figure>
+<p> 删除操作后，如果当前节点是黑色的根节点，那么不用任何操作，因为并没有破坏树的平衡性，即没有违背红-黑树的规则，这很好理解。如果当前节点是红色的，说明刚刚移走的后继节点是黑色的，那么不管后继节点的父节点是啥颜色，我们只要将当前节点涂黑就可以了，红-黑树的平衡性就可以恢复。但是如果遇到以下四种情况，我们就需要通过变色或旋转来恢复红-黑树的平衡了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. x的兄弟节点w是红色的</span><br><span class="line">   - w的颜色变黑，x的父节点变红，以x的父节点为轴进行左旋。左旋之后，兄弟节点就是x的父节点的右节点。</span><br><span class="line">2. x的兄弟节点w是黑色的，而且w的两个子结点都是黑色的</span><br><span class="line">   - 将兄弟节点（w）涂红，将当前节点指向其父节点，将其父节点指向当前节点的祖父节点，不需要旋转。</span><br><span class="line">3. x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span><br><span class="line">   - 交换w和其左节点的颜色，然后对w进行右旋。</span><br><span class="line">4. x的兄弟节点w是黑色的，w的右边孩子是红色的</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">RB-DELETE-FIXUP(T,x)</span><br><span class="line">	<span class="keyword">while</span> x!=T.root <span class="keyword">and</span> x.color==BLACK</span><br><span class="line">    	<span class="keyword">if</span> x==x.p.left</span><br><span class="line">        	w=x.p.right<span class="comment">//兄弟节点</span></span><br><span class="line">        	<span class="keyword">if</span> w.color==RED <span class="comment">//x的兄弟节点w是红色的</span></span><br><span class="line">            	w.color=BLACK </span><br><span class="line">              	x.p.color=RED</span><br><span class="line">              	LEFT-ROTATE(T,x.p)</span><br><span class="line">              	w=x.p.right <span class="comment">//左旋之后,兄弟节点是x.p.right</span></span><br><span class="line">        	<span class="keyword">if</span> w.left.color==BLACK <span class="keyword">and</span> w.right.color==BLACK <span class="comment">//w的左右节点为黑色</span></span><br><span class="line">            	w.color=RED</span><br><span class="line">              	x=x.p</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> w.right.color==BLACK <span class="comment">//x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span></span><br><span class="line">            	w.left.color=BLACK</span><br><span class="line">            	w.color=RED</span><br><span class="line">            	RIGHT-ROTATE(T,w)</span><br><span class="line">              	w=x.p.right</span><br><span class="line">            w.color=x.p.color <span class="comment">//x的兄弟节点w是黑色的，w的右边孩子是红色的</span></span><br><span class="line">            x.p.color=BLACK</span><br><span class="line">            w.right.color=BLACK</span><br><span class="line">            LEFT-ROTATE(T,x.p)</span><br><span class="line">            x=T.root</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    	<span class="keyword">else</span></span><br><span class="line">        	w=x.p.left <span class="comment">//兄弟节点</span></span><br><span class="line">          	<span class="keyword">if</span> w.color==RED</span><br><span class="line">            	w.color=BLACK</span><br><span class="line">              	x.p.color=RED</span><br><span class="line">              	LEFT-ROTATE(T,x.p)</span><br><span class="line">              	w=x.p.left <span class="comment">//左旋之后,兄弟节点是x.p.left</span></span><br><span class="line">        	<span class="keyword">if</span> w.left.color==BLACK <span class="keyword">and</span> w.right.color==BLACK <span class="comment">//w的左右节点为黑色</span></span><br><span class="line">            	w.color=RED</span><br><span class="line">              	x=x.p</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> w.right.color==BLACK <span class="comment">//x的兄弟节点w是黑色的，w的左孩子是红色的，w的右孩子是黑色的</span></span><br><span class="line">            	w.left.color=BLACK</span><br><span class="line">            	w.color=RED</span><br><span class="line">            	RIGHT-ROTATE(T,w)</span><br><span class="line">              	w=x.p.left</span><br><span class="line">              </span><br><span class="line">            w.color=x.p.color <span class="comment">//x的兄弟节点w是黑色的，w的右边孩子是红色的</span></span><br><span class="line">            x.p.color=BLACK</span><br><span class="line">            w.left.color=BLACK</span><br><span class="line">            RIGHT-ROTATE(T,x.p)</span><br><span class="line">            x=T.root</span><br><span class="line">   x.color=BLACK</span><br></pre></td></tr></table></figure>
+<p>​                     </p>
+<h3 id="REFERENCE"><a href="#REFERENCE" class="headerlink" title="REFERENCE"></a>REFERENCE</h3><p><a href="https://blog.csdn.net/eson_15/article/details/51144079" target="_blank" rel="noopener"><a href="https://blog.csdn.net/eson_15/article/details/51144079" target="_blank" rel="noopener">【数据结构和算法05】 红-黑树（看完包懂~）</a></a></p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/数据结构/">数据结构</a> <a class="tag-link" href="/tags/红黑树/">红黑树</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		4764
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/04/06/红黑树/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/04/06/二叉搜索树/">数据结构（三）—— 二叉搜索树</a>  
+	       
+		 
+
+		 <time>2018-04-06 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>搜索树数据结构支持许多动态集合操作，包括SEARCH,MINIMUM,MAXIMUM,PREDECESSOR,SUCCESSOR,INSERT和DELETE等。二叉搜索树上的基本操作花费的时间与这棵树的高度成正比。对于有n个节点的一颗完全二叉树来说，这些操作的最坏运行时间为$O(lgn)$。 </p>
+<h3 id="二叉搜索树的概念："><a href="#二叉搜索树的概念：" class="headerlink" title="二叉搜索树的概念："></a>二叉搜索树的概念：</h3><ul>
+<li>通常有键值对，key，value，除此之外，还有left,right和p来表示左节点，右节点和父亲节点。</li>
+<li>对于任意节点x，满足$x.left.key\le x.key\le x.right.key$。 </li>
+<li>根节点是树中唯一一个父亲节点为NULL的节点。</li>
+</ul>
+<h3 id="二叉搜索树可以利用简单的递归算法来输出子树的关键字，有三种输出形式："><a href="#二叉搜索树可以利用简单的递归算法来输出子树的关键字，有三种输出形式：" class="headerlink" title="二叉搜索树可以利用简单的递归算法来输出子树的关键字，有三种输出形式："></a>二叉搜索树可以利用简单的递归算法来输出子树的关键字，有三种输出形式：</h3><ul>
+<li>先序遍历：先输出根节点的关键字，再输出左右节点的关键字。</li>
+<li>中序遍历：先输出左节点的关键字，再输出根节点的关键字，在输出右节点的关键字。</li>
+<li>后序遍历：先输出左节点和右节点的关键字，再输出根节点的关键字。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">PRE-ORDER(x) <span class="comment">//先序遍历</span></span><br><span class="line">	<span class="keyword">if</span> x!=<span class="literal">NULL</span></span><br><span class="line">		print x.key</span><br><span class="line">		PRE-ORDER(x.left)</span><br><span class="line">		PRE-ORDER(x.right)</span><br><span class="line"></span><br><span class="line">MID-ORDER(x) <span class="comment">//中序遍历</span></span><br><span class="line">	<span class="keyword">if</span> x!=<span class="literal">NULL</span></span><br><span class="line">		MID-ORDER(x.left)</span><br><span class="line">		print x.key</span><br><span class="line">		MID-ORDER(x.right)</span><br><span class="line">         </span><br><span class="line">POST-ORDER(x) <span class="comment">//后序遍历</span></span><br><span class="line">	<span class="keyword">if</span> x!=<span class="literal">NULL</span></span><br><span class="line">		POST-ORDER(x.left)</span><br><span class="line">		POST-ORDER(x.right)</span><br><span class="line">		print x.key</span><br></pre></td></tr></table></figure>
+<h3 id="二叉搜索树的查询操作："><a href="#二叉搜索树的查询操作：" class="headerlink" title="二叉搜索树的查询操作："></a>二叉搜索树的查询操作：</h3><p>1.查找操作，即查找具有给定关键字的节点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">TREE-SEARCH(x,k) <span class="comment">//查找x节点及其子结点是否含有k的关键字</span></span><br><span class="line">	<span class="keyword">if</span> x==<span class="literal">NULL</span> <span class="keyword">or</span> k==x.key</span><br><span class="line">    	<span class="keyword">return</span> x</span><br><span class="line">	<span class="keyword">if</span> k&lt;x.key</span><br><span class="line">    	<span class="keyword">return</span> TREE-SEARCH(x.left,k)</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">return</span> TREE-SEARCH(x.right,k)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>迭代版本：通常情况下，该版本比递归快得多。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">TREE-SEARCH(x,k)</span><br><span class="line">	<span class="keyword">while</span> x!=<span class="literal">NULL</span> <span class="keyword">and</span> k!=x.key</span><br><span class="line">    	<span class="keyword">if</span> k&lt;x.key</span><br><span class="line">        	x=x.left</span><br><span class="line">        <span class="keyword">else</span> x=x.right</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>2.最大关键字元素和最小关键字元素</p>
+<ul>
+<li>最小关键字元素，查找x节点下的最小关键字节点</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TREE-MINIMUM(x)</span><br><span class="line">	<span class="keyword">while</span> x.left!=<span class="literal">NULL</span></span><br><span class="line">    	x=x.left</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最大关键字元素，查找x节点下的最大关键字节点</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">TREE-MAXIMUM(x)</span><br><span class="line">	<span class="keyword">while</span> x.right!=<span class="literal">NULL</span></span><br><span class="line">    	x=x.right</span><br><span class="line">	<span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>3.查找节点的前驱结点和后继节点</p>
+<ul>
+<li>后继节点，指的是比这个节点的关键字大的最小关键字的节点。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">TREE-SUCCESSOR(x)</span><br><span class="line">	<span class="keyword">if</span> x.right!=<span class="literal">NULL</span></span><br><span class="line">    	<span class="keyword">return</span> TREE-MINIMUM(x.right)</span><br><span class="line">	y=x.p</span><br><span class="line">	<span class="keyword">while</span> y!=<span class="literal">NULL</span> <span class="keyword">and</span> x==y.right</span><br><span class="line">    	x=y</span><br><span class="line">    	y=y.p</span><br><span class="line">	<span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<ul>
+<li>前驱结点，指的是比这个节点的关键字小的最大关键字的节点。</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">TREE-PREDECESSOR(x)</span><br><span class="line">	<span class="keyword">if</span> x.left!=<span class="literal">NULL</span></span><br><span class="line">    	<span class="keyword">return</span> TREE-MAXIMUM(x.left)</span><br><span class="line">	y=x.p</span><br><span class="line">	<span class="keyword">while</span> y!=<span class="literal">NULL</span> <span class="keyword">and</span> x==y.left</span><br><span class="line">    	x=y</span><br><span class="line">    	y=y.p</span><br><span class="line">    <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<h3 id="二叉搜索树的插入和删除"><a href="#二叉搜索树的插入和删除" class="headerlink" title="二叉搜索树的插入和删除"></a>二叉搜索树的插入和删除</h3><ul>
+<li>插入，将一个节点z作为输入插入到一棵树T中</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">TREE-INSERT(T,z)</span><br><span class="line">	y=<span class="literal">NULL</span></span><br><span class="line">  	x=T.root</span><br><span class="line">  	<span class="keyword">while</span> x!=<span class="literal">NULL</span> <span class="comment">//寻找到适合的位置插入</span></span><br><span class="line">      	y=x</span><br><span class="line">      	<span class="keyword">if</span> z.key&lt;x.key</span><br><span class="line">          	x=x.left</span><br><span class="line">        <span class="keyword">else</span> x=x.right</span><br><span class="line">  	z.p=y</span><br><span class="line">    <span class="keyword">if</span> y==<span class="literal">NULL</span></span><br><span class="line">      	T.root=z</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> z.key&lt;y.key</span><br><span class="line">      	y.left=z</span><br><span class="line">    <span class="keyword">else</span> y.right=z</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除，删除树T中的某个节点z</li>
+</ul>
+<p>首先定义一个子过程，TRANSPLANT，表示用另一棵子树替换一棵子树，并成为其双亲的孩子节点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">TRANSPLANT(T,u,v)<span class="comment">//用v代替u</span></span><br><span class="line">	<span class="keyword">if</span> u.p==<span class="literal">NULL</span></span><br><span class="line">      	T.root=v</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> u==u.p.left</span><br><span class="line">      	u.p.left=v</span><br><span class="line">    <span class="keyword">else</span> u.p.right=v</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> v!=<span class="literal">NULL</span></span><br><span class="line">      	v.p=u.p</span><br></pre></td></tr></table></figure>
+<p>然后利用现成的TRANSPLANT，就可以实现从二叉搜索树T中删除节点z的操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">TREE-DELETE(T,z)</span><br><span class="line">	<span class="keyword">if</span> z.left==<span class="literal">NULL</span></span><br><span class="line">      	TRANSPLANT(T,z,z.right)</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> z.right==<span class="literal">NULL</span></span><br><span class="line">      	TRANSPLANT(T,z,z.left)</span><br><span class="line">	<span class="keyword">else</span> </span><br><span class="line">      	y=TREE-MINIMUM(z.right)<span class="comment">//y是z的后继节点</span></span><br><span class="line">      	<span class="keyword">if</span> y.p!=z</span><br><span class="line">          	TRANSPLANT(T,y,y.right)</span><br><span class="line">          	y.right=z.right</span><br><span class="line">          	y.right.p=y <span class="comment">//将z原来的右节点置成y</span></span><br><span class="line">        TRANSPLANT(T,z,y)</span><br><span class="line">          	y.left=z.left</span><br><span class="line">          	y.left.p=y</span><br></pre></td></tr></table></figure>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/二叉搜索树/">二叉搜索树</a> <a class="tag-link" href="/tags/数据结构/">数据结构</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2189
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/04/06/二叉搜索树/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/04/06/利用Hexo和GitHub page构建属于自己的blog/">利用Hexo和GitHub page构建属于自己的blog</a>  
+	       
+		 
+
+		 <time>2018-04-06 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>今天给大家介绍的就是我这个blog的具体构建方式，让一个小白借助GitHub page和hexo，一步一步地实现属于自己的blog，并绑定自己的域名。</p>
+<h4 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a><h3>前期准备：</h3></h4><h5 id="1-Github："><a href="#1-Github：" class="headerlink" title="1. Github："></a><h4>1. Github：</h4></h5><p>首先你需要创建一个属于自己的GitHub，<a href="https://github.com/" target="_blank" rel="noopener">注册页面</a>如下，而GitHub page可以认为是用户编写的、托管在github上的静态网页，首先它可以绑定你的域名；其次简单快捷，使用Github Pages可以为你提供一个免费的服务器，免去了自己搭建服务器和写数据库的麻烦，是一个很好的搭建blog的平台。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\1.png" alt="1"></p>
+<p><br></p>
+<h5 id="2-node-js"><a href="#2-node-js" class="headerlink" title="2. node.js"></a><h4>2. node.js</h4></h5><p>在<a href="https://nodejs.org/en/" target="_blank" rel="noopener">node.js</a> 的官网上，如下所示，选择左边的稳定版下载即可，安装过程一直next即可，较为简单，不做过多赘述。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\2.png" alt="2"></p>
+<p><br></p>
+<h4>3. Git</h4>
+
+<p>首先需要上<a href="https://git-scm.com/download" target="_blank" rel="noopener">官网</a>选择自己的系统进行下载，可以参考<a href="https://jingyan.baidu.com/article/90895e0fb3495f64ed6b0b50.html" target="_blank" rel="noopener">安装教程</a> ，然后安装完成之后，，在任意文件夹（包括桌面）点击鼠标右键，即可看到如下两个选项。我们要使用的是Git Bash Here选项。更多关于git的操作可以参考<a href="http://git.oschina.net/progit/" target="_blank" rel="noopener">Git入门教程</a> 。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\3.png" alt="2"></p>
+<p><br></p>
+<h3>Hexo的安装和配置</h3>
+
+<p>首先，Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页，所以说借助Hexo，我们可以方便的实现属于自己的博客。</p>
+<h4>1. Hexo安装</h4>
+
+<p>首先选择一个文件夹，表示你要安装Hexo的路径，然后鼠标右键，点击Git Bash Here，然后输入如下的npm命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br><span class="line">npm install hexo --save</span><br><span class="line"><span class="comment">#如果命令无法运行，可以尝试更换taobao的npm源</span></span><br><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br></pre></td></tr></table></figure>
+<p>安装完成后应该会出现npm的文件夹。</p>
+<p><br></p>
+<h4>2. Hexo初始化配置</h4>
+
+<p>安装完成后，根据自己喜好建立目录（如<code>F:\Blog\Hexo</code>），直接进入<code>F:\Blog\Hexo</code>文件夹下右键鼠标，点击<code>Git Bash Here</code>，进入Git命令框，执行以下操作。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\4.png" alt="2"></p>
+<p>然后再输入如下指令来安装插件，为了方便，将所有插件安装即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-index --save</span><br><span class="line">npm install hexo-generator-archive --save</span><br><span class="line">npm install hexo-generator-category --save</span><br><span class="line">npm install hexo-generator-tag --save</span><br><span class="line">npm install hexo-server --save</span><br><span class="line">npm install hexo-deployer-git --save</span><br><span class="line">npm install hexo-deployer-heroku --save</span><br><span class="line">npm install hexo-deployer-rsync --save</span><br><span class="line">npm install hexo-deployer-openshift --save</span><br><span class="line">npm install hexo-renderer-marked@0.2 --save</span><br><span class="line">npm install hexo-renderer-stylus@0.2 --save</span><br><span class="line">npm install hexo-generator-feed@1 --save</span><br><span class="line">npm install hexo-generator-sitemap@1 --save</span><br></pre></td></tr></table></figure>
+<p>最后如果想在本地查看效果的话，再在git命令框中输入</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<p>然后打开网页，在网页链接中输入<code>localhost:4000</code>，就可以看到本地的效果如下。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\5.jpg" alt="2"></p>
+<p><br></p>
+<h3>博客的美化</h3>
+
+<p>虽然博客已经可以在本地运行了，但是其实样式都还是默认的，那么要怎么进行美化呢，在这里推荐一种最简单的方式：</p>
+<ul>
+<li>进入<a href="https://hexo.io/themes/" target="_blank" rel="noopener">Hexo官网主题专栏</a>。</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\6.png" alt="2"></p>
+<ul>
+<li>然后选择自己喜欢的主题，在这里以nayo为例，点进去之后可以看到页面为如下显示，</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\7.png" alt="2"></p>
+<p>然后预览如果觉得合适的话，那么进入到刚才Hexo放置的目录，找到themes文件夹，例如<code>F:\Blog\Hexo\themes</code>，然后右键，选择Git Bash Here，然后输入：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/Lemonreds/hexo-theme-Nayo(这里指的是你点进去主题的那个网页的网址)</span><br></pre></td></tr></table></figure>
+<p>然后会发现themes文件中多了一个为<code>hexo-theme-Nayo</code>的文件夹，然后打开<code>F:\Blog\Hexo</code>下的_config.yml（用记事本或者sublime等工具打开），找到theme，修改参数为：<code>theme:hexo-theme-Nayo</code>。 </p>
+<p>然后就是定制属于自己的blog，首先对于那些有分类、标签、关于等目录的主题，Hexo 默认不生成 <code>categories/tags/about</code> 等页面,需要自己创建页面。首先进入到Hexo的目录下，右键选择<code>Git Bash Here</code>，然后输入：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories <span class="comment">##表示分类页</span></span><br><span class="line">hexo new page tags <span class="comment">##表示标签页</span></span><br><span class="line">hexo new page about <span class="comment">##表示关于页</span></span><br></pre></td></tr></table></figure>
+<p>然后进入到<code>F:\Blog\Hexo\source</code>文件夹，发现多了三个文件夹，分别是categories、tags和about，里面都有一个index的md文件，然后增加一个layout属性：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories/tags/about</span><br><span class="line">date: 2018-03-01 12:57:53</span><br><span class="line">layout: category/tag/about</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>这里是对三个文件都做一次操作即可。</p>
+<p>然后打开<code>F:\Blog\Hexo\themes\hexo-theme-nayo</code>，在<code>_config.yml</code>中修改相应的属性，即可定制属于自己的博客，然后可以在git输入框中输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<p>然后打开<code>localhost:4000</code>进行查看效果。如果满意，那么我们就可以把他部署到我们自己的GitHub上面了。</p>
+<h3>将本地的网页上传到GitHub上</h3>
+
+<h4>1. GitHub账号的注册</h4>
+
+<p>首先需要注册一个GitHub账号，注册的过程较为简单在这里略过。</p>
+<h4>2. 创建项目代码库</h4>
+
+<ul>
+<li>注册完成后，就需要创建一个自己的GitHub page项目了，点击New repository。</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\8.png" alt="2"></p>
+<p>然后根据下图来配置仓库信息，最后点击下方的<code>Create repository</code>，完成创建。 </p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\9.png" alt="2"></p>
+<h4>3. 配置SSH密钥</h4>
+
+<p>这里的目的是为了让你的本地git仓库能够和你的GitHub建立联系。对于以前使用过git来上传代码的用户，这一步可以忽略，但是对于新用户来说，要怎么配置git的ssh呢？</p>
+<ul>
+<li>首先，我们需要看看是否看看本机是否存在SSH keys,打开Git Bash,并运行:</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
+<p>如果存在则可以不用创建新的SSH密钥，如果不存在，则进入下一步。</p>
+<ul>
+<li>存在的话可以忽略此步，我们可以通过如下指令创建按照你提供的邮箱的一对密钥：</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">"your_email@example.com"</span></span><br><span class="line"></span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> which to save the key (/c/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure>
+<p>然后回车之后，则将密钥按默认文件位置进行存储。</p>
+<p>然后根据提示，输入密码和确认密码，相关提示为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase): [Type a passphrase]</span><br><span class="line">Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure>
+<p>完成之后，运行如下命令将密钥复制到系统粘贴板中。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clip &lt; ~/.ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<p>至此，你已经拥有了一个自己的密钥了。</p>
+<ul>
+<li>拿到密钥以后，你就可以登录GitHub，然后在settings-&gt;SSH and GPG keys-&gt;New SSH key。</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\10.png" alt="2"></p>
+<p>然后输入标题和SSH key，输入相关信息。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\11.png" alt="2"></p>
+<ul>
+<li>为了测试是否成功，我们可以输入如下指令：</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>然后收到提示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host ‘github.com (207.97.227.239)’ can’t be established. </span><br><span class="line">RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48. </span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+<p>然后直接输入yes即可，即可收到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hi username! You&apos;ve successfully authenticated, but GitHub does not provide shell access.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其实现在你已经可以通过SSH链接来连接到Github了，接着还可以完善一些个人信息，Git会根据用户的名字和邮箱来记录提交。GitHub也是用这些信息来做权限的处理，输入下面的代码进行个人信息的设置，把名称和邮箱替换成你自己的，名字必须是你的真名，而不是GitHub的昵称。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name <span class="string">"cnfeat"</span>  <span class="comment">##用户名</span></span><br><span class="line">git config --global user.email  <span class="string">"cnfeat@gmail.com"</span>  <span class="comment">##填写自己的邮箱</span></span><br></pre></td></tr></table></figure>
+<p>到这里，你的电脑已经成功连接到了GitHub。</p>
+<h4>4. 将本地的Hexo文件更新到Github的库中</h4>
+
+<ul>
+<li>首先是点击Clone or download，然后复制SSH的链接。</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\12.png" alt="2"></p>
+<ul>
+<li>然后打开Hexo文件夹下面的<code>_config.yml</code>文件，查找关键词<code>deploy</code>，修改成：</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git  <span class="comment">##类型填写git</span></span><br><span class="line">  repo: git@github.com:JellyP/JellyP.github.io.git <span class="comment">##添加一个repo，输入网址，</span></span><br><span class="line">  branch: master <span class="comment">##添加一个branch，输入master</span></span><br></pre></td></tr></table></figure>
+<p>值得注意的是，每个关键字后面要接着一个空格再接信息。</p>
+<p>然后在Hexo的目录下，右键选择 Git Bash Here，然后输入</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+<p>然后你的本地博客就被部署到你的GitHub上啦，在浏览器中输入你建立的仓库的名字，即yourname.github.io，即可访问你自己的博客了。</p>
+<h3>使用markdown写自己的博客</h3>
+
+<p>Markdown 是一种轻量级的「标记语言」，它的优点很多，目前也被越来越多的写作爱好者，撰稿者广泛使用。看到这里请不要被「标记」、「语言」所迷惑，Markdown 的语法十分简单。常用的标记符号也不超过十个，这种相对于更为复杂的HTML 标记语言来说，Markdown 可谓是十分轻量的，学习成本也不需要太多，且一旦熟悉这种语法规则，会有一劳永逸的效果。在这里不介绍具体的markdown语法了，详情可以参考<a href="https://www.appinn.com/markdown/" target="_blank" rel="noopener">markdown语法中文版</a>。具体的写博客的过程可以参考如下步骤：</p>
+<h4>1. 前期准备</h4>
+
+<p>为了让自己在写博客的时候插入图片，首先打开Hexo的目录下的<code>_config.yml</code>文件，将里面的<code>post_asset_folder:</code>的属性设置为<code>true</code>。</p>
+<p>然后在hexo目录下利用Git Bash Here执行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+<p>下载安装一个可以上传本地图片的插件。</p>
+<h4>2. 创建博客</h4>
+
+<p>在这里主要介绍创建博客的两种方式：</p>
+<ul>
+<li>第一种方式，运行</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo n <span class="string">"aaaa"</span> <span class="comment">###比如你要写的文章的名字为aaaa</span></span><br></pre></td></tr></table></figure>
+<p>就会发现在<code>F:\Blog\Hexo\source\_posts</code>里不仅有aaaa.md文件，还有一个aaaa的文件夹。插入的图片放入aaaa文件夹里面。</p>
+<ul>
+<li>第二种方式，直接在<code>F:\Blog\Hexo\source\_posts</code>文件夹例创建aaaa.md和aaaa文件夹即可。</li>
+</ul>
+<h4>3. 书写博客</h4>
+
+<p>为了给博客书写标题、标签等，并非直接命名即可，我们可以对于博客的markdown文件，在开头的地方，输入：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: aaaa</span><br><span class="line">categories: [test]</span><br><span class="line">tags: [aaa,bbb]</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+<p>来对博客进行命名、分类、和插入标签。</p>
+<h4>4. 上传博客</h4>
+
+<p>在书写结束后，我们就可以直接上传到自己的GitHub了，也是利用指令:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+<h3>关联个性化域名</h3> 
+
+<p>也许你不想使用yourname.github.io这样的网址当做自己博客的域名，那么绑定个性化域名也是比较简单的操作，可以分为如下几个步骤：</p>
+<h4>1. 购买域名</h4>
+
+<p>首先可以购买一个域名，例如<a href="https://wanwang.aliyun.com/domain/?spm=5176.383338.1907008.1.LWIFhw" target="_blank" rel="noopener">阿里云</a>的网站，我们可以使用支付宝或者淘宝账号进行登录，也可以重新注册，然后查询域名，并进行购买</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\13.png" alt="2"></p>
+<p>注意，为了要让域名生效，需要实名认证和输入个人信息模板。</p>
+<h4>2. 配置CNAME</h4>
+
+<p>在F:\Blog\Hexo\source文件夹下创建一个记事本文件CNAME.txt，然后输入你购买的域名，最后再修改CNAME.txt为CNAME（去除后缀）。</p>
+<p>然后通过<code>hexo g -d</code>的方式进行提交，上传到GitHub。</p>
+<h4>3. 修改云解析DNS</h4>
+
+<p>在登录之后点击右上角头像，在左边栏选择 域名与网站-&gt;域名，然后选择自己购买的用来替换GitHub page的域名。</p>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\14.png" alt="2"></p>
+<p>进入之后选择DNS修改，然后修改DNS为如下：<br><img src="利用Hexo和GitHub page构建属于自己的blog\15.png" alt="2"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">f1g1ns1.dnspod.net </span><br><span class="line">f1g1ns2.dnspod.net</span><br></pre></td></tr></table></figure>
+<h4>4. 域名解析</h4>
+
+<ul>
+<li>打开<a href="https://www.dnspod.cn/" target="_blank" rel="noopener">DNSPOD</a>注册一个账户。然后域名解析-&gt;添加域名-&gt;点击域名</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\16.png" alt="2"></p>
+<ul>
+<li>然后为了得到自己GitHub page的ip，我们可以<code>win+R</code>输入<code>cmd</code>，输入</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping yourname.github.io</span><br></pre></td></tr></table></figure>
+<p>然后会得到一个IP，有可能是IPV6的信息，如果想要得到IPV4的ip信息可以使用：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping -4 yourname.github.io</span><br></pre></td></tr></table></figure>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\17.png" alt="2"></p>
+<p>将IP地址复制，进入到点击域名后的界面。</p>
+<ul>
+<li>最后在域名界面选择添加记录：对于IPV4的IP，类型选择A，添加两种主机记录，分别为@和<code>www</code>的类型；对于IPV6的IP，类型选择AAAA，添加两种主机记录，分别为@和<code>www</code>。</li>
+</ul>
+<p><img src="利用Hexo和GitHub page构建属于自己的blog\18.png" alt="2"></p>
+<p>现在等待生效即可，最迟72小时，在网页上输入你购买的域名即可获得你自己的博客主页了。</p>
+<h3>写在最后</h3>
+
+<p>当你完成了这一系列之后，肯定心情还是比较开心和激动的，其实这只是属于你博客的刚刚开始，你还需要不断的往里面书写自己的文章，才能有助于博客的蓬勃发展，形式并非是重要的，只有靠内容才能够获得别人的认可，相信你在写博客的过程中会受益无穷的，有问题的话可以在留言板留言，或者联系我的邮箱：<a href="mailto:pengguodong0414@foxmail.com" target="_blank" rel="noopener">pengguodong0414@foxmail.com</a>。</p>
+<h3>参考资料：</h3>
+
+<p><a href="https://www.jianshu.com/p/15ae47eddc56" target="_blank" rel="noopener">小白独立搭建博客–Github Pages和Hexo简明教程</a></p>
+<p><a href="http://blog.csdn.net/happystarycy/article/details/52490183" target="_blank" rel="noopener">创建SSH密钥，并连接GitHub</a></p>
+<p><a href="http://blog.csdn.net/sugar_rainbow/article/details/57415705" target="_blank" rel="noopener">hexo生成博文插入图片</a></p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/web/">web</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/Hexo/">Hexo</a> <a class="tag-link" href="/tags/github/">github</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		6174
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/04/06/利用Hexo和GitHub page构建属于自己的blog/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/31/链表/">数据结构（一）—— 链表</a>  
+	       
+		 
+
+		 <time>2018-03-31 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>链表是里面的对象按线性顺序排列，数组的线性顺序是由数组的下标决定的，然而与数组不同的是，链表的顺序是由各个对象里的指针决定的。链表可以分为单向链表和双向链表，在这里简单说一下双向链表，因为双向链表更为复杂，双向链表的每个对象都如下所示，每个对象有一个数据$data$和两个指针$prev$和$next$，设$x$为链表的一个对象，那么$x.next$指向$x$在链表中的后继元素，$x.prev$指向$x$在链表中的钱去元素。</p>
+<ul>
+<li>如果$x.prev=NULL$，那么表示该元素是链表的头($head$)。</li>
+<li>如果$x.next=NULL$，那么表示该元素是链表的尾($tail$)。</li>
+<li>属性$L.head$指向链表的第一个元素，如果$L.head=NULL$，则链表为空。</li>
+</ul>
+<p>对于单链接的链表则没有$x.prev$。</p>
+<p><img src="链表\1.png" alt="1"></p>
+<center>(双向链表)</center>
+
+<p><img src="链表\2.png" alt="1"></p>
+<center>(单向链表)</center>
+
+
+
+<h3 id="链表的搜索："><a href="#链表的搜索：" class="headerlink" title="链表的搜索："></a>链表的搜索：</h3><p>$LIST-SEARCH(L,k)$采用简单的线性搜索方式，用于查找链表$L$中的第一个数据为$k$的元素，并返回指向该元素的指针，如果链表中没有数据为$k$的对象，则返回$NULL$。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LIST-SEARCH(L,k)</span><br><span class="line">	x=L.head</span><br><span class="line">	<span class="keyword">while</span> x!=<span class="literal">NULL</span> <span class="keyword">and</span> x.key!=k</span><br><span class="line">    	x=x.next</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<h3 id="链表的插入："><a href="#链表的插入：" class="headerlink" title="链表的插入："></a>链表的插入：</h3><p>给定一个已设置好数据$key$的元素$x$，过程$LIST-INSERT$将$x$插入到链表的前端。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LIST-INSERT(L,x)</span><br><span class="line">	x.next=L.head</span><br><span class="line">	<span class="keyword">if</span> L.head!=<span class="literal">NULL</span></span><br><span class="line">    	L.head.prev=x</span><br><span class="line">	L.head=x</span><br><span class="line">	x.prev=<span class="literal">NULL</span></span><br></pre></td></tr></table></figure>
+<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><h3 id="链表的删除："><a href="#链表的删除：" class="headerlink" title="链表的删除："></a>链表的删除：</h3><p>过程$LIST-DELETE$将一个元素$x$从链表$L$中删除。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LIST-DELETE(L,X)</span><br><span class="line">	<span class="keyword">if</span> x.prev!=<span class="literal">NULL</span></span><br><span class="line">    	x.prev.next=x.next</span><br><span class="line">	<span class="keyword">else</span> L.head=x.next</span><br><span class="line">    <span class="keyword">if</span> x.next!=<span class="literal">NULL</span></span><br><span class="line">    	x.next.prev=x.prev</span><br></pre></td></tr></table></figure>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/数据结构/">数据结构</a> <a class="tag-link" href="/tags/链表/">链表</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		840
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/31/链表/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/30/数据结构/">数据结构（一）—— 栈和队列</a>  
+	       
+		 
+
+		 <time>2018-03-30 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>​    数据结构的几个章节，在本文中介绍栈和队列。</p>
+<h2 id="栈和队列"><a href="#栈和队列" class="headerlink" title="栈和队列"></a>栈和队列</h2><p>栈和队列都是动态集合，他们的特点如下：</p>
+<ul>
+<li>栈：LIFO(Last In First Out)，也就是最后压入栈中的元素最先被删除。</li>
+<li>队列：FIFO(First In First Out)，也就是最先存在于队列的元素最先被删除。</li>
+</ul>
+<h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><p>栈上的插入元素操作称为压入(PUSH)，而无元素参数的DELETE操作称为弹出(POP)。可以使用一个数组$S[1,\cdots,n]$来实现最多可容纳n个元素的栈。该数组有一个$S.top$，指向最新插入的元素。栈中包含的元素是$S[1,\cdots,S.top]$，其中$S[1]$是栈底元素，而$S[S.top]$是栈顶元素。</p>
+<p>当$S.top=0$即表示栈中不包含任何元素，我们可以用这个来判断栈是否为空(empty)。对于栈的操作，有可能会产生如下两种情况的错误：</p>
+<ul>
+<li>下溢(unerflow)：对一个空的栈进行弹出操作。（如果使用stl，那么最可能出现的就是这种错误了）</li>
+<li>上溢(underflow)：$S.top$如果超过了n。（如果自己编写栈这个数据类型，则这个时候要给数组新增内存，防止内存泄露）</li>
+</ul>
+<p>栈的几种操作如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">STACK-EMPTY(S)</span><br><span class="line">	<span class="keyword">if</span> S.top=<span class="number">0</span></span><br><span class="line">    	<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PUSH(S,x)</span><br><span class="line">	S.top=S.top+<span class="number">1</span></span><br><span class="line">	S[S.top]=x</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POP()</span><br><span class="line">	<span class="keyword">if</span> STACK-EMPTY(S)</span><br><span class="line">    	error <span class="string">"underflow"</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	S.top=S.top<span class="number">-1</span></span><br><span class="line">    	<span class="keyword">return</span> S[S.top<span class="number">-1</span>]</span><br></pre></td></tr></table></figure>
+<p>三种操作的执行时间都为$O(1)$。</p>
+<h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>栈上的插入元素操作称为入队(ENQUEUE)，而无元素参数的DELETE操作称为出队(DEQUEUE)。队列有队头(head)和队尾(tail)。利用一个数组$Q[1,\cdots,n]$来实现一个最多容纳$n-1$个元素的队列的一种方式。该队列有一个属性$Q.head$指向队头元素，一个属性$Q.tail$指向下个元素将要插入的位置。使用循环数组的形式，即数组下标n和下标1是紧挨着的。初始化$Q.head=Q.tail=1$。当$Q.head=Q.tail$时，队列为空，当$Q.head=Q.tail+1$，队列是满的。和栈一样，也有两种可能出现的错误：</p>
+<ul>
+<li>下溢(unerflow)：对一个空的队列进行出队操作。（如果使用stl，那么最可能出现的就是这种错误了）</li>
+<li>上溢(underflow)：对一个满的队列插入新元素。（如果自己编写栈这个数据类型，则这个时候要给数组新增内存，防止内存泄露）</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ENQUEUE(Q,x)</span><br><span class="line">	Q[Q.tail]=x</span><br><span class="line">	<span class="keyword">if</span> Q.tail==Q.length<span class="comment">//循环数组</span></span><br><span class="line">    	Q.tail=<span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    	Q.tail=Q.tail+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">DEQUEUE(Q)</span><br><span class="line">	x=Q[Q.head]</span><br><span class="line">	<span class="keyword">if</span> Q.head==Q.length</span><br><span class="line">    	Q.head=<span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span> Q.head=Q.head+<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<h3 id="附录："><a href="#附录：" class="headerlink" title="附录："></a>附录：</h3><p>队列的简单实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cstdlib&gt; </span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Node</span>&#123;</span></span><br><span class="line">    Node* next;</span><br><span class="line">    <span class="keyword">int</span> ele;</span><br><span class="line">&#125;Node;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Queue</span> &#123;</span></span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">  	Queue() &#123;</span><br><span class="line">    	<span class="keyword">this</span>-&gt;size = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">this</span>-&gt;tail = <span class="keyword">this</span>-&gt;head = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">push</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> &amp; ele)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">pop</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">front</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">back</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span></span>;</span><br><span class="line">  	<span class="function"><span class="keyword">int</span> <span class="title">Size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>-&gt;size;</span><br><span class="line">    &#125;</span><br><span class="line">  	~Queue() &#123;</span><br><span class="line">    	clear();</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    Node* head;</span><br><span class="line">    Node* tail;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> Queue::back()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(tail!=<span class="literal">NULL</span>)	<span class="keyword">return</span> tail-&gt;ele;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> Queue::clear()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">while</span>(size) <span class="keyword">this</span>-&gt;pop();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> Queue::front()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(head!=<span class="literal">NULL</span>) <span class="keyword">return</span> head-&gt;ele;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> Queue::push(<span class="keyword">const</span> <span class="keyword">int</span> &amp; ele)</span><br><span class="line">&#123;</span><br><span class="line">	size++;</span><br><span class="line">	<span class="keyword">if</span> (head==<span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		head = tail = <span class="keyword">new</span> Node();</span><br><span class="line">		head-&gt;ele = ele;</span><br><span class="line">		head-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		tail-&gt;next = <span class="keyword">new</span> Node();;</span><br><span class="line">		tail-&gt;next-&gt;ele = ele;</span><br><span class="line">		tail-&gt;next-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">		tail = tail-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> Queue::pop()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(size==<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		size--;</span><br><span class="line">		<span class="keyword">delete</span> head;</span><br><span class="line">		head=tail=<span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(size&gt;<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		size--;</span><br><span class="line">		Node* temp=head;</span><br><span class="line">		head=head-&gt;next;</span><br><span class="line">		<span class="keyword">delete</span> temp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Queue q1;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; size;</span><br><span class="line">    <span class="keyword">int</span> ele;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="built_in">cin</span> &gt;&gt; ele;</span><br><span class="line">        q1.push(ele);</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; q1.back() &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"The size of Queue is : "</span> &lt;&lt; q1.Size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; q1.front() &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">        q1.pop();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"The size of Queue is : "</span> &lt;&lt; q1.Size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; q1.front() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">        <span class="built_in">cin</span> &gt;&gt; ele;</span><br><span class="line">        q1.push(ele);</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; q1.back() &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    q1.clear();</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; q1.back() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"The size of Queue is : "</span> &lt;&lt; q1.Size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>栈的简单实现：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> MYSTACK__H__</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MYSTACK__H__</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Node</span> &#123;</span></span><br><span class="line"> <span class="keyword">int</span> number;</span><br><span class="line"> Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">myStack</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line"> Node *mtop;</span><br><span class="line"> <span class="keyword">int</span> _size;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line"> myStack();</span><br><span class="line"> myStack(<span class="keyword">const</span> myStack &amp;<span class="built_in">stack</span>);</span><br><span class="line"> myStack(<span class="keyword">const</span> <span class="keyword">int</span> *arr, <span class="keyword">const</span> <span class="keyword">int</span> _size); <span class="comment">// 用数组构造,按顺序压栈</span></span><br><span class="line"> ~myStack();</span><br><span class="line"> <span class="function"><span class="keyword">bool</span> <span class="title">empty</span><span class="params">()</span> <span class="keyword">const</span></span>;  <span class="comment">// 栈空则返回true</span></span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">top</span><span class="params">()</span> <span class="keyword">const</span></span>; <span class="comment">// 返回栈顶元素，如果栈为空则返回0</span></span><br><span class="line"> <span class="function"><span class="keyword">bool</span> <span class="title">pop</span><span class="params">()</span></span>;  </span><br><span class="line"> <span class="function"><span class="keyword">bool</span> <span class="title">push</span><span class="params">(<span class="keyword">int</span> _number)</span></span>; <span class="comment">// 请注意push失败的情况，即new失败</span></span><br><span class="line"> <span class="function"><span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line"> myStack&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> myStack&amp; <span class="built_in">stack</span>);</span><br><span class="line"> <span class="keyword">friend</span> ostream&amp; <span class="keyword">operator</span>&lt;&lt;(ostream&amp; out, <span class="keyword">const</span> myStack&amp; <span class="built_in">stack</span>) &#123;</span><br><span class="line">  Node *t = <span class="built_in">stack</span>.mtop;</span><br><span class="line"> <span class="keyword">if</span> (t == <span class="literal">NULL</span>) &#123;</span><br><span class="line">  out &lt;&lt; <span class="string">"The stack is empty!"</span>;</span><br><span class="line">  <span class="keyword">return</span> out;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">while</span> (t != <span class="literal">NULL</span>) &#123;</span><br><span class="line">  out &lt;&lt; t-&gt;number &lt;&lt; <span class="string">' '</span>;</span><br><span class="line">  t = t-&gt;next;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> out;</span><br><span class="line"> &#125;;</span><br><span class="line">&#125;;</span><br><span class="line">myStack::myStack()</span><br><span class="line">&#123;</span><br><span class="line">	mtop=<span class="literal">NULL</span>;</span><br><span class="line">	_size=<span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">myStack::myStack(<span class="keyword">const</span> myStack &amp;<span class="built_in">stack</span>)</span><br><span class="line">&#123;</span><br><span class="line">	_size=<span class="built_in">stack</span>.size();</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		mtop=<span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		mtop=<span class="keyword">new</span> Node();</span><br><span class="line">		mtop-&gt;number=<span class="built_in">stack</span>.mtop-&gt;number;</span><br><span class="line">		mtop-&gt;next=<span class="literal">NULL</span>;</span><br><span class="line">		Node* mtail=mtop;</span><br><span class="line">		Node* copyed=<span class="built_in">stack</span>.mtop;</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;_size;i++)</span><br><span class="line">		&#123;</span><br><span class="line">			mtail-&gt;next=<span class="keyword">new</span> Node();</span><br><span class="line">			mtail-&gt;next-&gt;number=copyed-&gt;next-&gt;number;</span><br><span class="line">			mtail=mtail-&gt;next;</span><br><span class="line">			copyed=copyed-&gt;next;</span><br><span class="line">			mtail-&gt;next=<span class="literal">NULL</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">myStack::myStack(<span class="keyword">const</span> <span class="keyword">int</span> *arr,<span class="keyword">const</span> <span class="keyword">int</span> _size)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">this</span>-&gt;_size=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>) mtop=<span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;_size;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">this</span>-&gt;push(arr[i]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">myStack::~myStack()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">while</span>(mtop!=<span class="literal">NULL</span>) pop();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">bool</span> myStack::empty() <span class="keyword">const</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> _size==<span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> myStack::top() <span class="keyword">const</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">return</span> mtop-&gt;number;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">bool</span> myStack::pop()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">delete</span> mtop;</span><br><span class="line">		mtop=<span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		Node* temp=mtop;</span><br><span class="line">		mtop=mtop-&gt;next;</span><br><span class="line">		<span class="keyword">delete</span> temp;</span><br><span class="line">	&#125;</span><br><span class="line">	_size--;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">bool</span> myStack::push(<span class="keyword">int</span> _number)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		mtop=<span class="keyword">new</span> Node();</span><br><span class="line">		mtop-&gt;next=<span class="literal">NULL</span>;</span><br><span class="line">		mtop-&gt;number=_number;</span><br><span class="line">		_size++;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		Node* temp=<span class="keyword">new</span> Node();	</span><br><span class="line">		<span class="keyword">if</span>(temp==<span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">		temp-&gt;next=mtop;</span><br><span class="line">		temp-&gt;number=_number;</span><br><span class="line">		mtop=temp;</span><br><span class="line">		_size++;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> myStack::size() <span class="keyword">const</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> _size;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">myStack&amp; myStack::<span class="keyword">operator</span>=(<span class="keyword">const</span> myStack&amp; <span class="built_in">stack</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">this</span>-&gt;~myStack();</span><br><span class="line">	_size=<span class="built_in">stack</span>.size();</span><br><span class="line">	<span class="keyword">if</span>(_size==<span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		mtop=<span class="literal">NULL</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		mtop=<span class="keyword">new</span> Node();</span><br><span class="line">		mtop-&gt;number=<span class="built_in">stack</span>.mtop-&gt;number;</span><br><span class="line">		mtop-&gt;next=<span class="literal">NULL</span>;</span><br><span class="line">		Node* mtail=mtop;</span><br><span class="line">		Node* copyed=<span class="built_in">stack</span>.mtop;</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;_size;i++)</span><br><span class="line">		&#123;</span><br><span class="line">			mtail-&gt;next=<span class="keyword">new</span> Node();</span><br><span class="line">			mtail-&gt;next-&gt;number=copyed-&gt;next-&gt;number;</span><br><span class="line">			mtail=mtail-&gt;next;</span><br><span class="line">			copyed=copyed-&gt;next;</span><br><span class="line">			mtail-&gt;next=<span class="literal">NULL</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="keyword">int</span> a[<span class="number">100</span>];</span><br><span class="line"> <span class="keyword">int</span> n, m, num;</span><br><span class="line"> <span class="built_in">cin</span> &gt;&gt; n &gt;&gt; m;</span><br><span class="line"> myStack s1;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s1 is empty? "</span> &lt;&lt; s1.empty() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n/<span class="number">2</span>; ++i) &#123;</span><br><span class="line">  <span class="built_in">cin</span> &gt;&gt; num;</span><br><span class="line">  s1.push(num);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s1's size is "</span> &lt;&lt; s1.size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> myStack s2(s1), s3;</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;  i &lt; m; ++i) &#123;</span><br><span class="line">  s1.pop();</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"now s1's size is "</span> &lt;&lt; s1.size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = n/<span class="number">2</span>; i &lt; n; ++i) &#123;</span><br><span class="line">  <span class="built_in">cin</span> &gt;&gt; num;</span><br><span class="line">  s1.push(num); s3.push(num);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s1's size is "</span> &lt;&lt; s1.size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s1 is "</span> &lt;&lt; s1 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s3 is "</span> &lt;&lt; s3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s2's top is "</span> &lt;&lt; s2.top() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> s2.pop();</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s2 is "</span>  &lt;&lt; s2 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s2 is empty?"</span> &lt;&lt; s2.empty() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> s2 = s1;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"now s2 is "</span> &lt;&lt; s2 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">  <span class="built_in">cin</span> &gt;&gt; a[i];</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function">myStack <span class="title">s4</span><span class="params">(a, n)</span></span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s4's size is "</span> &lt;&lt; s4.size() &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s4 is "</span> &lt;&lt; s4 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> s3 = s4; s3.pop();</span><br><span class="line"> <span class="built_in">cout</span> &lt;&lt; <span class="string">"s3 is "</span> &lt;&lt; s3 &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/数据结构/">数据结构</a> <a class="tag-link" href="/tags/栈和队列/">栈和队列</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		7386
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/30/数据结构/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/28/最大子数组/">最大子数组</a>  
+	       
+		 
+
+		 <time>2018-03-28 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>假定给定你股票的每日价格，让你只能购买一次，并且出售一次，要求你获得的利润最大，那么这个问题其实就是最大子数组问题了。</p>
+<h3 id="问题转换："><a href="#问题转换：" class="headerlink" title="问题转换："></a>问题转换：</h3><p>也即：给定一个序列（至少含有 1 个数），从该序列中寻找一个连续的子序列，使得子序列的和最大。</p>
+<h4 id="解法讲述："><a href="#解法讲述：" class="headerlink" title="解法讲述："></a>解法讲述：</h4><p>其实这个可以看成是分治法，为了求解最大子数组问题，假定我们要寻找子数组$A[low,\cdots,high]$的最大子数组，首先需要将整个子数组划分成两个规模尽量相等的子数组，即找到子数组的中间位置，例如$mid$，然后考虑求解两个子数组$A[low,\cdots,mid]$和$A[mid+1,\cdots,high]$，那么$A[low,\cdots,high]$的最大子数组$A[i,\cdots,j]$必然满足一下情况：</p>
+<ul>
+<li>完全位于子数组$A[low,\cdots,mid]$中，因此$low\le i\le j\ \le mid$。</li>
+<li>完全位于子数组$A[mid+1,\cdots,high]$，因此$mid&lt; i\le j\ \le high$。</li>
+<li>跨越了中点，因此$low\le i\le mid \le j \le high$。</li>
+</ul>
+<p>我们对两个分解的子数组，我们可以发现其实也是同样的分解方式，这两个子问题仍然是最大子数组问题，因此我们的工作就是寻找跨越中点的最大子数组，然后在三种情况中选取最大值。</p>
+<p>伪代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">FIND-MAX-CROSSING-SUBARRAY(A,low,mid,high)</span><br><span class="line">	left-sum=-inf</span><br><span class="line">	sum=<span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i=mid downto low</span><br><span class="line">    	sum=sum+A[i]</span><br><span class="line">    	<span class="keyword">if</span> sum&gt;left-sum</span><br><span class="line">        	left-sum=sum</span><br><span class="line">        	max-left=i</span><br><span class="line">	right-sum=-inf</span><br><span class="line"> 	sum=<span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j=mid+<span class="number">1</span> to high</span><br><span class="line">    	sum=sum+a[j]</span><br><span class="line">    	<span class="keyword">if</span> sum&gt;right-sum</span><br><span class="line">        	right-sum=sum</span><br><span class="line">        	max-right=j</span><br><span class="line">	<span class="keyword">return</span> (max-left,max-right,left-sum+right-sum)</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FIND-MAXIMUM-SUBARRAY(A,low,high)</span><br><span class="line">	<span class="keyword">if</span> high==low</span><br><span class="line">    	<span class="keyword">return</span> (low,high,A[low]) <span class="comment">//只有一个元素</span></span><br><span class="line">	<span class="keyword">else</span> mid=<span class="built_in">floor</span>((low+high)/<span class="number">2</span>)</span><br><span class="line">    	(left-low,left-high,left-sum)=FIND-MAXIMUM-SUBARRAY(A,low,mid)</span><br><span class="line">    	(right-low,right-high,right-sum)=FIND-MAXIMUM-SUBARRAY(A,mid+<span class="number">1</span>,high)</span><br><span class="line">    	(cross-low,cross-high,cross-sum)=FIND-MAX-CROSSING-SUBARRAY(A,low,mid,high)</span><br><span class="line">    	<span class="keyword">if</span> left-sum&gt;=right-sum <span class="keyword">and</span> left-sum&gt;=cross-sum</span><br><span class="line">        	<span class="keyword">return</span> (left-low,left-high,left-sum)</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> right-sum&gt;=left-sum <span class="keyword">and</span> right-sum&gt;=cross-sum</span><br><span class="line">        	<span class="keyword">return</span> (right-low,right-high,right-sum)</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> (cross-low,cross-high,cross-sum)</span><br></pre></td></tr></table></figure>
+<h3 id="leetcode实战"><a href="#leetcode实战" class="headerlink" title="leetcode实战"></a>leetcode实战</h3><p><a href="https://leetcode-cn.com/problems/maximum-subarray/description/" target="_blank" rel="noopener">53.最大子序列</a></p>
+<p>给定一个序列（至少含有 1 个数），从该序列中寻找一个连续的子序列，使得子序列的和最大。</p>
+<p>例如，给定序列 <code>[-2,1,-3,4,-1,2,1,-5,4]</code>，<br>连续子序列 <code>[4,-1,2,1]</code> 的和最大，为 <code>6</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findMaxCrossingSum</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A,<span class="keyword">int</span> low,<span class="keyword">int</span> mid,<span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> left_sum=INT_MIN;</span><br><span class="line">        <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=mid;i&gt;=low;i--)</span><br><span class="line">        &#123;</span><br><span class="line">            sum=sum+A[i];</span><br><span class="line">            <span class="keyword">if</span>(sum&gt;=left_sum)</span><br><span class="line">            &#123;</span><br><span class="line">                left_sum=sum;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> right_sum=INT_MIN;</span><br><span class="line">        sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j=mid+<span class="number">1</span>;j&lt;=high;j++)</span><br><span class="line">        &#123;</span><br><span class="line">            sum=sum+A[j];</span><br><span class="line">            <span class="keyword">if</span>(sum&gt;=right_sum)</span><br><span class="line">            &#123;</span><br><span class="line">                right_sum=sum;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> left_sum+right_sum;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">findMaxSum</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; A,<span class="keyword">int</span> low,<span class="keyword">int</span> high)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(high==low) <span class="keyword">return</span> A[low];</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">int</span> mid=(low+high)/<span class="number">2</span>;</span><br><span class="line">            <span class="keyword">int</span> left_sum=findMaxSum(A,low,mid);</span><br><span class="line">            <span class="keyword">int</span> right_sum=findMaxSum(A,mid+<span class="number">1</span>,high);</span><br><span class="line">            <span class="keyword">int</span> cross_sum=findMaxCrossingSum(A,low,mid,high);</span><br><span class="line">            <span class="keyword">if</span>(left_sum&gt;=right_sum&amp;&amp;left_sum&gt;=cross_sum) <span class="keyword">return</span> left_sum;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(right_sum&gt;=left_sum&amp;&amp;right_sum&gt;=cross_sum) <span class="keyword">return</span> right_sum;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> cross_sum;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> findMaxSum(nums,<span class="number">0</span>,nums.size()<span class="number">-1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>附上另一种解法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxSubArray</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> ans = nums[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">int</span> sum= <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">auto</span> s : nums)&#123;</span><br><span class="line">            sum += s;</span><br><span class="line">            ans = max(sum, ans);</span><br><span class="line">            sum = max(sum , <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/分治/">分治</a> <a class="tag-link" href="/tags/算法/">算法</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2732
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/28/最大子数组/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/22/使用VBA来帮助在excel中录入数据/">使用VBA来帮助在excel中录入数据</a>  
+	       
+		 
+
+		 <time>2018-03-22 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <h3 id="序："><a href="#序：" class="headerlink" title="序："></a>序：</h3><p>今天下午在做TA(teacher assistant)的时候，为了给学生们登记分数，然后在excel表格中，一下午CTRL+F，还有ABC+-这几个键，按得手都酸，在登记完后思考了下有没有更快的录入方式，最后分析了一下，最耗时间的操作主要有以下两个：</p>
+<ul>
+<li>单人操作的时候，自己对于登记好一份作业之后要查看第二份作业的分数进行翻页的过程。（这个自己来省不了时间啊，总不能做个机器出来吧，只能两个人来比较省时间了）</li>
+<li>在excel中每次ctrl+f之后，按ctrl+f还有删除几位数，并移动鼠标光标到相应位置登记分数的过程。（这个过程实际上比翻页更复杂，因为涉及到的操作更多，更耗费时间）</li>
+</ul>
+<p>然后通过思考，发现自己在按了ctrl+F之后，有效输入就是查找学生的学号，而学生学号也有一定规律，所以只需要查找部分即可，另一个有效的输入就是学生的分数了，也就是说，你弹出搜索框和点击要登记的位置进行输入分数的操作，都是无用的耗时的，抱着这样的心态开始了这次VBA的自（wei）强（le）学（tou）习（lan）之路。</p>
+<h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><p>首先什么是<a href="https://baike.baidu.com/item/VBA/1596798?fr=aladdin" target="_blank" rel="noopener">VBA</a>，（都是套话，看具体操作的可以忽略），Visual Basic for Applications（VBA）是Visual Basic的一种宏语言，是微软开发出来在其桌面应用程序中执行通用的自动化(OLE)任务的编程语言。主要能用来扩展Windows的应用程序功能，特别是Microsoft Office软件。怎么样，一看介绍就很符合我们的要求吧，就是为了office软件用的啊，MS大法好啊。</p>
+<p>然后查了很多资料，emm，没找到现成的符合需求的，然后看到EXCEL有一个录制宏的操作，即【开发工具-&gt;录制宏】：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\1.png" alt="1"></p>
+<p>按下图的确定之后即开始录制了：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\2.png" alt="1"></p>
+<p>然后我模拟了一次自己录入成绩的操作，然后停止录制，然后点【开发工具-&gt;宏】：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\3.png" alt="1"></p>
+<p>然后对自己录制的宏进行编辑：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\4.png" alt="1"></p>
+<p>然后可以看到如下的代码：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 宏<span class="number">1</span>()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 宏1 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+e</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    Cells.Find(What:=<span class="string">"6033"</span>, After:=ActiveCell, LookIn:=xlFormulas, LookAt _</span><br><span class="line">        :=xlPart, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:= _</span><br><span class="line">        <span class="literal">False</span>, MatchByte:=<span class="literal">False</span>, SearchFormat:=<span class="literal">False</span>).Activate</span><br><span class="line">    Range(<span class="string">"E8"</span>).<span class="keyword">Select</span></span><br><span class="line">    ActiveCell.FormulaR1C1 = <span class="string">"B"</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>然后发现原来这里有个find函数可以模拟ctrl+F的查找，这个其实是可以帮助我们进行查询资料的，因为很多时候你不知道怎么搜索资料，然后查询了一下VBA中find函数的使用，以及怎么给单元格赋值的操作。经过修改，可以得到：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span> Ran= Cells.Find(What:=<span class="string">"6033"</span>) <span class="comment">'查找关键字6033</span></span><br><span class="line">Cells(Ran.Row, Ran.Column)=<span class="string">"B"</span> <span class="comment">'给查找到关键字的单元格赋值为B</span></span><br></pre></td></tr></table></figure>
+<p>然后就完成了第一步了，模拟查找的过程和填写数据的过程，然后接下来就是想要通过不断的输入学号和学生成绩来进行填写数据，也就是怎么使用输入呢，后面经过网上资料的查找，有人提到可以使用InputBox，然后就通过查找InputBox的使用，最后得到了如下的程序：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span> Ran = Cells.Find(What:=Application.InputBox(<span class="string">"查找的学号"</span>))<span class="comment">'查找到你输入查找的学号的单元格</span></span><br><span class="line">Cells(Ran.Row, Ran.Column + <span class="number">3</span>) = Application.InputBox(<span class="string">"分数"</span>)<span class="comment">'为找到的位置后的第三列的地方填写成绩</span></span><br><span class="line">   ActiveWorkbook.Save<span class="comment">'保存</span></span><br></pre></td></tr></table></figure>
+<p>然后加个循环就可以实现一次性输入多个人的情况啦：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 快速录入数据()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快速录入数据 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+q</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    <span class="keyword">Dim</span> i <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    <span class="keyword">For</span> i = <span class="number">1</span> <span class="keyword">To</span> <span class="number">110</span></span><br><span class="line">    <span class="keyword">Set</span> Ran = Cells.Find(What:=Application.InputBox(<span class="string">"查找学号"</span>))</span><br><span class="line">    </span><br><span class="line">    Cells(Ran.Row, Ran.Column + <span class="number">3</span>) = Application.InputBox(<span class="string">"分数"</span>)</span><br><span class="line">    ActiveWorkbook.Save</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">Next</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>然后觉得A和B和C的跨度有点大，+-号也不太方便输入，就通过1 2 3 来表示A B C，写了个优化版，但是感觉速度不如上一个版本，具体使用效果未测试，但是肯定更省事：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 快速录入数据()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快速录入数据 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+q</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    <span class="keyword">Dim</span> i <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    <span class="keyword">Dim</span> mul <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    mul = Application.InputBox(<span class="string">"增加几列"</span>)</span><br><span class="line">    <span class="keyword">For</span> i = <span class="number">1</span> <span class="keyword">To</span> <span class="number">110</span></span><br><span class="line">    xuehao = Application.InputBox(<span class="string">"查找学号"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">Set</span> Ran = Cells.Find(What:=xuehao)</span><br><span class="line">    CurrentStatu = Cells(Ran.Row, Ran.Column + mul)</span><br><span class="line">    <span class="keyword">If</span> Len(CurrentStatu) = <span class="number">0</span> <span class="keyword">Then</span></span><br><span class="line">        s = Application.InputBox(<span class="string">"分数"</span>)</span><br><span class="line">        <span class="keyword">If</span> s = <span class="string">"1"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A-"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"2"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B-"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"11"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"111"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A+"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"22"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"222"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B+"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"3"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"C"</span></span><br><span class="line">        <span class="keyword">Else</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = s</span><br><span class="line">        <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">    <span class="keyword">Else</span></span><br><span class="line">        MsgBox (<span class="string">"该学生已有成绩"</span>)</span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">        ActiveWorkbook.Save</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">Next</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>最后展示一波效果：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\5.png" alt="1"></p>
+<p><img src="使用VBA来帮助在excel中录入数据\6.png" alt="1"></p>
+<p><img src="使用VBA来帮助在excel中录入数据\7.png" alt="1"></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>VBA这个东西感觉上手还是比较快的，虽然没有完全理解复杂的代码，但是至少也完成了自己的需求，还是很满意的。</p>
+<h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><p><a href="http://blog.csdn.net/gxiyv/article/details/1592156" target="_blank" rel="noopener">VBA中find查找后面各项参数的作用</a></p>
+<p><a href="https://zhidao.baidu.com/question/1884070145218080348.html" target="_blank" rel="noopener">InputBox函数的使用</a></p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/VBA/">VBA</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/EXCEL/">EXCEL</a> <a class="tag-link" href="/tags/VBA/">VBA</a> <a class="tag-link" href="/tags/偷懒/">偷懒</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2785
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/22/使用VBA来帮助在excel中录入数据/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/20/各种排序算法/">各种排序算法</a>  
+	       
+		 
+
+		 <time>2018-03-20 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>最近面试的时候，感觉对于排序的问题被问到的比较多，所以想对排序的几种算法做一个总结，顺便帮助自己巩固基础，在这里借助<a href="https://github.com/JellyP/JellyP.github.io/blob/master/reference/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%E4%B8%AD%E6%96%87%E7%89%88.pdf" target="_blank" rel="noopener">算法导论</a>这本书，在介绍以下几种排序算法：插入排序、归并排序、堆排序和快速排序。</p>
+<p>所谓排序问题就是满足这样的条件，例如：</p>
+<p>输入为n个数的序列：$&lt;a_1,a_2,\cdots,a_n&gt;$。</p>
+<p>输出为一个排好序的n个数的序列：$&lt;{a_1}^{‘},{a_2}^{‘},\cdots,{a_n}^{‘}&gt;$，满足${a_1}^{‘}\le{a_2}^{‘}\le\cdots\le{a_n}^{‘}$。</p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>插入排序可以理解成是打扑克牌的时候，在最后整个牌在你手上是一个从小到大排序的状态。一开始没有摸牌的时候，手上的牌是空的，每次摸起一张牌，就让其插入在正确的位置，为了让其插入正确的位置，就需要从左到右地去查找，这个过程就是类似插入排序了，而每次摸牌结束后，自己手上的牌都是排好序了的状态。</p>
+<p>伪代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">INSERTION-SORT(<span class="built_in">array</span> a[])</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span> j=<span class="number">2</span> to a.length</span><br><span class="line">    key=a[j] <span class="comment">//将a[j]临时保存，并将其插入到已经排序好的a[1,...,j-1]中，类似摸牌的过程，现在摸的是第j张牌。</span></span><br><span class="line">    i=j<span class="number">-1</span></span><br><span class="line">    <span class="keyword">while</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> a[i]&gt;key <span class="comment">//找到所有比他大的数字，让它放在其右边，实现从小到大排序</span></span><br><span class="line">      a[i+<span class="number">1</span>]=a[i];</span><br><span class="line">  	  i=i<span class="number">-1</span></span><br><span class="line">    a[i+<span class="number">1</span>]=key<span class="comment">//将a[j]即key的值放入正确的位置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在INSERTION-SORT中，若输入数组已排好序，则出现最佳情况。这时最佳的运行时间可以看成是$an+b$，其中$a$和$b$依赖于每个语句的代价，具体推导在这里不做赘述，可以看出其是线性函数，即$O(n)$。</p>
+<p>而其最坏的情况，运行时间可以表示为$an^2+bn+c$，其中$a$、$b$和$c$依赖每个语句的代价。具体推导在这里不做赘述，可以看出其是n的二次函数，即$O(n^2)$。</p>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><p>归并排序的本质是分治法的一种应用，即为了解决一个给定的问题，算法一次或者多次递归地调用其自身以解决紧密相关的子问题。</p>
+<p>分治法在每层递归有三个步骤，以归并排序为例：</p>
+<ul>
+<li>分解：将原问题分解为若干个子问题，这些子问题是原问题的规模较小的实例。归并排序中则是将待排序的n个元素的序列分成各具$\frac{n}{2}$两个子序列。</li>
+<li>解决：将子问题解决，利用递归的方式求解，当子问题规模足够小的时候，直接得出答案。归并排序中则是递归地排序两个子序列，当子序列足够小则直接得到答案。</li>
+<li>合并：将子问题的解合并成原问题的解。归并排序中则将两个已经排序的子序列以产生已排序的答案。</li>
+</ul>
+<p>归并排序的关键步骤在于“合并”两个已排序的子序列，通常我们可以借助一个辅助过程$\text{MERGE}(A,p,q,r)$来完成合并，其中$A$是一个数组，$p$,$q$和$r$是数组下标，满足$p\le q&lt;r$。假设在该过程中，$A[p,\cdots,q]$和$A[q+1,\cdots,r]$都是已经排好序的子序列，这个函数能够合并当前两个子数组形成一个新的已经排好序的子数组并代替当前的子数组$A[p,\cdots,r]$，总的代价为O(n)。</p>
+<p>其工作步骤我们还是回到扑克牌的例子，假设你的面前现在有两堆已经排好序的扑克牌，牌面朝上，最小的牌都在最上面，我们希望你拿到手上的时候，得到一堆完整的排好序的牌。那么要怎么做呢，我们的基本步骤就是每次将两堆牌上你看到的最小的牌拿上来，直到一边的牌全部拿完即可。在归并的过程中，待合并元素的总数是$n=r-p+1$，那么也就是一旦执行了$r-p+1$个步骤，算法就可以停止了，这里有一个问题，就是怎么知道有一个堆为空呢，可以通过在每个牌堆底部放置一个哨兵牌，表示一个特殊的值，在这里为了简化，可以使用$\infty$来表示，因为不可能出现比他还小的牌，所以当有一个堆显露出这个牌的时候，表示这个堆已经取完，当两个堆同时出现时，表示所有非哨兵牌已经被排序好了，我们的目标也就完成了。</p>
+<p>伪代码为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MERGE(A,p,q,r)</span><br><span class="line">&#123;</span><br><span class="line">	n1=q-p+<span class="number">1</span> <span class="comment">//表示第一个子序列的长度</span></span><br><span class="line">	n2=r-q <span class="comment">//表示第二个子序列的长度</span></span><br><span class="line">	let L[<span class="number">1</span>,...,n1+<span class="number">1</span>] <span class="keyword">and</span> R[<span class="number">1</span>,...,n2+<span class="number">1</span>] be <span class="keyword">new</span> arrays <span class="comment">//新建两个新数组用于储存两个排好序的序列</span></span><br><span class="line">	<span class="keyword">for</span> i=<span class="number">1</span> to n1 <span class="comment">//L[i]存A[p,...,q]的序列</span></span><br><span class="line">		L[i]=A[p+i<span class="number">-1</span>]</span><br><span class="line">	<span class="keyword">for</span> j=<span class="number">1</span> to n2 <span class="comment">//R[j]存A[q+1,...,r]的序列</span></span><br><span class="line">		R[j]=A[q+j]</span><br><span class="line">	L[n1+<span class="number">1</span>]=inf <span class="comment">//L和R最后一个数组置为无穷</span></span><br><span class="line">	R[n2+<span class="number">1</span>]=inf</span><br><span class="line">	i=<span class="number">1</span>,j=<span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> k=p to r <span class="comment">//执行r-p+1次</span></span><br><span class="line">		<span class="keyword">if</span> L[i]&lt;=R[j] <span class="comment">//选择L和R中较小的值放入A中</span></span><br><span class="line">			A[k]=L[i]</span><br><span class="line">			i=i+<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			A[k]=R[j]</span><br><span class="line">			j=j+<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而如果不使用哨兵牌的方式，也可以最后进行检查其是否为空，在这里介绍下另一种思路：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MERGE(A,p,q,r)</span><br><span class="line">&#123;</span><br><span class="line">	n1=q-p+<span class="number">1</span> <span class="comment">//表示第一个子序列的长度</span></span><br><span class="line">	n2=r-q <span class="comment">//表示第二个子序列的长度</span></span><br><span class="line">	let L[<span class="number">1</span>,...,n1] <span class="keyword">and</span> R[<span class="number">1</span>,...,n2] be <span class="keyword">new</span> arrays <span class="comment">//新建两个新数组用于储存两个排好序的序列</span></span><br><span class="line">	<span class="keyword">for</span> i=<span class="number">1</span> to n1 <span class="comment">//L[i]存A[p,...,q]的序列</span></span><br><span class="line">		L[i]=A[p+i<span class="number">-1</span>]</span><br><span class="line">	<span class="keyword">for</span> j=<span class="number">1</span> to n2 <span class="comment">//R[j]存A[q+1,...,r]的序列</span></span><br><span class="line">		R[j]=A[q+j]</span><br><span class="line">	i=<span class="number">1</span>,j=<span class="number">1</span></span><br><span class="line">	<span class="keyword">while</span> i&lt;=n1 &amp;&amp; j&lt;=n2 <span class="comment">//一直取牌直到有一个牌堆为空的时候</span></span><br><span class="line">		<span class="keyword">if</span> L[i]&lt;=R[j] <span class="comment">//选择L和R中较小的值放入A中</span></span><br><span class="line">			A[k++]=L[i++]</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">          	 A[k++]=R[j++]</span><br><span class="line">	<span class="keyword">while</span> i&lt;=n1 <span class="comment">//当L牌堆还有空的时候</span></span><br><span class="line">		A[k++]=L[i++]</span><br><span class="line">	<span class="keyword">while</span> j&lt;=n2 <span class="comment">//当R牌堆还有空的时候</span></span><br><span class="line">		A[k++]=R[j++]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来就是通过将过程MERGE作为归并排序的子程序来用，书写归并排序。即$\text{MERGE-SORT}(A,p,r)$，其意义为通过这个函数能够排序子数组$A[p,\cdots,r]$中的元素，当$p\ge r$时，该子数组最多只有一个元素，所以是已经排好序的结果，对应分治法中的子问题规模足够小的情况。否则，将$A[p,\cdots,r]$分解成两个子数组$A[p,\cdots,q]$和$A[q+1,\cdots,r]$两个数组，前者包含$\lceil\frac{n}{2}\rceil$个元素，后者包含$\lfloor\frac{n}{2}\rfloor$个元素，伪代码为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MERGE-SORT(A,p,r)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span> p&lt;r</span><br><span class="line">    q=(p+r)/<span class="number">2</span> <span class="comment">//分解</span></span><br><span class="line">    MERGE-SORT(A,p,q) <span class="comment">//排序A[p,...,q]</span></span><br><span class="line">    MERGE-SORT(A,q+<span class="number">1</span>,r) <span class="comment">//排序A[q+1,...,r]</span></span><br><span class="line">    MERGE(A,p,q,r) <span class="comment">//归并</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了给整个序列$A=&lt;A[1],A[2],\cdots,A[n]&gt;$，我们执行初始调用MERGE-SORT(A,1,A.length)。为了计算归并排序的时间复杂度，我们可以将$T(n)$表示成规模为$n$的问题的运行时间。</p>
+<p>那么归并排序的最坏时间复杂度为：</p>
+<p><img src="各种排序算法/2.png" alt="1"></p>
+<p>其中c表示求解规模为1的问题所需要的时间以及在分解过程中与合并步骤处理每个元素所需要的时间。</p>
+<p><img src="各种排序算法/1.png" alt="1"></p>
+<p>如图所示，我们可以通过构建递归树的形式，得到一个具有$\text{lg}n+1$层的树，每层贡献总代价为$cn$，所以总代价为$cn\lg n+cn$，即复杂度为${O}(n\lg n)$。 </p>
+<h3 id="堆排序："><a href="#堆排序：" class="headerlink" title="堆排序："></a>堆排序：</h3><p>首先是堆：在这里定义二叉堆是一个数组，可以看成是一个近似的完全二叉树，对于表示堆的数组$A[1,\cdots,A[A.length]]$，对于每个给定的节点的下标i，我们很容易计算得到其父节点和左右孩子节点：</p>
+<p><img src="各种排序算法\3.jpg" alt="1"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Parent(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">floor</span>(index/<span class="number">2</span>)</span><br><span class="line">  </span><br><span class="line">LeftChild(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*index</span><br><span class="line"></span><br><span class="line">RightChild(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*index+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>在计算其父节点和左右节点的时候，除法和乘法可以通过左移右移的操作来实现，在C中即操作符<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
+<p>二叉堆可以分为两种形式，最大堆和最小堆：</p>
+<ul>
+<li>最大堆的性质是除了根以外的所有节点i都要满足：$A[parent[i]]\ge A[i]$。用于堆排序算法。</li>
+<li>最小堆的性质是除了根以外的所有节点i都要满足：$A[parent[i]]\le A[i]$。用于构造优先队列。</li>
+</ul>
+<p>堆排序主要可以分为以下几个步骤：</p>
+<p><strong>1.维护堆的性质：</strong></p>
+<p>MAX-HEAPIFY是用于维护最大堆性质的过程，输入为一个数组$A$和一个下标$i$。在调用该函数的时候，我们假定根节点为$LEFT(i)$和$RIGHT(i)$的二叉树都是最大堆，但这时$A[i]$有可能小于其孩子，这种情况违背了最大堆的性质，MAX-HEAPIFY通过让$A[i]$的值在最大堆中“逐级下降”，从而使得下标$i$为根节点的子树重新遵循最大堆的性质。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">MAX-HEAPIFY(A,i)</span><br><span class="line">	l=LEFT(i)<span class="comment">//l是i的左子树的节点</span></span><br><span class="line">	r=RIGHT(i)<span class="comment">//r是i的右子树节点</span></span><br><span class="line">	<span class="keyword">if</span> l&lt;=A.heap-size <span class="keyword">and</span> A[l]&gt;A[i] <span class="comment">//当A[i]比左子树小的时候</span></span><br><span class="line">    	largest=l <span class="comment">//取largest=左子树下标</span></span><br><span class="line">    <span class="keyword">else</span> largest=i</span><br><span class="line">    <span class="keyword">if</span> r&lt;=A.heap-size <span class="keyword">and</span> A[r]&gt;A[largest] <span class="comment">//当A[largest]比右子树的更小的时候</span></span><br><span class="line">    	largest=r <span class="comment">//取largest=右子树下标</span></span><br><span class="line">    <span class="keyword">if</span> largest!=i <span class="comment">//当largest不是原来的i值，证明要逐级下降</span></span><br><span class="line">    	exchange A[i] with A[largest] <span class="comment">//交换A和最大值的下标的位置</span></span><br><span class="line">    	MAX-HEAPIFY(A,largest) <span class="comment">//看最大值的下标的是否是整个的最大值</span></span><br></pre></td></tr></table></figure>
+<p>这一步的时间复杂度为$O(\lg n)$。</p>
+<p><strong>2.建堆：</strong></p>
+<p>BUILD-MAX-HEAP(A)，是将一个大小为$n=A.length$的数组转换成最大堆的过程。由于子数组$A(\lfloor\frac{n}{2}\rfloor+1,\cdots,n)$都是树的叶子节点。所以可以对树的其他节点都调用一次MAX-HEAPIFY。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BUILD-MAX-HEAP(A)</span><br><span class="line">	A.heap-size=A.length</span><br><span class="line">	<span class="keyword">for</span> i=<span class="built_in">floor</span>(A.length/<span class="number">2</span>) down to <span class="number">1</span></span><br><span class="line">    	MAX-HEAPIFY(A,i)</span><br></pre></td></tr></table></figure>
+<p>这一步的时间复杂度为线性的。</p>
+<p><strong>3.堆排序算法：</strong></p>
+<p>有了上面两步之后，接下来写堆排序算法就比较简单了，首先是利用BUILD-MAX-HEAP将输入的数组$A$建成最大堆。然后因为数组的最大元素总在根节点$A[1]$，所以我们可以通过将其与$A[n]$进行互换，然后再去除该节点，再重新维护堆的性质即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HEAPSORT(A)</span><br><span class="line">	BUILD-MAX-HEAP(A) <span class="comment">//建立最大堆</span></span><br><span class="line"> 	<span class="keyword">for</span> i=A.length down to <span class="number">2</span></span><br><span class="line">    	exchange A[l] with A[i] <span class="comment">//交换最后一个节点和第一个节点的位置</span></span><br><span class="line">    	A.heap-size=A.heap-size<span class="number">-1</span> <span class="comment">//减少一个堆大小，即去除一个二叉树节点</span></span><br><span class="line">    	MAX-HEAPIFY(A,<span class="number">1</span>) <span class="comment">//重新维护堆，使得A[1]为最大值</span></span><br></pre></td></tr></table></figure>
+<p>最后即可得到一个从小到大排好序的数组$A$了，其时间复杂度为$O(n\lg n)$。</p>
+<h3 id="快速排序："><a href="#快速排序：" class="headerlink" title="快速排序："></a>快速排序：</h3><p>快速排序是一个能够对原址进行排序的方法，虽然其最坏时间复杂度为$O(n^2)$，但是其期望的时间复杂度为$O(n\lg n )$，所以通常是实际排序应用中最好的选择。</p>
+<p>快排和归并排序类似，也是采用了分治的思想。数组$A[p,\cdots,r]$被划分为两个子数组$A[p,\cdots,q-1]$和$A[q+1,\cdots,r]$，使得$A[p,\cdots,q-1]$都小于$A[q]$，同时$A[q]$也小于等于$A[q+1,\cdots,r]$。</p>
+<p>算法的关键是对数组的划分，它实现了对子数组$A[p,\cdots,r]$的原址重排序。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PARTITION(A,p,r)</span><br><span class="line">	X=A[r]</span><br><span class="line"> 	i=p<span class="number">-1</span></span><br><span class="line">	<span class="keyword">for</span> j=p to r<span class="number">-1</span></span><br><span class="line">    	<span class="keyword">if</span> A[j]&lt;=x </span><br><span class="line">        	i=i+<span class="number">1</span></span><br><span class="line">        	exchange A[i] with A[j] <span class="comment">//将比x小的放在前面，比x大的放在后面</span></span><br><span class="line">	exchange A[i+<span class="number">1</span>] with A[r]</span><br><span class="line">	<span class="keyword">return</span> i+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>而快排则是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">QUICKSORT(A,p,r)</span><br><span class="line">	<span class="keyword">if</span> p&lt;r</span><br><span class="line">    	q=PARTITION(A,p,r)</span><br><span class="line">    	QUICKSORT(A,p,q<span class="number">-1</span>)</span><br><span class="line">    	QUICKSORT(A,q,r)</span><br></pre></td></tr></table></figure>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>做完了这几个排序的介绍，也算是对这几个介绍的一个复习吧，有时间再刷刷题巩固一下了。</p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/排序/">排序</a> <a class="tag-link" href="/tags/算法/">算法</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		5517
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/20/各种排序算法/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/15/Android studio的安装和配置/">Android studio的安装和配置</a>  
+	       
+		 
+
+		 <time>2018-03-15 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>在这篇文章里，主要内容是向你们介绍怎么安装和配置Android studio，使得最后能够新建项目和Android与GitHub相连接。</p>
+<h4>Android studio 的安装</h4>
+
+<p>Android studio的安装，你们可以参考一下这个网址<a href="">Android studio的安装和配置</a>，建议将PDF下载之后进行查看。然后如果是首次安装的话，涉及到sdk的安装，hosts的修改，虚拟机的安装等，按着教程一步一步来应该是可以解决的。</p>
+<h4>配置Android studio中的git</h4>
+
+<p>首先需要在<a href="https://git-scm.com/download" target="_blank" rel="noopener">官网</a>下载git，然后安装之后记住安装路径（例如G:\github\Git\cmd\git.exe），然后打开Android studio，选择右上角file-&gt;settings，打开如下界面，具体操作步骤见下图：</p>
+<p><img src="Android studio的安装和配置\1.png" alt="1"></p>
+<h4>在Android studio中配置GitHub账号</h4>
+
+<p>同样和配置git一样，选择GitHub，输入已经注册好的GitHub账号，然后选择test，如果弹出connection successful，那么就证明配置成功了。</p>
+<p><img src="Android studio的安装和配置\2.png" alt="1"></p>
+<h4>在Android studio中导入GitHub的项目</h4>
+
+<p>在Android studio界面，选择如下的选项：</p>
+<p><img src="Android studio的安装和配置\3.png" alt="1"></p>
+<p>然后如果已经登录了GitHub之后，那么就会弹出进行你GitHub上仓库的项目的选取，在选择好项目和路径之后，就可以克隆到本地了。</p>
+<p><img src="Android studio的安装和配置\4.png" alt="1"></p>
+<h4>将本地项目分享到GitHub上</h4>
+
+<p>为了更好的管理自己的代码，实现多人协作，我们可以将代码上传到GitHub上，和克隆代码类似，我们选择share project on github即可。</p>
+<p><img src="Android studio的安装和配置\5.png" alt="1"></p>
+<p>确定好仓库名字和描述之后</p>
+<p><img src="Android studio的安装和配置\6.png" alt="1"></p>
+<p>再选择好自己所要上传的文件，上传即可。</p>
+<p><img src="Android studio的安装和配置\7.png" alt="1"></p>
+<p>然后打开自己的GitHub就能看到自己所新建的仓库和仓库内上传的新项目了。</p>
+<p>Android studio的配置到这里就已经结束了，如果你还有什么问题欢迎联系我的邮箱<a href="mailto:pengguodong0414@foxmail.com" target="_blank" rel="noopener">pengguodong0414@foxmail.com</a>或者留下你的评论。</p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/Android/">Android</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/Android/">Android</a> <a class="tag-link" href="/tags/git/">git</a> <a class="tag-link" href="/tags/环境配置/">环境配置</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		823
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/15/Android studio的安装和配置/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/01/01/Hello/">Hello</a>  
+	       
+		 
+
+		 <time>2018-01-01 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>Welcome to my Blog!</p>
+    
+	  
+</div>
+
+
+
+		
+
+		
+    <a class="article-readmore" href="/2018/01/01/Hello/">Continue</a> 
+    	
+</article>     
+     	
+  
+
+ 
+
+  <nav class="paginator scrollIn">
+    <a class="extend prev" rel="prev" href="/">Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+  
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

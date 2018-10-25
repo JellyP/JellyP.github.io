@@ -1,0 +1,438 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Day8:ios学习日记 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		day8:ios学习日记
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/06/06 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2784
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>day8:ios学习笔记</p>
+<p>第17章</p>
+<ul>
+<li><p>UIView是UIResponder的子类，我们可以直接通过覆盖以下4个函数来处理触摸事件，即可完成画图的工作，当应用某个触摸事件发生后，系统都会将该事件添加至一个由UIApplication单例管理的事件队列中，然后UIApplication会向拥有该事件的视图发送特定的UIResponder消息。当多个手指在同一视图、同一时刻执行相同的触摸操作的时候，会采用单个消息、一次分发所有相关的UITouch对象的方式。注意：在这个例子中，不需要也不应该去保存UITouch对象。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">touchesBegan</span><span class="params">(<span class="number">_</span> touches: Set&lt;UITouch&gt;, with event: UIEvent?)</span></span> </span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">touchesMoved</span><span class="params">(<span class="number">_</span> touches: Set&lt;UITouch&gt;, with event: UIEvent?)</span></span> </span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">touchesEnded</span><span class="params">(<span class="number">_</span> touches: Set&lt;UITouch&gt;, with event: UIEvent?)</span></span> </span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">touchesCancelled</span><span class="params">(<span class="number">_</span> touches: Set&lt;UITouch&gt;, with event: UIEvent?)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>结构体和类的区别：</p>
+<ul>
+<li>结构体不支持继承</li>
+<li>如果没有定义构造方法，结构体默认由一个根据成员生成的构造函数。</li>
+<li>如果所有属性都有默认值，并且没有定义其他构造方法，结构体会有默人的一个空构造方法来创建结构体并设置默认值。</li>
+<li>结构体是值类型的，而类是指针类型的。</li>
+</ul>
+</li>
+<li><p>重载drawRect的时候，进行画图操作，当添加新线之后，调用setNeedDisplay()函数来进行调用drawRect。</p>
+</li>
+<li><p>利用IBInspectable来让代码中的属性和Interface Builder的属性相关联。</p>
+</li>
+<li><p>UIResponder对象可以成为第一响应对象并接受触摸事件，例如UIView,UIViewController,UIApplication,UIWindow。UIResponder对象有一个nextResponder()对象，这些对象一起组成了响应链。当UIResponder不处理某个事件时，就会把这个事件传递给nextResponder()方法，如果最终的UIApplication也没有处理这个事件，那么这个事件就会被忽略。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">响应链顺序：</span><br><span class="line"><span class="type">UIView</span> -&gt; father <span class="type">UIView</span> -&gt; <span class="type">UIViewController</span> -&gt; <span class="type">UIWindow</span> -&gt; <span class="type">UIApplication</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>UIControl是Cocoa Touch中很多类的父类，它不会直接向目标对象发送消息，而是通过UIApplication对象来进行转发。例如UIButton对象，要处理其事件的时候，是先通过UIControl的方法先对其是那种类型事件进行判断，然后再调用自身的sendActionsForControlEvents(_:)方法去查询目标动作对来进行匹配。如果UICtrol对象直接向目标对象发送消息，由于UIControl的目标－动作对中，可能目标对象为nil的情况，而通过UIApplication来转发会先进行判断对象是否为nil，如果是nil，那么UIApplication就会找出UIWindow对象的第一响应对象发送响应的动作消息。UIApplication对象是应用程序的象征，一个UIApplication就是一个应用程序，是以单例模式存在。</p>
+</li>
+</ul>
+<p>第18章</p>
+<ul>
+<li><p>UIGestureRecognizer有很多子类，例如UITapGestureRecognizer,UILongPressGestureRecognizer 等，利用这些子类能够处理不同的手势。</p>
+</li>
+<li><p>delaysTouchesBegan，设置属性为true的时候，能够使得该手势延迟调用TouchBegan函数。</p>
+</li>
+<li><p>gesture1.require(toFail: gesture2 )能够使得gesture1在gesture2识别失败后再进行识别。</p>
+</li>
+<li><p>location(in:view)可以获取手势的位置。</p>
+</li>
+<li><p>一个应用只有一个UIMenuController，当需要展示他的时候，给他设置UIMenuItem,设置显示区域，设置可见即可。为了让其显示，需要将当前的View设置成第一响应对象，即重载<strong>变量</strong>canBecomeFirstResponder ,变量也可以进行重载！然后在显示menu之前，调用becomeFirstResponder()，再添加Item，设置显示区域，设置可见即可。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="keyword">var</span> canBecomeFirstResponder: <span class="type">Bool</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将UIGestureRecognizer的cancelsTouchesInView属性设置成false，即可确保手势处理触摸事件后视图仍然可以通过UIResponder方法收到触摸事件。</p>
+</li>
+<li><p>当一个手势识别成功需要去识别另一个手势的时候，可以重载委托的这个函数:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">gestureRecognizer</span><span class="params">(<span class="number">_</span> gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer)</span></span> -&gt; <span class="type">Bool</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>手势一共有7种状态:</p>
+<p>|     状态      |                    意义                    |<br>| :———: | :————————————–: |<br>|  .possible  |   手势识别器还没有识别它的手势，但是可能正在评估触摸事件。这是默认状态。    |<br>|   .failed   | 手势识别器已经接收到不能识别为其手势的多点触摸序列。没有发送动作消息，手势识别器被重置为.possible |<br>|   .began    | 手势识别器已经接收到被识别为连续手势的触摸物体。它在运行循环的下一个周期发送其动作消息（或消息）。 |<br>|  .changed   | 手势识别器已经接收到被识别为对连续手势的改变的触摸。它在运行循环的下一个周期发送其动作消息（或消息）。 |<br>|   .ended    | 手势识别器已经接收到被识别为连续手势结束的触摸。它在运行循环的下一个周期发送其动作消息（或消息），并将其状态重置为.possible |<br>| .cancelled  | 手势识别器已经接收到触摸，从而导致连续手势的取消。它在运行循环的下一个周期发送其动作消息（或消息），并将其状态重置为.possible |<br>| .recognized | 手势识别器已经接收到它识别为手势的多点触摸序列。它在运行循环的下一个周期发送其动作消息（或消息），并将其状态重置为.possible |</p>
+</li>
+</ul>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/06/07/day9-ios学习日记/">          
+
+     <span class="left" data-hover="day9:ios学习日记">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/05/25/day7-ios学习笔记/">         
+
+    <span class="right" data-hover="day7:ios学习笔记">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

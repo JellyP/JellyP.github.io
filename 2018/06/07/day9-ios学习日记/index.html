@@ -1,0 +1,422 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Day9:ios学习日记 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		day9:ios学习日记
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/06/07 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2501
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>day9:ios学习日记</p>
+<p>第19章</p>
+<p>这一章好难啊，感觉看了快一天，而且熟练度不够，需要再重新仔细看代码才行。</p>
+<ul>
+<li><p>利用URL的键值对来访问请求信息。可以利用枚举来建立响应的方法，方便后面进行使用。</p>
+</li>
+<li><p>在swift中，关于访问控制有三种:</p>
+<p>| public         | internal                   | private                |<br>| ————– | ————————– | ———————- |<br>| 所有文件，包括第三方库的文件 | 默认值，对于app来说，只有当前项目的文件可以访问。 | 只有当前文件可以访问这个类，而不是当前的类。 |</p>
+</li>
+<li><p>闭包是很神奇的东西，不过由于见的比较少，在重新查看并通过一个例子之后终于理解了逃逸闭包的使用。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">逃逸闭包:当函数执行结束后,才去调用函数内部的闭包,叫做逃逸闭包</span><br><span class="line">非逃逸闭包:当函数执行过程中,执行的函数内部的闭包,叫做非逃逸闭包,默认情况下，是非逃逸闭包。</span><br><span class="line">-如果函数的最后一个参数是闭包,函数参数可以提前结束,最后一个参数直接使用&#123;&#125;,包装闭包的代码。</span><br></pre></td></tr></table></figure>
+<p>例如这一段代码：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  ViewController.swift</span></span><br><span class="line"><span class="comment">//  Test</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by gdgd on 18/5/31.</span></span><br><span class="line"><span class="comment">//  Copyright © 2018年 gdgd. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> UIKit</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ViewController</span>: <span class="title">UIViewController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        loadData &#123; (json: [<span class="type">String</span>]) <span class="keyword">in</span></span><br><span class="line">            </span><br><span class="line">            <span class="built_in">print</span>(json)</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        setupUI &#123; (result) <span class="keyword">in</span></span><br><span class="line">            </span><br><span class="line">            <span class="built_in">print</span>(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">loadData</span><span class="params">(completion:@escaping <span class="params">(<span class="number">_</span> : [String])</span></span></span>-&gt;()) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="type">DispatchQueue</span>.global().async &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"当前的线程<span class="subst">\(Thread.current)</span>)"</span>)</span><br><span class="line">            </span><br><span class="line">            <span class="type">Thread</span>.sleep(forTimeInterval: <span class="number">3</span>)</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">let</span> json = [<span class="string">"lausen"</span>]</span><br><span class="line">            </span><br><span class="line">            <span class="type">DispatchQueue</span>.main.async &#123;</span><br><span class="line">                </span><br><span class="line">                <span class="built_in">print</span>(<span class="string">"当前的线程<span class="subst">\(Thread.current)</span>"</span>);</span><br><span class="line">                </span><br><span class="line">                completion(json)</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="built_in">print</span>(<span class="string">"执行到这儿结束了"</span>) <span class="comment">//函数结束后才去调用的闭包这个就是逃逸闭包</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">setupUI</span><span class="params">(completion: <span class="params">(<span class="number">_</span> : [String])</span></span></span> -&gt; ()) &#123; <span class="comment">//而这个就是非逃逸闭包</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> json = [<span class="string">"liuxiang"</span>,<span class="string">"lausen"</span>,<span class="string">"somnus"</span>]</span><br><span class="line">        </span><br><span class="line">        completion(json)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之前一直对于闭包作为参数有了一定的误会，以为在定义逃逸闭包的时候，就已经决定了他要做什么事情，但其实是在调用<strong>具有该闭包的参数的函数</strong>的时候，才会具体去实现闭包的具体内容。例如在这个例子中，虽然在逃逸闭包的定义里有一些输出，例如输出当前线程什么的，但是逃逸闭包的具体实现是在<code>viewDidLoad</code>里调用<code>loadData</code>的时候，对获得到到json数据，进行输出。最后输出结果为：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">"liuxiang"</span>, <span class="string">"lausen"</span>, <span class="string">"somnus"</span>]</span><br><span class="line">当前的线程&lt;<span class="type">NSThread</span>: <span class="number">0x608000071980</span>&gt;&#123;number = <span class="number">3</span>, name = (null)&#125;)</span><br><span class="line">执行到这儿结束了</span><br><span class="line">当前的线程&lt;<span class="type">NSThread</span>: <span class="number">0x600000065a00</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">[<span class="string">"lausen"</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>URLSession提供了和服务器进行通信的方法，其中URLSessionTask负责与服务器进行通信。URLSessionTask分为三种任务：数据任务、下载任务、上传任务。</p>
+</li>
+<li>捋一捋程序的思路：发送请求到服务器 -&gt; 获取JSON数据 -&gt; 构建解析JSON数据的模型 -&gt; 利用JSONSerialization来把数据转换成为基础对象即已定义的解析JSON数据的模型 -&gt; 将成功转换的数据转换成为Image对象显示出来。</li>
+<li>默认情况下，由于访问网络时间可能很久，所以URLSessionTask在后台线程中运行，而更新UI需要在主线程，即<code>OperationQueue.main.addOperation</code></li>
+</ul>
+<p>第20章</p>
+<ul>
+<li><p>定义数据源，遵循UICollectionViewDataSouce协议的同时，也需要遵循NSObjectProtocol，可以采用直接继承NSObject类来实现。一定要实现的方法为:<code>func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -&gt; UICollectionViewCell</code>和  <code>func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -&gt; Int</code> </p>
+<p>一个是查询需要显示多少数据，另一个是用来获取指定位置的UICollectionViewCell。</p>
+</li>
+<li><p>使用扩展可以对自定义的类或者系统框架的类中添加方法，类、结构体和枚举都支持扩展。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">calss <span class="type">A</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> a: <span class="type">Int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">A</span>: <span class="title">Equatable</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> == <span class="params">(leftvar:A, rightvar: B)</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> leftvar.a  == rightvar.a</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/06/07/day10-ios学习日记/">          
+
+     <span class="left" data-hover="day10:ios学习日记">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/06/06/day8-ios学习日记/">         
+
+    <span class="right" data-hover="day8:ios学习日记">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

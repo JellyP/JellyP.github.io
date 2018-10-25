@@ -1,0 +1,424 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  使用VBA来帮助在excel中录入数据 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		使用VBA来帮助在excel中录入数据
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/03/22 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/VBA/">VBA</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/EXCEL/">EXCEL</a> <a class="tag-link" href="/tags/VBA/">VBA</a> <a class="tag-link" href="/tags/偷懒/">偷懒</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		2785
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<h3 id="序："><a href="#序：" class="headerlink" title="序："></a>序：</h3><p>今天下午在做TA(teacher assistant)的时候，为了给学生们登记分数，然后在excel表格中，一下午CTRL+F，还有ABC+-这几个键，按得手都酸，在登记完后思考了下有没有更快的录入方式，最后分析了一下，最耗时间的操作主要有以下两个：</p>
+<ul>
+<li>单人操作的时候，自己对于登记好一份作业之后要查看第二份作业的分数进行翻页的过程。（这个自己来省不了时间啊，总不能做个机器出来吧，只能两个人来比较省时间了）</li>
+<li>在excel中每次ctrl+f之后，按ctrl+f还有删除几位数，并移动鼠标光标到相应位置登记分数的过程。（这个过程实际上比翻页更复杂，因为涉及到的操作更多，更耗费时间）</li>
+</ul>
+<p>然后通过思考，发现自己在按了ctrl+F之后，有效输入就是查找学生的学号，而学生学号也有一定规律，所以只需要查找部分即可，另一个有效的输入就是学生的分数了，也就是说，你弹出搜索框和点击要登记的位置进行输入分数的操作，都是无用的耗时的，抱着这样的心态开始了这次VBA的自（wei）强（le）学（tou）习（lan）之路。</p>
+<h3 id="正文："><a href="#正文：" class="headerlink" title="正文："></a>正文：</h3><p>首先什么是<a href="https://baike.baidu.com/item/VBA/1596798?fr=aladdin" target="_blank" rel="noopener">VBA</a>，（都是套话，看具体操作的可以忽略），Visual Basic for Applications（VBA）是Visual Basic的一种宏语言，是微软开发出来在其桌面应用程序中执行通用的自动化(OLE)任务的编程语言。主要能用来扩展Windows的应用程序功能，特别是Microsoft Office软件。怎么样，一看介绍就很符合我们的要求吧，就是为了office软件用的啊，MS大法好啊。</p>
+<p>然后查了很多资料，emm，没找到现成的符合需求的，然后看到EXCEL有一个录制宏的操作，即【开发工具-&gt;录制宏】：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\1.png" alt="1"></p>
+<p>按下图的确定之后即开始录制了：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\2.png" alt="1"></p>
+<p>然后我模拟了一次自己录入成绩的操作，然后停止录制，然后点【开发工具-&gt;宏】：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\3.png" alt="1"></p>
+<p>然后对自己录制的宏进行编辑：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\4.png" alt="1"></p>
+<p>然后可以看到如下的代码：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 宏<span class="number">1</span>()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 宏1 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+e</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    Cells.Find(What:=<span class="string">"6033"</span>, After:=ActiveCell, LookIn:=xlFormulas, LookAt _</span><br><span class="line">        :=xlPart, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:= _</span><br><span class="line">        <span class="literal">False</span>, MatchByte:=<span class="literal">False</span>, SearchFormat:=<span class="literal">False</span>).Activate</span><br><span class="line">    Range(<span class="string">"E8"</span>).<span class="keyword">Select</span></span><br><span class="line">    ActiveCell.FormulaR1C1 = <span class="string">"B"</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>然后发现原来这里有个find函数可以模拟ctrl+F的查找，这个其实是可以帮助我们进行查询资料的，因为很多时候你不知道怎么搜索资料，然后查询了一下VBA中find函数的使用，以及怎么给单元格赋值的操作。经过修改，可以得到：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span> Ran= Cells.Find(What:=<span class="string">"6033"</span>) <span class="comment">'查找关键字6033</span></span><br><span class="line">Cells(Ran.Row, Ran.Column)=<span class="string">"B"</span> <span class="comment">'给查找到关键字的单元格赋值为B</span></span><br></pre></td></tr></table></figure>
+<p>然后就完成了第一步了，模拟查找的过程和填写数据的过程，然后接下来就是想要通过不断的输入学号和学生成绩来进行填写数据，也就是怎么使用输入呢，后面经过网上资料的查找，有人提到可以使用InputBox，然后就通过查找InputBox的使用，最后得到了如下的程序：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Set</span> Ran = Cells.Find(What:=Application.InputBox(<span class="string">"查找的学号"</span>))<span class="comment">'查找到你输入查找的学号的单元格</span></span><br><span class="line">Cells(Ran.Row, Ran.Column + <span class="number">3</span>) = Application.InputBox(<span class="string">"分数"</span>)<span class="comment">'为找到的位置后的第三列的地方填写成绩</span></span><br><span class="line">   ActiveWorkbook.Save<span class="comment">'保存</span></span><br></pre></td></tr></table></figure>
+<p>然后加个循环就可以实现一次性输入多个人的情况啦：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 快速录入数据()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快速录入数据 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+q</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    <span class="keyword">Dim</span> i <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    <span class="keyword">For</span> i = <span class="number">1</span> <span class="keyword">To</span> <span class="number">110</span></span><br><span class="line">    <span class="keyword">Set</span> Ran = Cells.Find(What:=Application.InputBox(<span class="string">"查找学号"</span>))</span><br><span class="line">    </span><br><span class="line">    Cells(Ran.Row, Ran.Column + <span class="number">3</span>) = Application.InputBox(<span class="string">"分数"</span>)</span><br><span class="line">    ActiveWorkbook.Save</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">Next</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>然后觉得A和B和C的跨度有点大，+-号也不太方便输入，就通过1 2 3 来表示A B C，写了个优化版，但是感觉速度不如上一个版本，具体使用效果未测试，但是肯定更省事：</p>
+<figure class="highlight vb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Sub</span> 快速录入数据()</span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快速录入数据 宏</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line"><span class="comment">' 快捷键: Ctrl+q</span></span><br><span class="line"><span class="comment">'</span></span><br><span class="line">    <span class="keyword">Dim</span> i <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    <span class="keyword">Dim</span> mul <span class="keyword">As</span> <span class="built_in">Integer</span></span><br><span class="line">    mul = Application.InputBox(<span class="string">"增加几列"</span>)</span><br><span class="line">    <span class="keyword">For</span> i = <span class="number">1</span> <span class="keyword">To</span> <span class="number">110</span></span><br><span class="line">    xuehao = Application.InputBox(<span class="string">"查找学号"</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">Set</span> Ran = Cells.Find(What:=xuehao)</span><br><span class="line">    CurrentStatu = Cells(Ran.Row, Ran.Column + mul)</span><br><span class="line">    <span class="keyword">If</span> Len(CurrentStatu) = <span class="number">0</span> <span class="keyword">Then</span></span><br><span class="line">        s = Application.InputBox(<span class="string">"分数"</span>)</span><br><span class="line">        <span class="keyword">If</span> s = <span class="string">"1"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A-"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"2"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B-"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"11"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"111"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"A+"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"22"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"222"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"B+"</span></span><br><span class="line">        <span class="keyword">ElseIf</span> s = <span class="string">"3"</span> <span class="keyword">Then</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = <span class="string">"C"</span></span><br><span class="line">        <span class="keyword">Else</span></span><br><span class="line">            Cells(Ran.Row, Ran.Column + mul) = s</span><br><span class="line">        <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">    <span class="keyword">Else</span></span><br><span class="line">        MsgBox (<span class="string">"该学生已有成绩"</span>)</span><br><span class="line">    <span class="keyword">End</span> <span class="keyword">If</span></span><br><span class="line">        ActiveWorkbook.Save</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">Next</span></span><br><span class="line"><span class="keyword">End</span> <span class="keyword">Sub</span></span><br></pre></td></tr></table></figure>
+<p>最后展示一波效果：</p>
+<p><img src="使用VBA来帮助在excel中录入数据\5.png" alt="1"></p>
+<p><img src="使用VBA来帮助在excel中录入数据\6.png" alt="1"></p>
+<p><img src="使用VBA来帮助在excel中录入数据\7.png" alt="1"></p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>VBA这个东西感觉上手还是比较快的，虽然没有完全理解复杂的代码，但是至少也完成了自己的需求，还是很满意的。</p>
+<h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><p><a href="http://blog.csdn.net/gxiyv/article/details/1592156" target="_blank" rel="noopener">VBA中find查找后面各项参数的作用</a></p>
+<p><a href="https://zhidao.baidu.com/question/1884070145218080348.html" target="_blank" rel="noopener">InputBox函数的使用</a></p>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/03/28/最大子数组/">          
+
+     <span class="left" data-hover="最大子数组">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/03/20/各种排序算法/">         
+
+    <span class="right" data-hover="各种排序算法">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>

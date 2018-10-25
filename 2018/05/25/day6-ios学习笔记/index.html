@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Day6:ios学习笔记 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		day6:ios学习笔记
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/05/25 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		1927
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<p>第13章</p>
+<ul>
+<li>利用UINavigationController来实现顶部栏，从而实现ios各个界面之间的切换。其实现原理是在UINavigationController维护一个UIViewController数组，而显示在屏幕上的是位于栈顶的元素。</li>
+<li>设置一个初始的UIViewController对象为UINavigationController的根视图控制器。根视图控制器将永远位于栈底。</li>
+<li>UINavigationController是UIViewController的子类，所以在main.storyboard里也是一个视图对象，该对象有两个子视图，一个是UINavigationController，另一个是栈顶元素的View。压栈操作会自动完成，无需用户手动设置，仅需设置跳转即可。</li>
+<li>使用UINavigationController的方式就是为其设置一个根视图控制器即可。同时一般情况下，需要在应用委托里，将UINavigationController设置为window的根视图控制器。</li>
+<li>切换视图更新数据，消失的视图会调用viewWillDisappear(_ :)，而出现的视图会调用viewWillAppear(_ :)，由于DIP原则，可以在这两个函数中去进行数据传递。在viewWillDisappear里更新数据，在viewWillAppear让数据显示在屏幕上。</li>
+<li>第一响应者状态：对于键盘事件和摇晃事件，有些响应没有位置等相关信息，不能用位置来决定哪些视图接受事件，就需要第一响应者事件。同一时刻只有一个第一响应者。例如在UITextField和UITextView中，当触摸事件被触发，UITextField和UITextView成为第一响应者，让系统在屏幕上显示键盘。所以要取消键盘可以使用resignFirstResponder函数来实现。要监管键盘等输入做出响应也需要使用委托机制。</li>
+<li>在main.storyboard中添加手势控件的时候，需要注意绑定到了哪个视图，否则可能会达不到预期的效果。</li>
+<li>每个UIViewController都有一个navigationItem属性，这并不是一个UIView的子类，如果已经通过Interface Builder设置了一个之后，再需要设置的话就需要通过代码设置。</li>
+</ul>
+<p>第14章</p>
+<ul>
+<li><p>利用UIImagePickerController对象的时候，需要为新创建的对象设置sourceType属性和delegate属性。利用isSourceTypeAvailable来进行类型判断。</p>
+</li>
+<li><p>为UIImagePickerController对象设置委托还需要实现UINavigationControllerDelegate协议，因为UIImagePickerController的委托属性是从UINavigationController中继承的。先设置该对象的委托为self（为什么？），然后利用present的方式，以模态的形式显示。</p>
+</li>
+<li><p>根据DIP原则，为了保存图片，我们可以创建一个ImageStore类来实现。具体代码可能和第五版的书有些出入，具体为：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> cache = <span class="type">NSCache</span>&lt;<span class="type">AnyObject</span>, <span class="type">AnyObject</span>&gt;() <span class="comment">//创建对象</span></span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">setImage</span><span class="params">(image: UIImage, forKey key: String)</span></span>&#123;</span><br><span class="line">        cache.setObject(image, forKey: key <span class="keyword">as</span> <span class="type">AnyObject</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">imageForKey</span><span class="params">(key: String)</span></span> -&gt; <span class="type">UIImage</span>? &#123;</span><br><span class="line">        <span class="keyword">return</span> cache.object(forKey: key <span class="keyword">as</span> <span class="type">AnyObject</span>) <span class="keyword">as</span>? <span class="type">UIImage</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">deleteImageForKey</span><span class="params">(key: String)</span></span>&#123;</span><br><span class="line">        cache.removeObject(forKey: key <span class="keyword">as</span> <span class="type">AnyObject</span>)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通过这次实验也更好的理解了<code>as!</code>和<code>as?</code>的使用，明白了为什么需要使用<code>as?</code>，例如在上述例子中，由于可能存在对象不存在的情况，所以使用<code>as?</code>的方式来让返回的对象可选。而<code>as!</code>则是在返回的时候强制解包，前提需要能保证其不为空。</p>
+</li>
+<li><p>为了要让照片能被存储，其实并不是在Item类里存放一个UIImage对象，而是存放一个String类型的对象，然后通过NSCache这个类来进行映射。为了能够在两个页面都得到响应的信息，需要在两个页面都放变量imageStore，并且在AppDelegate.swift中创建该对象。然后在两个页面同时维护一个对象。</p>
+</li>
+</ul>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+
+   
+
+      
+    <a href="/2018/05/25/day7-ios学习笔记/">          
+
+     <span class="left" data-hover="day7:ios学习笔记">  Prev </span>  
+
+    </a>
+    
+  
+    
+  
+
+  
+
+  <a href="/2018/05/24/day5-ios学习笔记/">         
+
+    <span class="right" data-hover="day5:ios学习笔记">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>
