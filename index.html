@@ -258,6 +258,15 @@
 </li>
 </ul>
 <p><img src="/2018/11/10/effective-Objective-C2.0总结与笔记-第二章/2.jpg" alt="2"></p>
+<h4 id="第13条：用“方法调配技术”调试“黑盒方法”"><a href="#第13条：用“方法调配技术”调试“黑盒方法”" class="headerlink" title="第13条：用“方法调配技术”调试“黑盒方法”"></a>第13条：用“方法调配技术”调试“黑盒方法”</h4><ul>
+<li><p>与给定的选择子名称相对应的方法也可以在运行期改变，不需要知道源代码，也不需要通过继承子类来覆写方法就能够改变这个类本身的功能，新功能会在本类的所有实例中生效，而不仅限于覆写了相关方法的子类实例，这个方案成为“方法调配” (method swizzling)。方法以函数指针的形式来表示，为IMP指针，原型如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id (*IMP)(id, SEL, ...);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为了互换2个已经写好的方法实现，可以使用下列函数：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//此函数的两个参数表示待交换的两个方法实现</span><br><span class="line">void method_exchangeImplementations(Method m1, Method m2);</span><br><span class="line"></span><br><span class="line">//方法实现可以通过下列函数获得。</span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name);</span><br><span class="line"></span><br><span class="line">//example</span><br><span class="line">//将uppercaseString和lowercaseString两个方法利用方法调配进行调换</span><br><span class="line">Method originalMethod = class_getClassMethod([NSString class], @selector(lowercaseString));</span><br><span class="line">    Method swappedMethod = class_getClassMethod([NSString class], @selector(uppercaseString));</span><br><span class="line">    method_exchangeImplementations(originalMethod, swappedMethod);</span><br></pre></td></tr></table></figure>
+<p>除了上面说的两个系统方法的替换，还可以使用自定义的方法和系统方法进行替换，这样的话就能够为那些系统的黑盒方法增加日志记录功能，这个非常有助于程序调试。<strong>很少人会在调试程序之外的场合使用上述方法来永久改变某个类的功能</strong>。</p>
     
 	  
 </div>
@@ -285,7 +294,7 @@
 
 
 	<span class="post-words"><span class="iconfont icon-words"></span>
-		8679
+		9460
 	</span>
 		
 	</div>
