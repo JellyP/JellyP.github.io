@@ -28,31 +28,31 @@
               
             
 
-              <a class="header-menu-link" id="header-menu-home" href="/">首页</a>     
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-archives" href="/archives">归档</a>     
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-categories" href="/categories">分类</a>     
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-tags" href="/tags">标签</a>     
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-about" href="/about">关于</a>     
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
 
             
             
@@ -97,6 +97,190 @@
     </div>		
 </div>
 
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/05/19/day2-ios学习笔记/">day2:ios学习笔记</a>  
+	       
+		 
+
+		 <time>2018-05-19 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>今天以一个温度转换应用，跟随书的脚步，去学习关于swift的一些东西。</p>
+<p>第三章：</p>
+<ul>
+<li>UIWindow是UIView的子类。每个UIView都有一个图层属性，指向一个CALayer对象。</li>
+<li>可以使用init(frame:)的方式使用代码初始化，例如：</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">     <span class="keyword">let</span> firstFrame=<span class="type">CGRect</span>(x: <span class="number">160</span>, y: <span class="number">240</span>, width: <span class="number">100</span>, height: <span class="number">150</span>)<span class="comment">// 单位是点，不是pixels</span></span><br><span class="line">     <span class="keyword">let</span> firstView=<span class="type">UIView</span>(frame: firstFrame)<span class="comment">// construct a UIVIEW object</span></span><br><span class="line">     firstView.backgroundColor=<span class="type">UIColor</span>.blue</span><br><span class="line">     view.addSubview(firstView) <span class="comment">// add as a subview</span></span><br><span class="line">     </span><br><span class="line">     <span class="keyword">let</span> secondFrame=<span class="type">CGRect</span>(x: <span class="number">40</span>, y: <span class="number">30</span>, width: <span class="number">20</span>, height: <span class="number">20</span>)</span><br><span class="line">     <span class="keyword">let</span> secondView=<span class="type">UIView</span>(frame:secondFrame)</span><br><span class="line">     secondView.backgroundColor=<span class="type">UIColor</span>.red</span><br><span class="line">     view.addSubview(secondView) <span class="comment">//只能被操作一次，以最后的那次为准</span></span><br><span class="line">firstView.addSubview(secondView)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>代码创建的视图只能用代码来添加约束。</li>
+</ul>
+<p>主要还是使用图形化界面进行布局，但是存疑的是，怎样能够使得宽度和Android一样可以自动变化呢？ 好像只能通过改变字体大小去适应宽度？</p>
+<p>第四章：</p>
+<ul>
+<li><p>可以使用属性观察者(property-observer)方法实现对UITextField区域的更改做出响应，即监控。</p>
+</li>
+<li><p>利用NSNumberFormatter来实现输出的格式化。</p>
+</li>
+<li><p>手势也可以通过添加控件的方式来在interface builder</p>
+</li>
+<li><p>利用委托(delegate)来实现对于输入的格式控制。实际操作的时候，忘记了给UITextField视图控件进行绑定委托的操作，导致代码一直没有生效，可以使用委托来实现对于输入的格式控制。注意使用不等号的时候，需要空格分开，否则会当成是将变量强制解包。</p>
+<ul>
+<li>课后初级练习：禁止输入字母</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在func textField中，添加如下判断</span></span><br><span class="line"><span class="keyword">let</span> letter=<span class="type">NSCharacterSet</span>.letters</span><br><span class="line"><span class="keyword">let</span> letterRange=string.rangeOfCharacter(from: letter)</span><br><span class="line"><span class="keyword">if</span> letterRange != <span class="literal">nil</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<p>第五章：</p>
+<ul>
+<li>昨天遇到的多个视图的疑问，在今天总算得到了解决，可以直接在interface builder中直接新建一个view cotroller对象进行实现。</li>
+<li>可以直接使用embeded in的操作来添加tabbar，在interface builder里可以直接看到对象图，很方便。</li>
+<li>viewDidLoad()在加载界面的时候进行调用。</li>
+</ul>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		1243
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/05/19/day2-ios学习笔记/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/05/19/day1-ios学习笔记-1/">day1:ios学习笔记</a>  
+	       
+		 
+
+		 <time>2018-05-19 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>今天主要还是学习了关于xcode的基本操作和swift语言的一些特性，和对第一章的简单内容进行了复现，感觉实际操作起来还是感觉不错的，ios的开发环境很舒服，主要遇到的还是找要用的东西在哪里的问题，因为之前没使用过，但是问题遇到的不多，没见过的主要还是在设置约束的时候，不过觉得这个auto layout还是很厉害的。</p>
+<ul>
+<li>可以点击其中的虚线来实现每个视图和他上面的最近视图距离一致。</li>
+</ul>
+<p>第一章重点：</p>
+<ul>
+<li>Interface Builder画布，并不是把代码可视化，而是一个可以创建对象、维护对象属性的编辑器，而不是靠创建代码文件来进行存储这些信息。（和安卓布局不同）</li>
+<li>MVC模式，模型－视图－控制器模式，具体来说就是模型对象和视图对象通过控制器对象来进行通信。</li>
+<li>关于xcode的操作，不详述。</li>
+</ul>
+<p>第二章重点：</p>
+<p>主要讲述了关于swift的一些语言特性，由于之前学过c＋＋，所以感觉上手还是比较快的，记一下比较没怎么看到的特点吧，playground真好用。</p>
+<ul>
+<li><p>数据类型有三类：结构体、类、枚举(enumerations)</p>
+<ul>
+<li>三类数据类型都有属性、构造器、实例方法、类或静态方法</li>
+<li>swift使用结构体来实现很多标准类型，例如Int,Bool等，具体不枚举了。</li>
+</ul>
+</li>
+<li><p>let类似c＋＋的const，java的final，都是不可修改</p>
+</li>
+<li><p>可以用［type］的方式来建立数组Array\&lt;Type>，[type,type]的方式建立字典Dictionary\&lt; T , T>，即键值对。</p>
+</li>
+<li><p>可选，即在变量类型后面添加一个问号，来表示这个要么是实例，要么是nil，使用的时候需要解包，尽量不要采用强制解包（在变量名后加一个！），要使用正常解包（if-let) 。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> reading1:<span class="type">Float</span>?</span><br><span class="line"><span class="keyword">var</span> reading2:<span class="type">Float</span>?</span><br><span class="line"><span class="keyword">var</span> reading3:<span class="type">Float</span>?</span><br><span class="line">reading1=<span class="number">1.0</span></span><br><span class="line">reading2=<span class="number">2.9</span></span><br><span class="line">reading3=<span class="number">3.1</span></span><br><span class="line"><span class="comment">// 都有进行赋值可以使用强制解包</span></span><br><span class="line"><span class="comment">// 如果没有只能使用正常解包</span></span><br><span class="line"><span class="comment">// 那强制解包的效率是否比正常解包更高？还未进行资料查询，存疑！！！！！！</span></span><br><span class="line"><span class="keyword">let</span> ave=(reading1!+reading2!+reading3!)<span class="comment">//强制解包</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">let</span> r1=reading1,r2=reading2,r3=reading3&#123;<span class="keyword">let</span> ...&#125;<span class="comment">//正常解包</span></span><br><span class="line"><span class="keyword">else</span> &#123;<span class="keyword">let</span> ...&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以使用range类型来进行循环，例如</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> range=<span class="number">0</span>..&lt;countingup.<span class="built_in">count</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range&#123;<span class="keyword">let</span> string = countingup[i]&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>“\(“和”)”之间的表达式会用变量替代。</p>
+</li>
+<li><p>switch不和c＋＋一样需要break。</p>
+</li>
+<li><p>枚举类型(enum)，离散值的集合，枚举的初始类型是Int的时候，后面的条件如果没有指明会自动递增。不过还没想到具体的使用场景。</p>
+</li>
+</ul>
+<p>暂时只看到了单页面的编程，主要还是swift的语法特性和xcode的操作，所以还是比较简单，希望自己更努力吧。</p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		1299
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/05/19/day1-ios学习笔记-1/">Continue</a> 
+    	
+</article>     
+     	
       	  	
 
   		
@@ -187,7 +371,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/04/06/红黑树/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/04/06/红黑树/">Continue</a> 
     	
 </article>     
      	
@@ -291,7 +475,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/04/06/二叉搜索树/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/04/06/二叉搜索树/">Continue</a> 
     	
 </article>     
      	
@@ -541,7 +725,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/04/06/利用Hexo和GitHub page构建属于自己的blog/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/04/06/利用Hexo和GitHub page构建属于自己的blog/">Continue</a> 
     	
 </article>     
      	
@@ -619,7 +803,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/31/链表/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/03/31/链表/">Continue</a> 
     	
 </article>     
      	
@@ -704,7 +888,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/30/数据结构/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/03/30/数据结构/">Continue</a> 
     	
 </article>     
      	
@@ -779,7 +963,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/28/最大子数组/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/03/28/最大子数组/">Continue</a> 
     	
 </article>     
      	
@@ -868,7 +1052,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/22/使用VBA来帮助在excel中录入数据/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/03/22/使用VBA来帮助在excel中录入数据/">Continue</a> 
     	
 </article>     
      	
@@ -984,125 +1168,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/20/各种排序算法/">阅读更多</a> 
-    	
-</article>     
-     	
-      	  	
-
-  		
-    	<article class="article">		
-	   
-	<div class="article-header">
-	    
-	     <a class="article-title"  href="/2018/03/15/Android studio的安装和配置/">Android studio的安装和配置</a>  
-	       
-		 
-
-		 <time>2018-03-15 </time>    
-	</div>
-
-
-    <div class="post-content article-excerpt">	
-	
-  	
-
-	   <p>在这篇文章里，主要内容是向你们介绍怎么安装和配置Android studio，使得最后能够新建项目和Android与GitHub相连接。</p>
-<h4>Android studio 的安装</h4>
-
-<p>Android studio的安装，你们可以参考一下这个网址<a href="">Android studio的安装和配置</a>，建议将PDF下载之后进行查看。然后如果是首次安装的话，涉及到sdk的安装，hosts的修改，虚拟机的安装等，按着教程一步一步来应该是可以解决的。</p>
-<h4>配置Android studio中的git</h4>
-
-<p>首先需要在<a href="https://git-scm.com/download" target="_blank" rel="noopener">官网</a>下载git，然后安装之后记住安装路径（例如G:\github\Git\cmd\git.exe），然后打开Android studio，选择右上角file-&gt;settings，打开如下界面，具体操作步骤见下图：</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/1.png" alt="1"></p>
-<h4>在Android studio中配置GitHub账号</h4>
-
-<p>同样和配置git一样，选择GitHub，输入已经注册好的GitHub账号，然后选择test，如果弹出connection successful，那么就证明配置成功了。</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/2.png" alt="1"></p>
-<h4>在Android studio中导入GitHub的项目</h4>
-
-<p>在Android studio界面，选择如下的选项：</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/3.png" alt="1"></p>
-<p>然后如果已经登录了GitHub之后，那么就会弹出进行你GitHub上仓库的项目的选取，在选择好项目和路径之后，就可以克隆到本地了。</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/4.png" alt="1"></p>
-<h4>将本地项目分享到GitHub上</h4>
-
-<p>为了更好的管理自己的代码，实现多人协作，我们可以将代码上传到GitHub上，和克隆代码类似，我们选择share project on github即可。</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/5.png" alt="1"></p>
-<p>确定好仓库名字和描述之后</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/6.png" alt="1"></p>
-<p>再选择好自己所要上传的文件，上传即可。</p>
-<p><img src="/2018/03/15/Android studio的安装和配置/7.png" alt="1"></p>
-<p>然后打开自己的GitHub就能看到自己所新建的仓库和仓库内上传的新项目了。</p>
-<p>Android studio的配置到这里就已经结束了，如果你还有什么问题欢迎联系我的邮箱<a href="mailto:pengguodong0414@foxmail.com" target="_blank" rel="noopener">pengguodong0414@foxmail.com</a>或者留下你的评论。</p>
-    
-	  
-</div>
-
-
-
-
-	<div class="article-info">
-		
-
-	<span class="post-meta">		
-	<span class="iconfont icon-category"></span>
-		<a class="category-link" href="/categories/Android/">Android</a>
-	</span>		
-	
-
-
-				
-	<span class="post-meta">
-	<span class="iconfont icon-tag"></span>
-		<a class="tag-link" href="/tags/Android/">Android</a> <a class="tag-link" href="/tags/git/">git</a> <a class="tag-link" href="/tags/环境配置/">环境配置</a>
-	</span>			
-	
-
-
-
-	<span class="post-words"><span class="iconfont icon-words"></span>
-		823
-	</span>
-		
-	</div>
-		
-
-		
-    <a class="article-readmore" href="/2018/03/15/Android studio的安装和配置/">阅读更多</a> 
-    	
-</article>     
-     	
-      	  	
-
-  		
-    	<article class="article">		
-	   
-	<div class="article-header">
-	    
-	     <a class="article-title"  href="/2018/01/01/Hello/">Hello</a>  
-	       
-		 
-
-		 <time>2018-01-01 </time>    
-	</div>
-
-
-    <div class="post-content article-excerpt">	
-	
-  	
-
-	   <p>Welcome to my Blog!</p>
-    
-	  
-</div>
-
-
-
-		
-
-		
-    <a class="article-readmore" href="/2018/01/01/Hello/">阅读更多</a> 
+    <a class="article-readmore" href="/2018/03/20/各种排序算法/">Continue</a> 
     	
 </article>     
      	
@@ -1111,7 +1177,7 @@
  
 
   <nav class="paginator scrollIn">
-    <a class="extend prev" rel="prev" href="/">上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/">Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next</a>
   </nav>
   
 
@@ -1128,7 +1194,7 @@
 
         
         <div class="search-container sildeUpMin">
-            <input type="text" placeholder="输入你想搜索的" id="search-input" class="search-input">  
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
               <span class="search-cancel iconfont icon-cancel"></span>
               <div id="search-result" class="search-result"></div>
         </div>
@@ -1143,37 +1209,37 @@
          
             
 
-            <a class="mobile-menu-link" href="/">首页
+            <a class="mobile-menu-link" href="/">Home
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/archives">归档
+            <a class="mobile-menu-link" href="/archives">Archives
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/categories">分类
+            <a class="mobile-menu-link" href="/categories">Categories
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/tags">标签
+            <a class="mobile-menu-link" href="/tags">Tags
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/about">关于
+            <a class="mobile-menu-link" href="/about">About
             </a>
             
          
                           
 
-            <a class="mobile-menu-link mobile-menu-search" href="#">搜索 </a>                 
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
             
          
       

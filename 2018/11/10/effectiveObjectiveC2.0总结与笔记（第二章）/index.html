@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Effective Objective-C 2.0 总结与笔记（第二章）—— 对象、消息、运行期 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		effective Objective-C 2.0 总结与笔记（第二章）—— 对象、消息、运行期
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/11/10 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		8686
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<h3 id="第二章：对象、消息、运行期"><a href="#第二章：对象、消息、运行期" class="headerlink" title="第二章：对象、消息、运行期"></a>第二章：对象、消息、运行期</h3><p>​    “对象”就是“基本构造单元”，开发者可以通过对象来存储并传递数据。对象之间传递数据并执行任务的过程就是“消息传递”。程序运行起来后，为其提供相关支持的代码就是“Objective-C运行期环境”，它提供了一些使得对象之间能够传递消息的重要函数，并且包括创建类实例所用的全部逻辑。</p>
+<h4 id="第6条：理解“属性”这一概念"><a href="#第6条：理解“属性”这一概念" class="headerlink" title="第6条：理解“属性”这一概念"></a>第6条：理解“属性”这一概念</h4><ul>
+<li>”属性“ (property) 是Objective-C的一项特性，用于封装对象中的数据。实例变量一般通过“存取方法”来访问，其中getter用于读取变量值，setter用于写入变量值。开发者可以令编译器自动编写与属性有关的存取方法。</li>
+<li>Objective-C语言很少将实例变量放在类接口的public区段内，更多的是使用<code>@property</code>的方式来声明。这是因为如果直接使用public的区段，当实例变量的偏移量改变（原有的实例变量里插入了新的实例变量）的时候，需要重新编译，假如代码库中某份代码使用了旧的类定义，就会出现不兼容的情况。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//public区段内声明实例变量</span><br><span class="line">@interface EOCPerson : NSObject &#123;</span><br><span class="line">@public</span><br><span class="line">    NSData *_dataOfBirth;</span><br><span class="line">    NSString *_firstName;</span><br><span class="line">    NSString *_lastName;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//使用@property方式声明</span><br><span class="line">@interface EOCPerson : NSObject</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//@property方式等效于</span><br><span class="line">@interface EOCPerson : NSObject</span><br><span class="line"></span><br><span class="line">- (NSString *)firstName;</span><br><span class="line">- (void)setFirstName;</span><br><span class="line">- (NSString *)lastName;</span><br><span class="line">- (void)setLastName;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>如果要访问属性，可以使用“点语法”，编译器会把“点语法”转换成对存取方法的调用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">EOCPerson *aPerson = [EOCPerson new];</span><br><span class="line">aPerson.firstName = @&quot;GDGD&quot;;//same as</span><br><span class="line">[aPerson setFirstName:@&quot;GDGD&quot;];</span><br><span class="line"></span><br><span class="line">NSString *lastNameOfGD = aPerson.lastName;//same as</span><br><span class="line">NSString *lastNameOfGD = [aPerson lastName];</span><br></pre></td></tr></table></figure>
+<p>使用属性的方式进行声明实例变量，编译器会自动生成存取方法，虽然这个时候在编译器上<strong>看不到</strong>生成的方法，这个方法默认的名字是：getter—就是属性的名字，setter—属性名字前面加set。</p>
+<p>如果想要修改“合成方法”的名字，可以使用@synthesize语法来指定关键字的名字。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//在实现文件中</span><br><span class="line">@implementation EOCPerson</span><br><span class="line">@synthesize firstName = _myFirstName;</span><br><span class="line">@synthesize lastName = _myLastName;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>如果不想要编译器自动生成的方法，可以使用@dynamic语法来阻止编译器的生成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@implementation EOCPerson</span><br><span class="line">@dynamic firstName, lastName;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>属性具有四种特质，不同的特质也会影响属性生成的存取方法。</li>
+</ul>
+<p>(1)、原子性：默认情况下，编译器所合成的方法会通过锁定机制确保其原子性 (atomicity) 。如果属性具备nonatomic特质，则不使用同步锁。<strong>在iOS开发的程序里，由于同步锁开销较大，如果使用原子性的属性会导致性能问题，所以属性都是nonatomic的特质。</strong></p>
+<p>(2)、读写权限：</p>
+<p>​    readwrite (读写) ：拥有前面说的获取方法 (getter) 和设置方法 (setter)，默认情况。</p>
+<p>​    readonly (只读) ：仅拥有获取方法。可以对外暴露为只读属性，然后在“class-continuation分类”中重新定义为读写属性。（27条有说）</p>
+<p>(3)、内存管理语义：这是最难理解的部分了，虽然这个特质仅会影响“设置方法”，但是其中涉及到内存管理部分，所以还是非常重要。</p>
+<p>​    assign：“设置方法”只会针对“纯量类型”（scalar type，例如CGFloat，NSInteger等）的简单赋值。一般在之前分配在栈里的数据类型就是使用assign修饰。</p>
+<p>​    strong：此特质表示一种拥有关系，当给这种属性设置新值的时候，会先保留新值，再释放旧值，然后设置新值上去，一般Objective-C对象使用这个修饰词。</p>
+<p>​    weak：表示非拥有关系，为这种属性设置新值的时候，不保留新值，也不释放旧值，当属性所指的对象被销毁的时候，属性值也会被清空。这就是一种弱持有，一般可以用来打破循环引用的情况（后面会介绍）。</p>
+<p>​    unsafe_unretained ：语义和assign相同，但是适用于对象类型（object type)，表示一种非拥有关系，但是当目标对象被销毁的时候，属性值不会被清空。</p>
+<p>​    copy：和strong类似，但是设置方法并不保留新值，而是将其拷贝。一般NSString <em>就使用这个特质来修饰。这是因为NSString </em>有可能指向一个可变的NSMutableString 实例，如果使用的不是copy的话，那么当可变字符串被篡改后，会影响到你不可变的字符串，所以要拷贝一个不可变的字符串。</p>
+<p>(4)、方法名：可以用来指定存取方法的方法名。</p>
+<p>​    getter=\&lt;name>：指定获取方法的方法名，如果某属性是Boolean，一般会用这种方式来在获取方法名上加上<code>is</code>前缀。</p>
+<p>​    setter=\&lt;name>：指定设置方法的方法名，较少使用。</p>
+<h4 id="第7条：在对象内部尽量直接访问实例变量"><a href="#第7条：在对象内部尽量直接访问实例变量" class="headerlink" title="第7条：在对象内部尽量直接访问实例变量"></a>第7条：在对象内部尽量直接访问实例变量</h4><ul>
+<li>在对象之外访问实例变量是通过属性来实现，但是当在对象内部访问实例变量的话最好采用直接访问的形式，而在设置实例变量的时候才通过属性来做。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//使用属性访问</span><br><span class="line">- (NSString *)fullName &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;%@ %@&quot;, self.firstName, self.lastName];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setFullName &#123;</span><br><span class="line">    NSArray *components = [[self fullName] componentsSeparatedByString:@&quot; &quot;];</span><br><span class="line">    self.firstName = components[0];</span><br><span class="line">    self.lastName = components[1];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//使用实例变量访问</span><br><span class="line">- (NSString *)fullName &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;%@ %@&quot;, _firstName, _lastName];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)setFullName &#123;</span><br><span class="line">    NSArray *components = [[self fullName] componentsSeparatedByString:@&quot; &quot;];</span><br><span class="line">    _firstName = components[0];</span><br><span class="line">    _lastName = components[1];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>使用实例变量和属性访问的区别如下：</p>
+<ul>
+<li>使用实例变量直接访问由于不经过方法派发，直接访问保存实例变量的那块内存，所以速度更快。</li>
+<li>直接访问实例变量可以绕过内存管理语义。</li>
+<li>直接访问实例变量不会出发KVO (Key-Value Observing)。</li>
+<li>通过属性可以帮助自己debug的时候排查与之相关的错误。</li>
+</ul>
+<p>知道以上的区别了之后，一般采用一种折中的方案，设置属性使用“设置方法“，读取实例变量则直接访问。</p>
+</li>
+<li><p>在初始化的时候，如果需要设置实例变量，应当直接访问，因为子类可能会”覆写“设置方法，导致调用到子类的设置方法的时候，出现意想不到的结果。</p>
+</li>
+<li><p>如果使用了懒加载的方式，就需要使用属性的方式来访问实例变量。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//lazy initialization</span><br><span class="line">- (NSString *)firstName &#123;</span><br><span class="line">    if (!_firstName) &#123;</span><br><span class="line">        _firstName = @&quot;GDGD&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    return _firstName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="第8条：理解“对象等同性”这一概念"><a href="#第8条：理解“对象等同性”这一概念" class="headerlink" title="第8条：理解“对象等同性”这一概念"></a>第8条：理解“对象等同性”这一概念</h4><ul>
+<li>由于<code>==</code>操作符比较出来的结果未必是我们想要的，因为该操作符是两个指针本身，而不是指针所指的对象。所以一般使用NSObject协议中声明的”isEqual“方法来判断两个对象的等同性。如果是自定义的类，则需要重写该方法以实现等同性判断。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NSString *foo = @&quot;hhh123&quot;;</span><br><span class="line">NSString *bar = [NSString stringWithFormat:@&quot;hhh%i&quot;,123];</span><br><span class="line">Boolean equalA = (foo == bar); // NO</span><br><span class="line">Boolean equalB = [foo isEqual:bar];//YES</span><br><span class="line">Boolean equalC = [foo isEqualToString:bar];//YES</span><br></pre></td></tr></table></figure>
+<ul>
+<li>NSObject协议中判断对象等同性主要是两个方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)isEqual:(id)object;</span><br><span class="line">- (NSUInteger)hash;</span><br></pre></td></tr></table></figure>
+<p>NSObject对这两个方法的默认实现是：指针值完全相等的时候，两个对象才相等。如果isEqual方法为Yes，那么两个对象的hash值相等，反之<strong>不成立</strong>。理解这个意义是自定义实现<code>isEqual:</code>的关键。</p>
+<p>设计hash方法的时候，需要尽量减少对象的碰撞，防止出现运算复杂度过大的情况。</p>
+<ul>
+<li>特定类所具有的等同性判定方法：由于Objective-C在编译期没有做强类型转换，为了增强代码的鲁棒性，应该保证所传对象的类型正确，且有异常处理逻辑。</li>
+<li>等同性判定的执行深度：如果是对数组进行等同性判定，往往需要比较两个数组的对应位置的所有对象，这样叫做“深度等同性判定”，如果可以通过identifier来标示等同性，就能大大节省计算。</li>
+<li>容器中可变类的等同性：在容器加入可变类对象的时候，把某个对象放入容器之后，就不应该改变其hash值了。由于容器会根据其hash值放在不同的“箱子数组”里，如果放入箱子之后hash值又改变了，那么证明容器放错了箱子，可能会出现隐患。所以需要保证hash值不是根据对象的可变部分来实现的，或者是在其放入容器后就不再改变hash值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">NSMutableSet *set = [NSMutableSet new];</span><br><span class="line"></span><br><span class="line">NSMutableArray *arrayA = [@[@1, @2] mutableCopy];</span><br><span class="line">[set addObject:arrayA];</span><br><span class="line">//set = &#123;((1,2))&#125;</span><br><span class="line"></span><br><span class="line">NSMutableArray *arrayB = [@[@1] mutableCopy];</span><br><span class="line">[set addObject:arrayB];</span><br><span class="line">//set = &#123;((1),(1,2))&#125;</span><br><span class="line"></span><br><span class="line">[arrayB addObject:@2];</span><br><span class="line">//set = &#123;((1,2),(1,2))&#125; 打破了set的语义</span><br><span class="line"></span><br><span class="line">NSSet *copySet = [set copy];</span><br><span class="line">//copySet = &#123;((1,2))&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="第9条：以”类族模式“隐藏实现细节"><a href="#第9条：以”类族模式“隐藏实现细节" class="headerlink" title="第9条：以”类族模式“隐藏实现细节"></a>第9条：以”类族模式“隐藏实现细节</h4><ul>
+<li>类族模式可以把实现细节隐藏在一套简单的公共接口后面。Objective-C的系统框架中普遍使用该模式，用户无需自己创建子类实例，只需要调用基类方法来创建即可。</li>
+<li>一般采用工厂模式来创建类族。由于Objective-C这门语言没办法指明某个基类是”抽象“的，所以如果使用了类族模式需要写上相应的注释。</li>
+<li>Cocoa里的类族：大部分collection类都是类族，如果要子类化这些类族，需要遵守一些规则：<ul>
+<li>子类应到继承自类族中的抽象基类：如果要编写NSArray类族的子类，需要继承自不可变数组的基类或者可变数组的基类。</li>
+<li>子类应该定义自己的数据存储方式。</li>
+<li>子类应当覆写超类文档中指明需要覆写的方法。</li>
+</ul>
+</li>
+</ul>
+<h4 id="第10条：在既有类中使用关联对象存放自定义数据"><a href="#第10条：在既有类中使用关联对象存放自定义数据" class="headerlink" title="第10条：在既有类中使用关联对象存放自定义数据"></a>第10条：在既有类中使用关联对象存放自定义数据</h4><ul>
+<li><p>有时候类的实例可能是由某种机制所创建的，那么也就是无法创建出自己所写的子类实例，那么也就是如果你需要存放对象到类中，就不能通过创建子类的方式实现了。而Objective-C的“关联对象” (associated object) 可以解决这个问题。</p>
+<ul>
+<li><p>可以给某个对象关联多个对象，通过“键”来区分，同时在创建关联对象的时候，也有相应的“内存管理语义”，由名为<code>objc_AssociationPolicy</code>的枚举所定义。</p>
+<p>|             关联类型              | 等效的@property属性 |<br>| :——————————-: | :—————–: |<br>|      OBJC_ASSOCIATION_ASSIGN      |       assign        |<br>|  OBJC_ASSOCIATION_COPY_NONATOMIC  |   nonatomic、copy   |<br>| OBJC_ASSOCIATION_RETAIN_NONATOMIC |  nonatomic、retain  |<br>|       OBJC_ASSOCIATION_COPY       |        copy         |<br>|      OBJC_ASSOCIATION_RETAIN      |       retain        |</p>
+</li>
+</ul>
+</li>
+<li><p>管理关联对象的方法：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//此方法以给定的键和策略为某对象设置关联对象</span><br><span class="line">- void objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy);</span><br><span class="line"></span><br><span class="line">//此方法根据给定的键从某对象中获取相应的关联对象值</span><br><span class="line">id objc_getAssociatedObject(id object, const void *key);</span><br><span class="line"></span><br><span class="line">//此方法移除指定对象的全部关联对象</span><br><span class="line">void objc_removeAssociatedObjects(id object);</span><br></pre></td></tr></table></figure>
+<p>可以把对象想象成NSDictionary，把关联到该对象的值理解为字典的条目，本质的区别在于设置关联对象的key是个不透明的指针，在NSDictionary里如果两个键值相等那么<code>isEqual:</code>方法的返回值就是YES，但是关联对象必须是两个指针相同才行，在设置关联对象的时候通常使用<strong>静态全局变量</strong>做键。</p>
+<h4 id="第11条：理解objc-msgSend的作用"><a href="#第11条：理解objc-msgSend的作用" class="headerlink" title="第11条：理解objc_msgSend的作用"></a>第11条：理解objc_msgSend的作用</h4><ul>
+<li>Objective-C的方法调用方式是消息结构，这种传递消息需要有“名称”或“选择子”，可以接受参数，而且可能还有返回值。在Objective-C中，如果向某对象传递消息，那么就会使用动态绑定机制来决定需要调用的方法，当对象收到消息之后，究竟该调用那个方法完全由运行期决定，同时可以在程序运行时改变。</li>
+<li>给对象发送消息的例子和过程如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line">someObject —— 接受者</span><br><span class="line">messageName —— 选择子</span><br><span class="line">parameter —— 参数</span><br><span class="line">**/</span><br><span class="line">id returnValue = [someObject messageName:parameter];</span><br><span class="line"></span><br><span class="line">//编译器看到这个消息之后会转换成一条标准的C语言函数调用，调用的是消息中心的核心函数，objc_msgSend</span><br><span class="line">void objc_msgSend(id self, SEL cmd, ...);</span><br><span class="line"></span><br><span class="line">//所以上面那个函数调用经过编译器会转换成如下函数--&gt;</span><br><span class="line">id returnValue = objc_msgSend(someObject,</span><br><span class="line">                              @selector(messageName:),</span><br><span class="line">                              parameter);</span><br><span class="line"></span><br><span class="line">//obj_msgSend函数会依据接受者和选择子的类型来调用适当的方法，为了完成此操作的方法需要在接受者所属类中搜寻方法列表，如果有就跳到其执行的代码，如果没找到就沿着体系继续往上查找，找到合适的方法再跳转。如果还没有，后面就会涉及到消息转发机制。</span><br><span class="line">//obj_msgSend会将匹配结果换存在”快速映射表“里，这样每个类其实都有这样一块缓存，所以执行起来很快，但是还是不如”静态绑定的函数调用操作“那样迅速。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>除了上述的部分消息的调用过程，还有一些”边界情况“，则需要交由Objective-C运行环境中的一些函数来处理：<ul>
+<li>objc_msgSend_stret：如果待发送的消息要返回结构体，那么可以交由此函数处理。需要CPU的寄存器能够容纳这个消息返回的结构体，如果无法容纳就会由另一个函数进行派发，那个函数会通过分配在栈上的某个变量来处理返回的结构体。</li>
+<li>objc_msgSend_fpret：如果消息返回的是浮点数，那么需要交由此函数处理。这个函数是为了处理x86等架构CPU中某些奇怪状况。</li>
+<li>objc_msgSendSuper：如果要给超类发消息，就给这个函数处理。</li>
+</ul>
+</li>
+<li>如果某函数的最后一项操作是调用另外一个函数，就可以使用“尾调用优化”技术。编译器会生成跳转到另一函数所需要的指令码，而不用向调用堆栈里推入新的”栈帧“。当某函数的最后一个操作仅仅是调用其他函数而不会将其返回值另作他用的时候，才能执行”尾调用优化“。</li>
+</ul>
+<h4 id="第12条：理解消息转发机制"><a href="#第12条：理解消息转发机制" class="headerlink" title="第12条：理解消息转发机制"></a>第12条：理解消息转发机制</h4><ul>
+<li><p>在编译期向类发送了其无法解读的消息并不会报错，因为运行期可以向类中添加方法，所以编译器在编译时无法确定类中到底会不会有某个方法实现。当对象接收到无法解读的消息后，就会启动”消息转发“机制。</p>
+</li>
+<li><p>消息转发分为两大阶段：</p>
+<ul>
+<li>第一阶段先征询接受者所属的类，看其是否能动态添加方法，以处理当前这个”未知的选择子“，这部分叫”动态方法解析“。注意这是一个类方法，因为是向接收者所属的类进行请求。</li>
+<li>第二阶段涉及”完整的消息转发机制“，这里细分为两小步：<ul>
+<li>当对象所属类不能动态添加方法后，<code>runtime</code>就会询问当前的接受者是否有其他对象可以处理这个未知的<code>selector</code>。</li>
+<li>当没有备援接收者时，就只剩下最后一次机会，那就是消息重定向。这个时候<code>runtime</code>会将未知消息的所有细节都封装为<code>NSInvocation</code>对象，给接受者最后一次机会，令其设法解决当前还未处理的这条消息。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>动态方法解析：</p>
+<ul>
+<li>对象收到无法解读的消息后，首先调用其所属类的类方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel;</span><br></pre></td></tr></table></figure>
+<p>这种方法的前提是：相关方法的实现代码已经写好，只等着运行的时候动态插在类里面就可以了。此方案常用来实现<code>@dynamic</code>属性。</p>
+<p>Example：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//假设这两个方法已经实现</span><br><span class="line">id autoDictionaryGetter(id self,SEL _cmd);</span><br><span class="line">void autoDictionarySetter(id self, SEL _cmd, id value);</span><br><span class="line"></span><br><span class="line">//使用这个类方法进行消息转发</span><br><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel &#123;</span><br><span class="line">    NSString *selectorString = NSStringFromSelector(sel);</span><br><span class="line">    if (/* selector is from a @dynamic property */) &#123;</span><br><span class="line">        if ([selectorString hasPrefix:@&quot;set&quot;]) &#123;</span><br><span class="line">            class_addMethod(self,</span><br><span class="line">                            sel,</span><br><span class="line">                            (IMP)autoDictionarySetter,</span><br><span class="line">                            &quot;v@:@&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            class_addMethod(self,</span><br><span class="line">                            sel,</span><br><span class="line">                            (IMP)autoDictionaryGetter,</span><br><span class="line">                            &quot;@@:&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return [super resolveInstanceMethod:sel];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>备援接收者：</p>
+<ul>
+<li>当前接受者还有第二次机会能处理未知的选择子，在这一步中，系统会问该选择子能不能转发给其他接受者。相关的方法为：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)forwardingTargetForSelector:(SEL)aSelector;</span><br></pre></td></tr></table></figure>
+<p>虽然Objective-C不支持多重继承，但是通过这个函数的组合我们可以模拟出多次继承的某些特性。</p>
+</li>
+<li><p>完整的消息转发：</p>
+<ul>
+<li>首先创建NSInvocation对象，把尚未处理的那条消息的所有细节都封在其中，包括选择子、目标和参数，这个步骤会调用下列方法来转发消息:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)forwardInvocation:(NSInvocation *)invocation;</span><br></pre></td></tr></table></figure>
+<p>实现此方法的时候，如果发现某调用操作不应由本类处理，则需调用超类的同名方法，这样继承体系中的每个类都有机会处理此调用请求，直到NSObject。</p>
+</li>
+<li><p>消息转发流程：</p>
+</li>
+</ul>
+<p><img src="/2018/11/10/effectiveObjectiveC2.0总结与笔记（第二章）/effectiveObjectiveC2.0总结与笔记(第二章" alt="2">/2.jpg)</p>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+    
+  
+
+  
+
+  <a href="/2018/11/09/effective-Objective-C-2-0-总结与笔记（第一章）/">         
+
+    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第一章）—— 熟悉Objective-C">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>
