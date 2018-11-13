@@ -28,31 +28,31 @@
               
             
 
-              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+              <a class="header-menu-link" id="header-menu-home" href="/">首页</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">归档</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">分类</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">标签</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+              <a class="header-menu-link" id="header-menu-about" href="/about">关于</a>     
 
             
             
@@ -110,7 +110,7 @@
 
 
 	<span class="post-words"><span class="iconfont icon-words"></span>
-		9460
+		10980
 	</span>
 		
 	
@@ -275,6 +275,28 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//此函数的两个参数表示待交换的两个方法实现</span><br><span class="line">void method_exchangeImplementations(Method m1, Method m2);</span><br><span class="line"></span><br><span class="line">//方法实现可以通过下列函数获得。</span><br><span class="line">Method class_getInstanceMethod(Class cls, SEL name);</span><br><span class="line"></span><br><span class="line">//example</span><br><span class="line">//将uppercaseString和lowercaseString两个方法利用方法调配进行调换</span><br><span class="line">Method originalMethod = class_getClassMethod([NSString class], @selector(lowercaseString));</span><br><span class="line">    Method swappedMethod = class_getClassMethod([NSString class], @selector(uppercaseString));</span><br><span class="line">    method_exchangeImplementations(originalMethod, swappedMethod);</span><br></pre></td></tr></table></figure>
 <p>除了上面说的两个系统方法的替换，还可以使用自定义的方法和系统方法进行替换，这样的话就能够为那些系统的黑盒方法增加日志记录功能，这个非常有助于程序调试。<strong>很少人会在调试程序之外的场合使用上述方法来永久改变某个类的功能</strong>。</p>
+<h4 id="第14条：理解“类对象”的用意"><a href="#第14条：理解“类对象”的用意" class="headerlink" title="第14条：理解“类对象”的用意"></a>第14条：理解“类对象”的用意</h4><ul>
+<li>Objective-C有个特殊的类型叫<code>id</code>，他能指代任意类型的Objective-C对象类型。编译器假定它能响应所有消息。<code>id</code>类型本身的定义如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/// Represents an instance of a class.</span><br><span class="line">struct objc_object &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">/// A pointer to an instance of a class.</span><br><span class="line">typedef struct objc_object *id;</span><br></pre></td></tr></table></figure>
+<p>每个对象结构体的首个成员是<code>Class</code>类的变量，该变量定义了对象所属的类，称为”is a”指针。</p>
+<p><code>Class</code>的定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class _Nonnull isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class _Nullable super_class                              OBJC2_UNAVAILABLE;</span><br><span class="line">    const char * _Nonnull name                               OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                                             OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size                                       OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list * _Nullable ivars                  OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list * _Nullable * _Nullable methodLists                    OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_cache * _Nonnull cache                       OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_protocol_list * _Nullable protocols          OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<p>此类结构体存放类的元数据，例如类的实例实现了几个方法，具备多少个实例变量等信息，首个变量也是<code>isa</code>指针，说明<code>Class</code>本身也是Objective-C对象。结构体有个叫做<code>super_class</code>的变量，是本类的超类。类对象所属的类型是另一个类，叫做“元类”，用来表示类对象本身所具备的元数据。每个类仅有一个类对象，每个类对象仅有一个与之相关的元类。</p>
+<p>example：</p>
+<p>假设有个名为someClass的子类从NSObject继承而来，则既成体系如下所示：</p>
+<p><img src="/2018/11/10/effective-Objective-C2.0总结与笔记-第二章/effective-Objective-C2-0总结与笔记-第三章/1.png" alt="1"></p>
+<p><code>super_class</code>指针确立了继承关系，而<code>isa</code>指针描述了实例所属的类。</p>
+<ul>
+<li><p>在类继承体系中查询类型信息：</p>
+<ul>
+<li>isMemberOfClass：能够判断出对象是否为某个特定类的实例。</li>
+<li>isKindOfClass：能够判断出对象是否为某类或者其派生类的实例。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NSMutableDictionary *dict = [NSMutableDictionary new];</span><br><span class="line">[dict isMemberOfClass:[NSDictionary class]];// NO</span><br><span class="line">[dict isMemberOfClass:[NSMutableDictionary class]];// YES</span><br><span class="line">[dict isKindOfClass:[NSDictionary class]];// YES</span><br><span class="line">[dict isKindOfClass:[NSArray class]];// NO</span><br></pre></td></tr></table></figure>
+<p>如果要比较类对象是否等同的话需要使用<code>==</code>操作符，而不是<code>isEqual:</code>，因为类对象是个单例，在应用程序范围内，每个类的<code>Class</code>仅有一个实例。</p>
+</li>
+</ul>
   	
 
 	  </div>     
@@ -346,6 +368,17 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
       
   
+
+   
+
+      
+    <a href="/2018/11/13/effective-Objective-C2-0总结与笔记-第三章/">          
+
+     <span class="left" data-hover="effective Objective-C 2.0 总结与笔记（第三章）—— 接口与API设计">  上一篇 </span>  
+
+    </a>
+    
+  
     
   
 
@@ -353,7 +386,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
   <a href="/2018/11/09/effective-Objective-C-2-0-总结与笔记（第一章）/">         
 
-    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第一章）—— 熟悉Objective-C">Next </span>  
+    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第一章）—— 熟悉Objective-C">下一篇 </span>  
 
   </a>
 
@@ -394,7 +427,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 		<div class="toc-container">	
 
 		<span class="toc-contents iconfont icon-close"> 
-			<span>Contents</span>
+			<span>目录</span>
 		</span>
 
 		<ul class="toc-list"></ul>
@@ -416,7 +449,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
         
         <div class="search-container sildeUpMin">
-            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+            <input type="text" placeholder="输入你想搜索的" id="search-input" class="search-input">  
               <span class="search-cancel iconfont icon-cancel"></span>
               <div id="search-result" class="search-result"></div>
         </div>
@@ -431,37 +464,37 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
          
             
 
-            <a class="mobile-menu-link" href="/">Home
+            <a class="mobile-menu-link" href="/">首页
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/archives">Archives
+            <a class="mobile-menu-link" href="/archives">归档
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/categories">Categories
+            <a class="mobile-menu-link" href="/categories">分类
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/tags">Tags
+            <a class="mobile-menu-link" href="/tags">标签
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/about">About
+            <a class="mobile-menu-link" href="/about">关于
             </a>
             
          
                           
 
-            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            <a class="mobile-menu-link mobile-menu-search" href="#">搜索 </a>                 
             
          
       

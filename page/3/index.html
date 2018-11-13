@@ -28,31 +28,31 @@
               
             
 
-              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+              <a class="header-menu-link" id="header-menu-home" href="/">首页</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">归档</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">分类</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">标签</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+              <a class="header-menu-link" id="header-menu-about" href="/about">关于</a>     
 
             
             
@@ -97,6 +97,122 @@
     </div>		
 </div>
 
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
+	     <a class="article-title"  href="/2018/03/20/各种排序算法/">各种排序算法</a>  
+	       
+		 
+
+		 <time>2018-03-20 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <p>最近面试的时候，感觉对于排序的问题被问到的比较多，所以想对排序的几种算法做一个总结，顺便帮助自己巩固基础，在这里借助<a href="https://github.com/JellyP/JellyP.github.io/blob/master/reference/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA%E4%B8%AD%E6%96%87%E7%89%88.pdf" target="_blank" rel="noopener">算法导论</a>这本书，在介绍以下几种排序算法：插入排序、归并排序、堆排序和快速排序。</p>
+<p>所谓排序问题就是满足这样的条件，例如：</p>
+<p>输入为n个数的序列：$&lt;a_1,a_2,\cdots,a_n&gt;$。</p>
+<p>输出为一个排好序的n个数的序列：$&lt;{a_1}^{‘},{a_2}^{‘},\cdots,{a_n}^{‘}&gt;$，满足${a_1}^{‘}\le{a_2}^{‘}\le\cdots\le{a_n}^{‘}$。</p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>插入排序可以理解成是打扑克牌的时候，在最后整个牌在你手上是一个从小到大排序的状态。一开始没有摸牌的时候，手上的牌是空的，每次摸起一张牌，就让其插入在正确的位置，为了让其插入正确的位置，就需要从左到右地去查找，这个过程就是类似插入排序了，而每次摸牌结束后，自己手上的牌都是排好序了的状态。</p>
+<p>伪代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">INSERTION-SORT(<span class="built_in">array</span> a[])</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">for</span> j=<span class="number">2</span> to a.length</span><br><span class="line">    key=a[j] <span class="comment">//将a[j]临时保存，并将其插入到已经排序好的a[1,...,j-1]中，类似摸牌的过程，现在摸的是第j张牌。</span></span><br><span class="line">    i=j<span class="number">-1</span></span><br><span class="line">    <span class="keyword">while</span> i&gt;<span class="number">0</span> <span class="keyword">and</span> a[i]&gt;key <span class="comment">//找到所有比他大的数字，让它放在其右边，实现从小到大排序</span></span><br><span class="line">      a[i+<span class="number">1</span>]=a[i];</span><br><span class="line">  	  i=i<span class="number">-1</span></span><br><span class="line">    a[i+<span class="number">1</span>]=key<span class="comment">//将a[j]即key的值放入正确的位置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在INSERTION-SORT中，若输入数组已排好序，则出现最佳情况。这时最佳的运行时间可以看成是$an+b$，其中$a$和$b$依赖于每个语句的代价，具体推导在这里不做赘述，可以看出其是线性函数，即$O(n)$。</p>
+<p>而其最坏的情况，运行时间可以表示为$an^2+bn+c$，其中$a$、$b$和$c$依赖每个语句的代价。具体推导在这里不做赘述，可以看出其是n的二次函数，即$O(n^2)$。</p>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><p>归并排序的本质是分治法的一种应用，即为了解决一个给定的问题，算法一次或者多次递归地调用其自身以解决紧密相关的子问题。</p>
+<p>分治法在每层递归有三个步骤，以归并排序为例：</p>
+<ul>
+<li>分解：将原问题分解为若干个子问题，这些子问题是原问题的规模较小的实例。归并排序中则是将待排序的n个元素的序列分成各具$\frac{n}{2}$两个子序列。</li>
+<li>解决：将子问题解决，利用递归的方式求解，当子问题规模足够小的时候，直接得出答案。归并排序中则是递归地排序两个子序列，当子序列足够小则直接得到答案。</li>
+<li>合并：将子问题的解合并成原问题的解。归并排序中则将两个已经排序的子序列以产生已排序的答案。</li>
+</ul>
+<p>归并排序的关键步骤在于“合并”两个已排序的子序列，通常我们可以借助一个辅助过程$\text{MERGE}(A,p,q,r)$来完成合并，其中$A$是一个数组，$p$,$q$和$r$是数组下标，满足$p\le q&lt;r$。假设在该过程中，$A[p,\cdots,q]$和$A[q+1,\cdots,r]$都是已经排好序的子序列，这个函数能够合并当前两个子数组形成一个新的已经排好序的子数组并代替当前的子数组$A[p,\cdots,r]$，总的代价为O(n)。</p>
+<p>其工作步骤我们还是回到扑克牌的例子，假设你的面前现在有两堆已经排好序的扑克牌，牌面朝上，最小的牌都在最上面，我们希望你拿到手上的时候，得到一堆完整的排好序的牌。那么要怎么做呢，我们的基本步骤就是每次将两堆牌上你看到的最小的牌拿上来，直到一边的牌全部拿完即可。在归并的过程中，待合并元素的总数是$n=r-p+1$，那么也就是一旦执行了$r-p+1$个步骤，算法就可以停止了，这里有一个问题，就是怎么知道有一个堆为空呢，可以通过在每个牌堆底部放置一个哨兵牌，表示一个特殊的值，在这里为了简化，可以使用$\infty$来表示，因为不可能出现比他还小的牌，所以当有一个堆显露出这个牌的时候，表示这个堆已经取完，当两个堆同时出现时，表示所有非哨兵牌已经被排序好了，我们的目标也就完成了。</p>
+<p>伪代码为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MERGE(A,p,q,r)</span><br><span class="line">&#123;</span><br><span class="line">	n1=q-p+<span class="number">1</span> <span class="comment">//表示第一个子序列的长度</span></span><br><span class="line">	n2=r-q <span class="comment">//表示第二个子序列的长度</span></span><br><span class="line">	let L[<span class="number">1</span>,...,n1+<span class="number">1</span>] <span class="keyword">and</span> R[<span class="number">1</span>,...,n2+<span class="number">1</span>] be <span class="keyword">new</span> arrays <span class="comment">//新建两个新数组用于储存两个排好序的序列</span></span><br><span class="line">	<span class="keyword">for</span> i=<span class="number">1</span> to n1 <span class="comment">//L[i]存A[p,...,q]的序列</span></span><br><span class="line">		L[i]=A[p+i<span class="number">-1</span>]</span><br><span class="line">	<span class="keyword">for</span> j=<span class="number">1</span> to n2 <span class="comment">//R[j]存A[q+1,...,r]的序列</span></span><br><span class="line">		R[j]=A[q+j]</span><br><span class="line">	L[n1+<span class="number">1</span>]=inf <span class="comment">//L和R最后一个数组置为无穷</span></span><br><span class="line">	R[n2+<span class="number">1</span>]=inf</span><br><span class="line">	i=<span class="number">1</span>,j=<span class="number">1</span></span><br><span class="line">	<span class="keyword">for</span> k=p to r <span class="comment">//执行r-p+1次</span></span><br><span class="line">		<span class="keyword">if</span> L[i]&lt;=R[j] <span class="comment">//选择L和R中较小的值放入A中</span></span><br><span class="line">			A[k]=L[i]</span><br><span class="line">			i=i+<span class="number">1</span>;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			A[k]=R[j]</span><br><span class="line">			j=j+<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而如果不使用哨兵牌的方式，也可以最后进行检查其是否为空，在这里介绍下另一种思路：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MERGE(A,p,q,r)</span><br><span class="line">&#123;</span><br><span class="line">	n1=q-p+<span class="number">1</span> <span class="comment">//表示第一个子序列的长度</span></span><br><span class="line">	n2=r-q <span class="comment">//表示第二个子序列的长度</span></span><br><span class="line">	let L[<span class="number">1</span>,...,n1] <span class="keyword">and</span> R[<span class="number">1</span>,...,n2] be <span class="keyword">new</span> arrays <span class="comment">//新建两个新数组用于储存两个排好序的序列</span></span><br><span class="line">	<span class="keyword">for</span> i=<span class="number">1</span> to n1 <span class="comment">//L[i]存A[p,...,q]的序列</span></span><br><span class="line">		L[i]=A[p+i<span class="number">-1</span>]</span><br><span class="line">	<span class="keyword">for</span> j=<span class="number">1</span> to n2 <span class="comment">//R[j]存A[q+1,...,r]的序列</span></span><br><span class="line">		R[j]=A[q+j]</span><br><span class="line">	i=<span class="number">1</span>,j=<span class="number">1</span></span><br><span class="line">	<span class="keyword">while</span> i&lt;=n1 &amp;&amp; j&lt;=n2 <span class="comment">//一直取牌直到有一个牌堆为空的时候</span></span><br><span class="line">		<span class="keyword">if</span> L[i]&lt;=R[j] <span class="comment">//选择L和R中较小的值放入A中</span></span><br><span class="line">			A[k++]=L[i++]</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">          	 A[k++]=R[j++]</span><br><span class="line">	<span class="keyword">while</span> i&lt;=n1 <span class="comment">//当L牌堆还有空的时候</span></span><br><span class="line">		A[k++]=L[i++]</span><br><span class="line">	<span class="keyword">while</span> j&lt;=n2 <span class="comment">//当R牌堆还有空的时候</span></span><br><span class="line">		A[k++]=R[j++]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来就是通过将过程MERGE作为归并排序的子程序来用，书写归并排序。即$\text{MERGE-SORT}(A,p,r)$，其意义为通过这个函数能够排序子数组$A[p,\cdots,r]$中的元素，当$p\ge r$时，该子数组最多只有一个元素，所以是已经排好序的结果，对应分治法中的子问题规模足够小的情况。否则，将$A[p,\cdots,r]$分解成两个子数组$A[p,\cdots,q]$和$A[q+1,\cdots,r]$两个数组，前者包含$\lceil\frac{n}{2}\rceil$个元素，后者包含$\lfloor\frac{n}{2}\rfloor$个元素，伪代码为：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MERGE-SORT(A,p,r)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">if</span> p&lt;r</span><br><span class="line">    q=(p+r)/<span class="number">2</span> <span class="comment">//分解</span></span><br><span class="line">    MERGE-SORT(A,p,q) <span class="comment">//排序A[p,...,q]</span></span><br><span class="line">    MERGE-SORT(A,q+<span class="number">1</span>,r) <span class="comment">//排序A[q+1,...,r]</span></span><br><span class="line">    MERGE(A,p,q,r) <span class="comment">//归并</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了给整个序列$A=&lt;A[1],A[2],\cdots,A[n]&gt;$，我们执行初始调用MERGE-SORT(A,1,A.length)。为了计算归并排序的时间复杂度，我们可以将$T(n)$表示成规模为$n$的问题的运行时间。</p>
+<p>那么归并排序的最坏时间复杂度为：</p>
+<p><img src="/2018/03/20/各种排序算法/2.png" alt="1"></p>
+<p>其中c表示求解规模为1的问题所需要的时间以及在分解过程中与合并步骤处理每个元素所需要的时间。</p>
+<p><img src="/2018/03/20/各种排序算法/1.png" alt="1"></p>
+<p>如图所示，我们可以通过构建递归树的形式，得到一个具有$\text{lg}n+1$层的树，每层贡献总代价为$cn$，所以总代价为$cn\lg n+cn$，即复杂度为${O}(n\lg n)$。 </p>
+<h3 id="堆排序："><a href="#堆排序：" class="headerlink" title="堆排序："></a>堆排序：</h3><p>首先是堆：在这里定义二叉堆是一个数组，可以看成是一个近似的完全二叉树，对于表示堆的数组$A[1,\cdots,A[A.length]]$，对于每个给定的节点的下标i，我们很容易计算得到其父节点和左右孩子节点：</p>
+<p><img src="/2018/03/20/各种排序算法/3.jpg" alt="1"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Parent(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">floor</span>(index/<span class="number">2</span>)</span><br><span class="line">  </span><br><span class="line">LeftChild(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*index</span><br><span class="line"></span><br><span class="line">RightChild(index)</span><br><span class="line">	<span class="keyword">return</span> <span class="number">2</span>*index+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>在计算其父节点和左右节点的时候，除法和乘法可以通过左移右移的操作来实现，在C中即操作符<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
+<p>二叉堆可以分为两种形式，最大堆和最小堆：</p>
+<ul>
+<li>最大堆的性质是除了根以外的所有节点i都要满足：$A[parent[i]]\ge A[i]$。用于堆排序算法。</li>
+<li>最小堆的性质是除了根以外的所有节点i都要满足：$A[parent[i]]\le A[i]$。用于构造优先队列。</li>
+</ul>
+<p>堆排序主要可以分为以下几个步骤：</p>
+<p><strong>1.维护堆的性质：</strong></p>
+<p>MAX-HEAPIFY是用于维护最大堆性质的过程，输入为一个数组$A$和一个下标$i$。在调用该函数的时候，我们假定根节点为$LEFT(i)$和$RIGHT(i)$的二叉树都是最大堆，但这时$A[i]$有可能小于其孩子，这种情况违背了最大堆的性质，MAX-HEAPIFY通过让$A[i]$的值在最大堆中“逐级下降”，从而使得下标$i$为根节点的子树重新遵循最大堆的性质。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">MAX-HEAPIFY(A,i)</span><br><span class="line">	l=LEFT(i)<span class="comment">//l是i的左子树的节点</span></span><br><span class="line">	r=RIGHT(i)<span class="comment">//r是i的右子树节点</span></span><br><span class="line">	<span class="keyword">if</span> l&lt;=A.heap-size <span class="keyword">and</span> A[l]&gt;A[i] <span class="comment">//当A[i]比左子树小的时候</span></span><br><span class="line">    	largest=l <span class="comment">//取largest=左子树下标</span></span><br><span class="line">    <span class="keyword">else</span> largest=i</span><br><span class="line">    <span class="keyword">if</span> r&lt;=A.heap-size <span class="keyword">and</span> A[r]&gt;A[largest] <span class="comment">//当A[largest]比右子树的更小的时候</span></span><br><span class="line">    	largest=r <span class="comment">//取largest=右子树下标</span></span><br><span class="line">    <span class="keyword">if</span> largest!=i <span class="comment">//当largest不是原来的i值，证明要逐级下降</span></span><br><span class="line">    	exchange A[i] with A[largest] <span class="comment">//交换A和最大值的下标的位置</span></span><br><span class="line">    	MAX-HEAPIFY(A,largest) <span class="comment">//看最大值的下标的是否是整个的最大值</span></span><br></pre></td></tr></table></figure>
+<p>这一步的时间复杂度为$O(\lg n)$。</p>
+<p><strong>2.建堆：</strong></p>
+<p>BUILD-MAX-HEAP(A)，是将一个大小为$n=A.length$的数组转换成最大堆的过程。由于子数组$A(\lfloor\frac{n}{2}\rfloor+1,\cdots,n)$都是树的叶子节点。所以可以对树的其他节点都调用一次MAX-HEAPIFY。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BUILD-MAX-HEAP(A)</span><br><span class="line">	A.heap-size=A.length</span><br><span class="line">	<span class="keyword">for</span> i=<span class="built_in">floor</span>(A.length/<span class="number">2</span>) down to <span class="number">1</span></span><br><span class="line">    	MAX-HEAPIFY(A,i)</span><br></pre></td></tr></table></figure>
+<p>这一步的时间复杂度为线性的。</p>
+<p><strong>3.堆排序算法：</strong></p>
+<p>有了上面两步之后，接下来写堆排序算法就比较简单了，首先是利用BUILD-MAX-HEAP将输入的数组$A$建成最大堆。然后因为数组的最大元素总在根节点$A[1]$，所以我们可以通过将其与$A[n]$进行互换，然后再去除该节点，再重新维护堆的性质即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">HEAPSORT(A)</span><br><span class="line">	BUILD-MAX-HEAP(A) <span class="comment">//建立最大堆</span></span><br><span class="line"> 	<span class="keyword">for</span> i=A.length down to <span class="number">2</span></span><br><span class="line">    	exchange A[l] with A[i] <span class="comment">//交换最后一个节点和第一个节点的位置</span></span><br><span class="line">    	A.heap-size=A.heap-size<span class="number">-1</span> <span class="comment">//减少一个堆大小，即去除一个二叉树节点</span></span><br><span class="line">    	MAX-HEAPIFY(A,<span class="number">1</span>) <span class="comment">//重新维护堆，使得A[1]为最大值</span></span><br></pre></td></tr></table></figure>
+<p>最后即可得到一个从小到大排好序的数组$A$了，其时间复杂度为$O(n\lg n)$。</p>
+<h3 id="快速排序："><a href="#快速排序：" class="headerlink" title="快速排序："></a>快速排序：</h3><p>快速排序是一个能够对原址进行排序的方法，虽然其最坏时间复杂度为$O(n^2)$，但是其期望的时间复杂度为$O(n\lg n )$，所以通常是实际排序应用中最好的选择。</p>
+<p>快排和归并排序类似，也是采用了分治的思想。数组$A[p,\cdots,r]$被划分为两个子数组$A[p,\cdots,q-1]$和$A[q+1,\cdots,r]$，使得$A[p,\cdots,q-1]$都小于$A[q]$，同时$A[q]$也小于等于$A[q+1,\cdots,r]$。</p>
+<p>算法的关键是对数组的划分，它实现了对子数组$A[p,\cdots,r]$的原址重排序。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PARTITION(A,p,r)</span><br><span class="line">	X=A[r]</span><br><span class="line"> 	i=p<span class="number">-1</span></span><br><span class="line">	<span class="keyword">for</span> j=p to r<span class="number">-1</span></span><br><span class="line">    	<span class="keyword">if</span> A[j]&lt;=x </span><br><span class="line">        	i=i+<span class="number">1</span></span><br><span class="line">        	exchange A[i] with A[j] <span class="comment">//将比x小的放在前面，比x大的放在后面</span></span><br><span class="line">	exchange A[i+<span class="number">1</span>] with A[r]</span><br><span class="line">	<span class="keyword">return</span> i+<span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>而快排则是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">QUICKSORT(A,p,r)</span><br><span class="line">	<span class="keyword">if</span> p&lt;r</span><br><span class="line">    	q=PARTITION(A,p,r)</span><br><span class="line">    	QUICKSORT(A,p,q<span class="number">-1</span>)</span><br><span class="line">    	QUICKSORT(A,q,r)</span><br></pre></td></tr></table></figure>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>做完了这几个排序的介绍，也算是对这几个介绍的一个复习吧，有时间再刷刷题巩固一下了。</p>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/C/">C++</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/排序/">排序</a> <a class="tag-link" href="/tags/算法/">算法</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		5517
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/03/20/各种排序算法/">阅读更多</a> 
+    	
+</article>     
+     	
       	  	
 
   		
@@ -178,7 +294,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/03/15/Android studio的安装和配置/">Continue</a> 
+    <a class="article-readmore" href="/2018/03/15/Android studio的安装和配置/">阅读更多</a> 
     	
 </article>     
      	
@@ -211,7 +327,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/01/01/Hello/">Continue</a> 
+    <a class="article-readmore" href="/2018/01/01/Hello/">阅读更多</a> 
     	
 </article>     
      	
@@ -220,7 +336,7 @@
  
 
   <nav class="paginator scrollIn">
-    <a class="extend prev" rel="prev" href="/page/2/">Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
   </nav>
   
 
@@ -237,7 +353,7 @@
 
         
         <div class="search-container sildeUpMin">
-            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+            <input type="text" placeholder="输入你想搜索的" id="search-input" class="search-input">  
               <span class="search-cancel iconfont icon-cancel"></span>
               <div id="search-result" class="search-result"></div>
         </div>
@@ -252,37 +368,37 @@
          
             
 
-            <a class="mobile-menu-link" href="/">Home
+            <a class="mobile-menu-link" href="/">首页
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/archives">Archives
+            <a class="mobile-menu-link" href="/archives">归档
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/categories">Categories
+            <a class="mobile-menu-link" href="/categories">分类
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/tags">Tags
+            <a class="mobile-menu-link" href="/tags">标签
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/about">About
+            <a class="mobile-menu-link" href="/about">关于
             </a>
             
          
                           
 
-            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            <a class="mobile-menu-link mobile-menu-search" href="#">搜索 </a>                 
             
          
       
