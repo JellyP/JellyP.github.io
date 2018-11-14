@@ -117,7 +117,89 @@
   	
 
 	   <h3 id="第三章：接口与API设计"><a href="#第三章：接口与API设计" class="headerlink" title="第三章：接口与API设计"></a>第三章：接口与API设计</h3><p>​    在开发应用程序的时候，总是不可避免的会用到他人的代码，或者自己的代码被他人所利用，所以要把代码写的更清晰一点，方便其他开发者能够迅速而方便地将其集成到他们的项目里。</p>
-<h4 id="第15条：用前缀避免命名空间冲突"><a href="#第15条：用前缀避免命名空间冲突" class="headerlink" title="第15条：用前缀避免命名空间冲突"></a>第15条：用前缀避免命名空间冲突</h4><h4 id="第16条：提供“全能初始化方法”"><a href="#第16条：提供“全能初始化方法”" class="headerlink" title="第16条：提供“全能初始化方法”"></a>第16条：提供“全能初始化方法”</h4><h4 id="第17条：实现description方法"><a href="#第17条：实现description方法" class="headerlink" title="第17条：实现description方法"></a>第17条：实现description方法</h4><h4 id="第18条：尽量使用不可变对象"><a href="#第18条：尽量使用不可变对象" class="headerlink" title="第18条：尽量使用不可变对象"></a>第18条：尽量使用不可变对象</h4>    
+<h4 id="第15条：用前缀避免命名空间冲突"><a href="#第15条：用前缀避免命名空间冲突" class="headerlink" title="第15条：用前缀避免命名空间冲突"></a>第15条：用前缀避免命名空间冲突</h4><ul>
+<li><p>Objective-C没有内置的命名空间机制（namespace），所以命名的时候需要设法避免潜在的命名冲突，否则就很容易重名了。如果发生命名冲突，那么应用程序的链接过程就会出错。比无法链接更糟糕的是在运行期载入了含有重名类的程序库，这时候就会有”重名符号错误”，很可能导致整个程序崩溃。</p>
+</li>
+<li><p>为了避免这种问题，我们可以变相实现命名空间：为所有的名称加上这个程序相关的前缀。需要注意的是，Apple宣称保留使用所有“两字母前缀“的权利，所以自己选用的前缀应该是3个字母。</p>
+</li>
+<li><p>如果在第三方库的基础上进行了开发后再次封包，则需要将所有的文件前缀修改成和第三方库之前匹配的前缀，才可以封包给其他人使用。</p>
+<p>example：EOCLibrary里扩展了XYZLibrary的东西，那么就要把XYZLibrary的相关前缀改成EOC的前缀。</p>
+</li>
+</ul>
+<h4 id="第16条：提供“全能初始化方法”"><a href="#第16条：提供“全能初始化方法”" class="headerlink" title="第16条：提供“全能初始化方法”"></a>第16条：提供“全能初始化方法”</h4><ul>
+<li>所有对象均要初始化，可为对象提供必要信息以便其能完成工作的初始化方法叫做全能初始化方法。如果创建类实例的方法不止一种，那么这个类就会有多个初始化方法，这里需要选定一个初始化方法作为全能初始化方法，令其他初始化方法都调用它。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (instancetype)init NS_DESIGNATED_INITIALIZER;</span><br><span class="line">- (instancetype)initWithTimeIntervalSinceReferenceDate:(NSTimeInterval)ti NS_DESIGNATED_INITIALIZER;</span><br><span class="line">- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_DESIGNATED_INITIALIZER;</span><br><span class="line">- (instancetype)initWithTimeIntervalSinceNow:(NSTimeInterval)secs;</span><br><span class="line">- (instancetype)initWithTimeIntervalSince1970:(NSTimeInterval)secs;</span><br><span class="line">- (instancetype)initWithTimeInterval:(NSTimeInterval)secsToBeAdded sinceDate:(NSDate *)date;</span><br></pre></td></tr></table></figure>
+<p>在上面的代码里，<code>initWithTimeIntervalSinceNow</code>就是全能初始化方法，其他所有的初始化方法都要调用它，所以只有该方法才会存储内部数据，当内部数据改变的时候，仅需要改变全能初始化方法即可。</p>
+<ul>
+<li>如果子类的全能初始化方法与超类的不同，那么应该覆写超类的全能初始化方法。</li>
+<li>在Objecive-C程序中，只有发生严重错误的时候才应该抛出异常，初始化的时候抛出异常是不得已之举，表明实例真的没办法初始化了。</li>
+</ul>
+<h4 id="第17条：实现description方法"><a href="#第17条：实现description方法" class="headerlink" title="第17条：实现description方法"></a>第17条：实现description方法</h4><ul>
+<li><p>调试程序的时候，经常需要打印并查看对象信息，一般有两种方法：</p>
+<ul>
+<li>编写代码把对象的全部属性输出到日志中。</li>
+<li>直接打印对象，通过实现description方法，将信息打印出来。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//EOCPerson.h</span><br><span class="line">@interface EOCPerson : NSObject</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCPerson.m</span><br><span class="line">- (NSString *)description &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;&lt;%@: %p,\&quot;%@ %@\&quot;&gt;&quot;,</span><br><span class="line">            [self class], self, _firstName, _lastName];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//test</span><br><span class="line">EOCPerson *person = [EOCPerson new];</span><br><span class="line">person.firstName = @&quot;Bob&quot;;</span><br><span class="line">person.lastName = @&quot;Smith&quot;;</span><br><span class="line">NSLog(@&quot;person = %@&quot;, person);</span><br><span class="line">/**</span><br><span class="line">person = &lt;EOCPerson: 0x7bf240c030f0,&quot;Bob Smith&quot;&gt;</span><br><span class="line">**/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果要输出很多互不相同的信息，可以借助<code>NSDictionary</code>：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)description &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;&lt;%@: %p,%@&gt;&quot;,</span><br><span class="line">            [self class],</span><br><span class="line">            self,</span><br><span class="line">            @&#123;@&quot;firstName&quot;:_firstName,</span><br><span class="line">              @&quot;lastName&quot;:_lastName&#125;</span><br><span class="line">            ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果想在LLDB里通过<code>po</code>指令输出，那么就应该实现<code>debugDescription</code>方法，和<code>Description</code>方法一样。</li>
+</ul>
+<h4 id="第18条：尽量使用不可变对象"><a href="#第18条：尽量使用不可变对象" class="headerlink" title="第18条：尽量使用不可变对象"></a>第18条：尽量使用不可变对象</h4><ul>
+<li>在实际编程中，应该尽量把对外公布的属性设为只读，而且只在确有必要的时候才将属性对外公布。</li>
+<li>如果使用了<code>readonly</code>属性，那么有人试着改变属性值，编译器就会报错。这样只能在对象内部进行修改。</li>
+<li>有时可能想修改封装在对象外部的属性，却不想令这些数据为外人所动，这种情况下可以利用”class-continuation分类”，将<code>readonly</code>改为<code>readwrite</code>。其实是等于在内部使用Extension的方式来实现。在对象外部，也可以通过KVC的方式来设置这些属性。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//EOCPointInterest.h</span><br><span class="line">@interface EOCPointInterest : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy, readonly) NSString *identifier;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCPointInterest.m</span><br><span class="line">#import &quot;EOCPointInterest.h&quot;</span><br><span class="line">@interface EOCPointInterest()</span><br><span class="line"></span><br><span class="line">@property (nonatomic, copy, readwrite) NSString *identifier;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation EOCPointInterest</span><br><span class="line">...</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//outter</span><br><span class="line">[pointOfInterest setValue:@&quot;GDGD&quot; forKey:@&quot;identifier&quot;];</span><br></pre></td></tr></table></figure>
+<p>这样可以直接改动<code>identifier</code>属性，即使没有于公共接口中公布这个方法，它依然可以违规的绕过本类的API。</p>
+<ul>
+<li>定义一些公共API的时候，可能会涉及到collection，这些属性应该设置成可变还是不可变是需要好好考虑清楚的。如果是可变的collection的话，不要把可变的collection作为属性公开，而应该提供相关方法让别人通过方法去修改collection。</li>
+</ul>
+<h4 id="第19条：使用清晰而协调的命名方式"><a href="#第19条：使用清晰而协调的命名方式" class="headerlink" title="第19条：使用清晰而协调的命名方式"></a>第19条：使用清晰而协调的命名方式</h4><ul>
+<li>这一章暂且略过，毕竟命名还是一个比较复杂的部分，而且每个工程都有自己的一套特色。这里只简单说一下大原则。</li>
+<li>在Objective-C里，命名要求尽量清晰，不使用缩略，让代码读起来像句子一样。</li>
+<li>类和协议的命名应该加上前缀，避免命名空间冲突。</li>
+</ul>
+<h4 id="第20条：为私有方法名加前缀"><a href="#第20条：为私有方法名加前缀" class="headerlink" title="第20条：为私有方法名加前缀"></a>第20条：为私有方法名加前缀</h4><ul>
+<li>一般来说私有方法是指在内部使用不暴露在外面的方法，这种方法可以通过加前缀的方式方便调试，同时也可以通过前缀来查找以方便统一修改私有代码。</li>
+<li>不要单用一个下划线作为私有方法的前缀，这是预留给苹果公司用的。</li>
+</ul>
+<h4 id="第21条：理解Objective-C错误模型"><a href="#第21条：理解Objective-C错误模型" class="headerlink" title="第21条：理解Objective-C错误模型"></a>第21条：理解Objective-C错误模型</h4><ul>
+<li>在Objective-C里，自动引用计数默认情况下不是异常安全的，也就是如果抛出异常那么该对象就不会自动释放了。如果要异常安全的话需要做一些额外操作。</li>
+<li>即使使用ARC，也可能导致内存泄露：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">id someResource = [someClass new];</span><br><span class="line">if (/* check for error */) &#123;</span><br><span class="line">    @throw [NSEXception exceptionWithName:@&quot;Exception&quot;</span><br><span class="line">            reason:@&quot;ther is a error&quot;</span><br><span class="line">            userInfo:nil];</span><br><span class="line">&#125;</span><br><span class="line">[someResource doSomething];</span><br><span class="line">[someResource release];</span><br></pre></td></tr></table></figure>
+<p>如果上述代码发生了异常之后，那么资源就不可能被释放掉了。如果要正确释放应该在抛出异常之前释放掉资源。</p>
+<ul>
+<li><p>现在Objective-C采用的方法是尽量不抛出异常，如果抛出异常了无需考虑恢复问题，应用程序也应该退出。</p>
+</li>
+<li><p>如果不是那么严重的异常，一般可以令方法返回<code>nil/0</code>，或者是使用<code>NSError</code>，表明有错误发生。</p>
+</li>
+<li><p><code>NSError</code>的用法更加灵活，并且这个模型可以添加描述错误的原因。</p>
+<ul>
+<li>Error domain (错误范围，类型为字符串)：错误发生的根源，通常用一个特有的全局变量来定义。</li>
+<li>Error code (错误码，类型为整数)：独有的错误代码，用来指明在某个范围内具体发生了何种错误。</li>
+<li>User info (用户信息，类型为字典)：关于错误的额外信息。</li>
+</ul>
+<p><code>NSError</code>的常见用法主要有两种：</p>
+<ul>
+<li>通过委托协议来传递此错误，有错误发生时，当前对象会把错误信息经由协议中的某个方法给其委托对象。例如：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>经由输出参数返回给调用者，例如：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)doSomething:(NSError **)error;</span><br><span class="line"></span><br><span class="line">//example</span><br><span class="line">NSError *error = nil;</span><br><span class="line">BOOL ret = [object doSomething:&amp;error];</span><br><span class="line">if (error) &#123;</span><br><span class="line">    //handle the error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    实际上使用ARC的时候，编译器会把方法签名中的<code>NSError **</code>转换成<code>NSError * __autoreleasing*</code>，也就是指针所指的对象在方法执行完毕后自动释放。</p>
+<p>​    定义错误码的时候最好使用枚举的方式实现，并且最好在定义这些枚举的头文件里对每个错误类型详细说明。</p>
+</li>
+</ul>
+    
 	  
 </div>
 
@@ -144,7 +226,7 @@
 
 
 	<span class="post-words"><span class="iconfont icon-words"></span>
-		162
+		4452
 	</span>
 		
 	</div>
