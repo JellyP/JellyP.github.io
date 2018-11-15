@@ -28,31 +28,31 @@
               
             
 
-              <a class="header-menu-link" id="header-menu-home" href="/">首页</a>     
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-archives" href="/archives">归档</a>     
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-categories" href="/categories">分类</a>     
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-tags" href="/tags">标签</a>     
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-about" href="/about">关于</a>     
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
 
             
             
@@ -110,7 +110,7 @@
 
 
 	<span class="post-words"><span class="iconfont icon-words"></span>
-		4452
+		5880
 	</span>
 		
 	
@@ -207,6 +207,31 @@
 <p>​    定义错误码的时候最好使用枚举的方式实现，并且最好在定义这些枚举的头文件里对每个错误类型详细说明。</p>
 </li>
 </ul>
+<h4 id="第22条：理解NSCopying协议"><a href="#第22条：理解NSCopying协议" class="headerlink" title="第22条：理解NSCopying协议"></a>第22条：理解NSCopying协议</h4><ul>
+<li>如果想要自己的类支持copy方法，那就要实现<code>NSCopying</code>协议，该协议只有一个方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)copyWithZone:(nullable NSZone *)zone;</span><br></pre></td></tr></table></figure>
+<p><code>NSZone</code>是以前开发程序时，会把内存分成不同的区，而对象会创建在不同的区，现在每个程序只有一个默认区，尽管必须实现这个方法，但是<code>zone</code>参数不用担心。copy方法是由<code>NSObject</code>实现，该方法只是以默认区为参数来调用。</p>
+<p>example：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//EOCPerson.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface EOCPerson : NSObject&lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//实现NSCopying的方法</span><br><span class="line">- (id)copyWithZone:(NSZone *)zone &#123;</span><br><span class="line">    EOCPerson *copy = [[self class] allocWithZone:zone];</span><br><span class="line">    copy.firstName = _firstName;</span><br><span class="line">    copy.lastName = _lastName;</span><br><span class="line">    return copy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果要访问类的内部实例变量（并非属性），那么需要用<code>-&gt;</code>的语法来访问。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@implementation EOCPerson &#123;</span><br><span class="line">    NSMutableSet *_friends;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//如果要访问，那么就是</span><br><span class="line">- (id)copyWithZone:(NSZone *)zone &#123;</span><br><span class="line">    /* copy something*/</span><br><span class="line">    copy-&gt;_friends;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>除了copy方法以外，还有mutableCopy方法，这个是来自于<code>NSMutableCopying</code>的协议，如果要实现一个可变的拷贝，那么就需要实现该协议的方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)mutableCopyWithZone:(nullable NSZone *)zone;</span><br></pre></td></tr></table></figure>
+<p>对于不可变的NSArray与可变的NSMutableArray来说，下列关系成立:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[NSArray copy] =&gt; NSArray;</span><br><span class="line">[NSArray mutableCopy] =&gt; NSMutableArray;</span><br><span class="line"></span><br><span class="line">[NSMutableArray copy] =&gt; NSArray;</span><br><span class="line">[NSMutableArray mutableCopy] =&gt; NSMutableArray;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>在编写拷贝方法的时候，还需要注意一个问题那就是拷贝执行的是深拷贝还是浅拷贝。</p>
+<ul>
+<li>深拷贝：拷贝对象的时候底层数据也一并复制过去。</li>
+<li>浅拷贝：只拷贝容器本身，而不复制其中数据。<code>Foundation</code>框架的所有<code>collection</code>类在默认情况下都执行浅拷贝，因为<code>collection</code>里可能存在无法拷贝的数据，或者并非需要深拷贝。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (id)deepCopy &#123;</span><br><span class="line">    EOCPerson *copy = [[[self class] alloc] init];</span><br><span class="line">    copy.firstName = _firstName;</span><br><span class="line">    copy.lastName = _lastName;</span><br><span class="line">    return copy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
   	
 
 	  </div>     
@@ -285,7 +310,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
   <a href="/2018/11/10/effective-Objective-C2.0总结与笔记-第二章/">         
 
-    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第二章）—— 对象、消息、运行期">下一篇 </span>  
+    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第二章）—— 对象、消息、运行期">Next </span>  
 
   </a>
 
@@ -326,7 +351,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 		<div class="toc-container">	
 
 		<span class="toc-contents iconfont icon-close"> 
-			<span>目录</span>
+			<span>Contents</span>
 		</span>
 
 		<ul class="toc-list"></ul>
@@ -348,7 +373,7 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
 
         
         <div class="search-container sildeUpMin">
-            <input type="text" placeholder="输入你想搜索的" id="search-input" class="search-input">  
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
               <span class="search-cancel iconfont icon-cancel"></span>
               <div id="search-result" class="search-result"></div>
         </div>
@@ -363,37 +388,37 @@ src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script
          
             
 
-            <a class="mobile-menu-link" href="/">首页
+            <a class="mobile-menu-link" href="/">Home
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/archives">归档
+            <a class="mobile-menu-link" href="/archives">Archives
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/categories">分类
+            <a class="mobile-menu-link" href="/categories">Categories
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/tags">标签
+            <a class="mobile-menu-link" href="/tags">Tags
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/about">关于
+            <a class="mobile-menu-link" href="/about">About
             </a>
             
          
                           
 
-            <a class="mobile-menu-link mobile-menu-search" href="#">搜索 </a>                 
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
             
          
       
