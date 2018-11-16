@@ -104,6 +104,136 @@
 	   
 	<div class="article-header">
 	    
+	     <a class="article-title"  href="/2018/11/15/effective-Objective-C2-0总结与笔记-第四章/">effective Objective-C 2.0 总结与笔记（第四章）—— 协议与分类</a>  
+	       
+		 
+
+		 <time>2018-11-15 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <h3 id="第四章：协议与分类"><a href="#第四章：协议与分类" class="headerlink" title="第四章：协议与分类"></a>第四章：协议与分类</h3><p>​    Objective-C语言有一项特性叫做“协议”，类似与Java的“接口”。Objective-C不支持多重继承，所以我们把某个类应该实现的一系列方法定义在协议里面。最为常见的用途就是实现委托模式了。</p>
+<p>​    “分类”也是Objective-C的一项重要特性，利用分类机制，无须继承子类即可直接为当前类添加方法。</p>
+<h4 id="第23条：通过委托与数据源协议进行对象间通信"><a href="#第23条：通过委托与数据源协议进行对象间通信" class="headerlink" title="第23条：通过委托与数据源协议进行对象间通信"></a>第23条：通过委托与数据源协议进行对象间通信</h4><ul>
+<li>委托模式的编程设计模式来实现对象间的通信，该模式的主旨是：<ul>
+<li>定义一套接口。</li>
+<li>如果对象想接受另一个对象的委托，那么就要遵循这个接口，以便其称为其“委托对象”。</li>
+</ul>
+</li>
+</ul>
+<p>example：<code>EOCDataModel</code>请求<code>EOCNetworkFetcher</code>以异步的方式执行一项任务，而<code>EOCNetworkFetcher</code>执行完这项任务之后，就会通知其委托对象，也就是<code>EOCDataModel</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">//EOCNetworkFetcher.h</span><br><span class="line">@class EOCNetworkFetcher;</span><br><span class="line">//定义一个协议</span><br><span class="line">@protocol EOCNetworkFetcherDelegate &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didReceiveData:(NSData *)data;</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didFailWithError:(NSError *)error;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//有了协议之后就可以使用一个属性来存放其委托对象了。这个属性需要使用weak，而不是strong，因为DataModel和NetworkFetcher必须为非拥有关系，通常情况下，扮演delegate的对象也要持有本对象。使用weak能防止保留环的产生。    </span><br><span class="line">@interface EOCNetworkFetcher : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic , weak) id&lt;EOCNetworkFetcherDelegate&gt; delegate;//利用属相来存放委托对象</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCNetworkFetcher.m</span><br><span class="line">#import &quot;EOCNetworkFetcher.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation EOCNetworkFetcher</span><br><span class="line">-(void)didSomeSthing&#123;</span><br><span class="line"></span><br><span class="line">    if ([_delegate respondsToSelector:@selector(networkFetcher:didReceiveData:)])&#123;</span><br><span class="line">        [_delegate networkFetcher:nil didReceiveData:nil];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCDataModel 实现EOCNetworkFetcherDelegate</span><br><span class="line">//EOCDataModel.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;EOCNetworkFetcher.h&quot;</span><br><span class="line">@interface EOCDataModel : NSObject&lt;EOCNetworkFetcherDelegate&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCDataModel.m</span><br><span class="line">#import &quot;EOCDataModel.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation EOCDataModel</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didReceiveData:(NSData *)data</span><br><span class="line">&#123;</span><br><span class="line">//do some things</span><br><span class="line">&#125;</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didFailWithError:(NSError *)error</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>委托协议一般使用<code>@optional</code>关键字来表示可选的，一般情况下都说使用这个方式来实现。</p>
+</li>
+<li><p>也可以使用协议定义一套接口，令某类经由该接口获取其所需的数据。委托模式的这一用法又称数据源模式，因为信息从数据源流向类。</p>
+</li>
+<li>若有必要，可以使用含有位段的结构体，将委托对象是否能响应相关协议方法这一信息缓存至其中。</li>
+</ul>
+<h4 id="第24条：将类的实现代码分散到便于管理的数个分类之中"><a href="#第24条：将类的实现代码分散到便于管理的数个分类之中" class="headerlink" title="第24条：将类的实现代码分散到便于管理的数个分类之中"></a>第24条：将类的实现代码分散到便于管理的数个分类之中</h4><ul>
+<li>如果一个类的代码全部放在一个巨大的实现文件里，可能可阅读性会差一点，那么可以通过Objective-C的分类机制，把类代码按逻辑划入几个分区中。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">@interface EOCPerson : NSObject&lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(NSString *)firstName</span><br><span class="line">                      andlastName:(NSString *)lastName;</span><br><span class="line"></span><br><span class="line">//friend method</span><br><span class="line">- (void)addFriend:(EOCPerson *)person;</span><br><span class="line">- (void)removeFriend:(EOCPerson *)person;</span><br><span class="line">- (void)isFriendWith:(EOCPerson *)person;</span><br><span class="line"></span><br><span class="line">//work method</span><br><span class="line">- (void)performDaysWork;</span><br><span class="line">- (void)takevacationFromWork;</span><br><span class="line"></span><br><span class="line">//play method</span><br><span class="line">- (void)goToTheCinema;</span><br><span class="line">- (void)goToSportGame;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//如果利用分类的方式，可以拆成3个分类</span><br><span class="line">@interface EOCPerson (Friendship)</span><br><span class="line">- (void)addFriend:(EOCPerson *)person;</span><br><span class="line">- (void)removeFriend:(EOCPerson *)person;</span><br><span class="line">- (void)isFriendWith:(EOCPerson *)person;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson (Work)</span><br><span class="line">- (void)performDaysWork;</span><br><span class="line">- (void)takevacationFromWork;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson (Play)</span><br><span class="line">- (void)goToTheCinema;</span><br><span class="line">- (void)goToSportGame;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果编写准备分享给其他开发者使用的程序库的时候，可以创建Private分类，把私有方法归入到Private分类中。</li>
+</ul>
+<h4 id="第25条：总是为第三方类的分类名称加前缀"><a href="#第25条：总是为第三方类的分类名称加前缀" class="headerlink" title="第25条：总是为第三方类的分类名称加前缀"></a>第25条：总是为第三方类的分类名称加前缀</h4><ul>
+<li>向第三方类中加分类的时候，应该添加上前缀，而对应的方法名也应该加上前缀。这样做的目的是防止因为没有加前缀而导致重复的分类被创建，或者分类下的方法命名重复，因为Objective-C没有命名空间，所以可能会出现意想不到的问题。</li>
+</ul>
+<h4 id="第26条：勿在分类中声明属性"><a href="#第26条：勿在分类中声明属性" class="headerlink" title="第26条：勿在分类中声明属性"></a>第26条：勿在分类中声明属性</h4><ul>
+<li>除了”class-continuation分类“（拓展），其他分类都无法向类中新增实例变量。他们无法把实现属性所需的实例变量合成出来，如果使用关联对象可以解决分类不能合成实例变量的问题，但是这样代码冗余度会提高，同时可能出现内存管理的问题。</li>
+<li>尽量把全部属性都定义在主接口里，而在”class-continuation分类“以外的分类，可以定义存取方法，但是尽量不要声明属性。</li>
+</ul>
+<h4 id="第27条：使用”class-continuation分类“隐藏实现细节"><a href="#第27条：使用”class-continuation分类“隐藏实现细节" class="headerlink" title="第27条：使用”class-continuation分类“隐藏实现细节"></a>第27条：使用”class-continuation分类“隐藏实现细节</h4><ul>
+<li>Objective-C动态消息系统的工作方式决定了不可能实现真正的私有方法或私有实例变量。如果确实是不需要对外公布确应该具有的方法和实例变量应该使用”class-continuation分类“来实现。</li>
+<li>“class-continuation分类“和普通的分类不同，他必须定义在所拓展的那个类的实现文件里，这是唯一能声明实例变量的分类，而且此分类没有特定的实现文件。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//EOCPerson.m</span><br><span class="line">@interface EOCPerson () &#123;</span><br><span class="line">    //实例变量</span><br><span class="line">&#125;</span><br><span class="line">//方法和属性</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>实例变量也可以声明到实现块里，语法上和”class-continuation分类“里定义一样。</p>
+<ul>
+<li>编写Objective-C++代码的时候，使用”class-continuation分类“也更为有效。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//EOCClass.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#include &quot;SomeCppClass.h&quot;</span><br><span class="line"></span><br><span class="line">@interface EOCClass : NSObject &#123;</span><br><span class="line">@private</span><br><span class="line">    SomeCppClass _cppDemo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>假如一个类的头文件声明如上，那么其实现文件应该是<code>EOCClass.mm</code>，表示告诉编译器应该将此文件使用Objective-C++的方式进行编译，但是由于头文件里包含了CPP文件，那么如果其他引入该头文件的类，都需要使用<code>.mm</code>的拓展名，这样并不是非常合适。</p>
+<p>最好的解决方案就是使用”class-continuation分类“。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//EOCClass.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface EOCClass : NSObject </span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//EOCClass.m</span><br><span class="line">#import &quot;EOCClass.h&quot;</span><br><span class="line">#include &quot;SomeCppClass.h&quot;</span><br><span class="line"></span><br><span class="line">@interface EOCClass () &#123;</span><br><span class="line">    SomeCppClass _cppDemo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation EOCClass</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>这样其头文件就不会出现CPP文件了，使用头文件的人也不会意识到这个底层的实现使用了CPP的代码，很好的隐藏了实现细节。</p>
+<ul>
+<li>“class-continuation分类“还有一种用法就是将在public接口中声明为“只读”的属性扩展为“可读写”，以便在类内部设置其值。因为这样可以不用直接访问实例变量，而是通过设置访问方法来做，就可以触发KVO通知。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@interface EOCPerson : NSObject&lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy, readonly) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy, readonly) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(NSString *)firstName</span><br><span class="line">                      andlastName:(NSString *)lastName;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson ()</span><br><span class="line">    </span><br><span class="line">@property(nonatomic, copy, readwrite) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy, readwrite) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>“class-continuation分类“还可以定义私有的协议。有时由于对象所遵从的某个协议在某个私有API中，所以可能不太想在公共接口中泄露这一信息。</li>
+</ul>
+<h4 id="第28条：通过协议提供匿名对象"><a href="#第28条：通过协议提供匿名对象" class="headerlink" title="第28条：通过协议提供匿名对象"></a>第28条：通过协议提供匿名对象</h4><ul>
+<li>协议定义了一系列方法，遵从此协议的对象应该实现它们，于是可以用协议把自己所写的API之中的实现细节隐藏起来，将返回的对象设计为遵从此协议的纯id类型，这样想要隐藏的类名就不会出现在API之中了。这一概念常常被称为“匿名对象”。在委托里，经常定义匿名对象，例如：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic, weak) id&lt;EOCDelegate&gt; delegate;</span><br></pre></td></tr></table></figure>
+<p>该属性是<code>id&lt;EOCDelegate</code>的，实际上任何类的对象都能充当这一属性，只需要遵循<code>EOCDelegate</code>即可。</p>
+<ul>
+<li><code>NSDictionary</code>也有应用这一概念，在可变版本的字典里，设置键值对所用的方法的签名是：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)setObject:(id)object forKey:(id&lt;NSCopying&gt;)key;</span><br></pre></td></tr></table></figure>
+<p>表示键值对的参数都可以是任意类型，key参数可以视为匿名对象，字典不关心key对象的所属的具体类，字典对象只需要确定能给此实例发送拷贝消息就可以。</p>
+<ul>
+<li><p>匿名对象的作用主要是：</p>
+<ul>
+<li><p>隐藏类型名称。</p>
+</li>
+<li><p>对于不关心具体类型，只是关心是否能响应特定方法的情况，可以使用匿名对象。</p>
+</li>
+</ul>
+</li>
+</ul>
+    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		5390
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2018/11/15/effective-Objective-C2-0总结与笔记-第四章/">Continue</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
 	     <a class="article-title"  href="/2018/11/13/effective-Objective-C2-0总结与笔记-第三章/">effective Objective-C 2.0 总结与笔记（第三章）—— 接口与API设计</a>  
 	       
 		 
@@ -1147,112 +1277,6 @@
 
 		
     <a class="article-readmore" href="/2018/05/24/day5-ios学习笔记/">Continue</a> 
-    	
-</article>     
-     	
-      	  	
-
-  		
-    	<article class="article">		
-	   
-	<div class="article-header">
-	    
-	     <a class="article-title"  href="/2018/05/23/day4-ios学习笔记/">day4:ios学习笔记</a>  
-	       
-		 
-
-		 <time>2018-05-23 </time>    
-	</div>
-
-
-    <div class="post-content article-excerpt">	
-	
-  	
-
-	   <p>day4:ios学习笔记</p>
-<p>今天主要是学习了一个动画的demo和关于UITableView的使用。</p>
-<p>第八章：</p>
-<ul>
-<li><p>闭包，语法如下，但是什么时候用闭包啊什么的，因为接触的较少，还不能很好的去应用。</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    (arguments)-&gt; <span class="keyword">return</span> type <span class="keyword">in</span></span><br><span class="line">    <span class="comment">//code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>动画使用animateWithDuration函数来实现，其中animations和completitions参数都是闭包类型。</p>
-</li>
-<li><p>约束也可以作为变量进行绑定，在书中第八章的demo中，就是采用不断变更约束条件的方式去实现动画效果。</p>
-</li>
-<li><p>调用视图的layoutIfNeed()方法可以让系统根据最新的约束来布局视图，所以可以在animations的闭包中调用该方法。</p>
-</li>
-<li><p>options参数可以控制动画的时间参数。</p>
-</li>
-</ul>
-<p>第九章：</p>
-<ul>
-<li><p>UITableViewController对象可以扮演UITableView交互中所涉及到的MVC模式中的三种对象，包括视图控制器对象、数据源和委托对象</p>
-</li>
-<li><p>应用启动的时候，AppDelegate的application(_:didFinishLaunchingWithOptions:)方法会被调用，AppDelegate是应用的委托，用来响应应用运行中的各种状态。</p>
-</li>
-<li><p>DIP原则(dependency inversion principle)，通过倒置依赖关系来解耦对象，让代码的可维护性提高。</p>
-<ul>
-<li>高层对象不依赖底层对象，依赖于抽象</li>
-<li>抽象不依赖于细节，细节依赖抽象</li>
-</ul>
-</li>
-<li><p>在使用UITableView的时候，必须要实现的两个方法为</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取行数</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(<span class="number">_</span> tableView: UITableView, numberOfRowsInSection section: Int)</span></span> -&gt; <span class="type">Int</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//获取每行所存放的数据</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">tableView</span><span class="params">(<span class="number">_</span> tableView: UITableView, cellForRowAt indexPath: IndexPath)</span></span> -&gt; <span class="type">UITableViewCell</span> &#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>每个UITableViewCell都有textLabel、textDetail和Image 3个属性。</li>
-</ul>
-</li>
-<li><p>要重用UITableViewCell，可以先设定Identifier，然后使用dequeueReusableCell来进行实现。</p>
-</li>
-<li><p>利用insets(边衬)，来实现布局的上左下右的间距。</p>
-</li>
-</ul>
-<p>第十章</p>
-<p>这一章看下来反而觉得难度不大，但是主要还是知识储备不够，很多时候不知道要用什么东西。</p>
-<ul>
-<li><p>提示框弹窗代码:</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> title = <span class="string">"balabala"</span></span><br><span class="line"><span class="keyword">let</span> message = <span class="string">"balabala"</span></span><br><span class="line"><span class="keyword">let</span> ac = <span class="type">UIAlertController</span>(title: title, message: message, preferredStyle: .actionSheet)<span class="comment">//还有.alert类型</span></span><br><span class="line"><span class="keyword">let</span> cancel = <span class="type">UIAlertAction</span>(title: <span class="string">"cancel"</span>, style: .cancel, handler: <span class="literal">nil</span>)<span class="comment">//do nothing</span></span><br><span class="line"><span class="keyword">let</span> done = <span class="type">UIAlertAction</span>(title: <span class="string">"done"</span>, style: .destructive, handler: &#123;</span><br><span class="line">    (action)-&gt;<span class="type">Void</span> <span class="keyword">in</span></span><br><span class="line">    <span class="comment">//do something</span></span><br><span class="line">&#125;)</span><br><span class="line">ac.addAction(cancel)</span><br><span class="line">ac.addAction(done)</span><br><span class="line">present(ac,animated: <span class="literal">true</span>, completion: <span class="literal">nil</span>) <span class="comment">//make it work</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>对于DIP模式有了更好的理解，为了完成这个例子，我们是通过对ItemStore这个类去增加功能性函数，而非在自定义的controller里面去实现，那么TableViewController其实只是知道自己有这样一个ItemStore类型的对象，但是具体实现什么我们可以在ItemStore类中进行实现和修改。即高层依赖于抽象，细节依赖于抽象。</p>
-</li>
-</ul>
-<p>- </p>
-    
-	  
-</div>
-
-
-
-
-	<div class="article-info">
-		
-
-	<span class="post-meta">		
-	<span class="iconfont icon-category"></span>
-		<a class="category-link" href="/categories/ios/">ios</a>
-	</span>		
-	
-
-
-				
-	<span class="post-meta">
-	<span class="iconfont icon-tag"></span>
-		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
-	</span>			
-	
-
-
-
-	<span class="post-words"><span class="iconfont icon-words"></span>
-		1712
-	</span>
-		
-	</div>
-		
-
-		
-    <a class="article-readmore" href="/2018/05/23/day4-ios学习笔记/">Continue</a> 
     	
 </article>     
      	

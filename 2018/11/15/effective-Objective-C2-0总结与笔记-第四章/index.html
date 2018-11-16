@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport"content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
+  
+  
+  <title>  Effective Objective-C 2.0 总结与笔记（第四章）—— 协议与分类 |   JellyP </title>
+
+ 
+  
+    <link rel="icon" href="/images/favicon.png">
+  
+
+
+  <link rel="stylesheet" href="/style.min.css"> 
+</head>  
+  <body>   
+    <header class="header">
+	
+  <nav class="header-nav">       
+	
+  	<span class="iconfont icon-menu mobile-toggle"></span>  
+
+    <a class="header-logo" href="/"><span>JellyP</a>  
+
+    <div class="header-menu">          
+              
+            
+
+              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+
+            
+            
+            
+
+              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+
+            
+            
+            
+
+              <a class="iconfont icon-menu-search header-menu-link" id="header-menu-search"></a>
+
+            
+                
+    </div>  
+    
+  </nav>
+</header>   
+
+    <div class="container">       
+      
+        
+
+          <section id="main">  
+
+        
+
+        <article class="post">
+
+	  
+	<div class="post-header slideDownMin center">
+
+	<span class="post-title">	
+		effective Objective-C 2.0 总结与笔记（第四章）—— 协议与分类
+	</span>
+
+	
+	<div class="post-info">
+
+		<time class="post-time"><span class="iconfont icon-date"></span>
+		2018/11/15 	
+		</time>
+		
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/ios/">ios</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/ios/">ios</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		5390
+	</span>
+		
+	
+	</div> 
+
+</div> 
+
+	 
+
+	  <div class="post-content slideDownMin">
+
+		
+
+	  	<h3 id="第四章：协议与分类"><a href="#第四章：协议与分类" class="headerlink" title="第四章：协议与分类"></a>第四章：协议与分类</h3><p>​    Objective-C语言有一项特性叫做“协议”，类似与Java的“接口”。Objective-C不支持多重继承，所以我们把某个类应该实现的一系列方法定义在协议里面。最为常见的用途就是实现委托模式了。</p>
+<p>​    “分类”也是Objective-C的一项重要特性，利用分类机制，无须继承子类即可直接为当前类添加方法。</p>
+<h4 id="第23条：通过委托与数据源协议进行对象间通信"><a href="#第23条：通过委托与数据源协议进行对象间通信" class="headerlink" title="第23条：通过委托与数据源协议进行对象间通信"></a>第23条：通过委托与数据源协议进行对象间通信</h4><ul>
+<li>委托模式的编程设计模式来实现对象间的通信，该模式的主旨是：<ul>
+<li>定义一套接口。</li>
+<li>如果对象想接受另一个对象的委托，那么就要遵循这个接口，以便其称为其“委托对象”。</li>
+</ul>
+</li>
+</ul>
+<p>example：<code>EOCDataModel</code>请求<code>EOCNetworkFetcher</code>以异步的方式执行一项任务，而<code>EOCNetworkFetcher</code>执行完这项任务之后，就会通知其委托对象，也就是<code>EOCDataModel</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">//EOCNetworkFetcher.h</span><br><span class="line">@class EOCNetworkFetcher;</span><br><span class="line">//定义一个协议</span><br><span class="line">@protocol EOCNetworkFetcherDelegate &lt;NSObject&gt;</span><br><span class="line"></span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didReceiveData:(NSData *)data;</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didFailWithError:(NSError *)error;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//有了协议之后就可以使用一个属性来存放其委托对象了。这个属性需要使用weak，而不是strong，因为DataModel和NetworkFetcher必须为非拥有关系，通常情况下，扮演delegate的对象也要持有本对象。使用weak能防止保留环的产生。    </span><br><span class="line">@interface EOCNetworkFetcher : NSObject</span><br><span class="line"></span><br><span class="line">@property (nonatomic , weak) id&lt;EOCNetworkFetcherDelegate&gt; delegate;//利用属相来存放委托对象</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCNetworkFetcher.m</span><br><span class="line">#import &quot;EOCNetworkFetcher.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation EOCNetworkFetcher</span><br><span class="line">-(void)didSomeSthing&#123;</span><br><span class="line"></span><br><span class="line">    if ([_delegate respondsToSelector:@selector(networkFetcher:didReceiveData:)])&#123;</span><br><span class="line">        [_delegate networkFetcher:nil didReceiveData:nil];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCDataModel 实现EOCNetworkFetcherDelegate</span><br><span class="line">//EOCDataModel.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#import &quot;EOCNetworkFetcher.h&quot;</span><br><span class="line">@interface EOCDataModel : NSObject&lt;EOCNetworkFetcherDelegate&gt;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">//EOCDataModel.m</span><br><span class="line">#import &quot;EOCDataModel.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation EOCDataModel</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didReceiveData:(NSData *)data</span><br><span class="line">&#123;</span><br><span class="line">//do some things</span><br><span class="line">&#125;</span><br><span class="line">-(void)networkFetcher:(EOCNetworkFetcher *)fetcher didFailWithError:(NSError *)error</span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>委托协议一般使用<code>@optional</code>关键字来表示可选的，一般情况下都说使用这个方式来实现。</p>
+</li>
+<li><p>也可以使用协议定义一套接口，令某类经由该接口获取其所需的数据。委托模式的这一用法又称数据源模式，因为信息从数据源流向类。</p>
+</li>
+<li>若有必要，可以使用含有位段的结构体，将委托对象是否能响应相关协议方法这一信息缓存至其中。</li>
+</ul>
+<h4 id="第24条：将类的实现代码分散到便于管理的数个分类之中"><a href="#第24条：将类的实现代码分散到便于管理的数个分类之中" class="headerlink" title="第24条：将类的实现代码分散到便于管理的数个分类之中"></a>第24条：将类的实现代码分散到便于管理的数个分类之中</h4><ul>
+<li>如果一个类的代码全部放在一个巨大的实现文件里，可能可阅读性会差一点，那么可以通过Objective-C的分类机制，把类代码按逻辑划入几个分区中。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">@interface EOCPerson : NSObject&lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(NSString *)firstName</span><br><span class="line">                      andlastName:(NSString *)lastName;</span><br><span class="line"></span><br><span class="line">//friend method</span><br><span class="line">- (void)addFriend:(EOCPerson *)person;</span><br><span class="line">- (void)removeFriend:(EOCPerson *)person;</span><br><span class="line">- (void)isFriendWith:(EOCPerson *)person;</span><br><span class="line"></span><br><span class="line">//work method</span><br><span class="line">- (void)performDaysWork;</span><br><span class="line">- (void)takevacationFromWork;</span><br><span class="line"></span><br><span class="line">//play method</span><br><span class="line">- (void)goToTheCinema;</span><br><span class="line">- (void)goToSportGame;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//如果利用分类的方式，可以拆成3个分类</span><br><span class="line">@interface EOCPerson (Friendship)</span><br><span class="line">- (void)addFriend:(EOCPerson *)person;</span><br><span class="line">- (void)removeFriend:(EOCPerson *)person;</span><br><span class="line">- (void)isFriendWith:(EOCPerson *)person;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson (Work)</span><br><span class="line">- (void)performDaysWork;</span><br><span class="line">- (void)takevacationFromWork;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson (Play)</span><br><span class="line">- (void)goToTheCinema;</span><br><span class="line">- (void)goToSportGame;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果编写准备分享给其他开发者使用的程序库的时候，可以创建Private分类，把私有方法归入到Private分类中。</li>
+</ul>
+<h4 id="第25条：总是为第三方类的分类名称加前缀"><a href="#第25条：总是为第三方类的分类名称加前缀" class="headerlink" title="第25条：总是为第三方类的分类名称加前缀"></a>第25条：总是为第三方类的分类名称加前缀</h4><ul>
+<li>向第三方类中加分类的时候，应该添加上前缀，而对应的方法名也应该加上前缀。这样做的目的是防止因为没有加前缀而导致重复的分类被创建，或者分类下的方法命名重复，因为Objective-C没有命名空间，所以可能会出现意想不到的问题。</li>
+</ul>
+<h4 id="第26条：勿在分类中声明属性"><a href="#第26条：勿在分类中声明属性" class="headerlink" title="第26条：勿在分类中声明属性"></a>第26条：勿在分类中声明属性</h4><ul>
+<li>除了”class-continuation分类“（拓展），其他分类都无法向类中新增实例变量。他们无法把实现属性所需的实例变量合成出来，如果使用关联对象可以解决分类不能合成实例变量的问题，但是这样代码冗余度会提高，同时可能出现内存管理的问题。</li>
+<li>尽量把全部属性都定义在主接口里，而在”class-continuation分类“以外的分类，可以定义存取方法，但是尽量不要声明属性。</li>
+</ul>
+<h4 id="第27条：使用”class-continuation分类“隐藏实现细节"><a href="#第27条：使用”class-continuation分类“隐藏实现细节" class="headerlink" title="第27条：使用”class-continuation分类“隐藏实现细节"></a>第27条：使用”class-continuation分类“隐藏实现细节</h4><ul>
+<li>Objective-C动态消息系统的工作方式决定了不可能实现真正的私有方法或私有实例变量。如果确实是不需要对外公布确应该具有的方法和实例变量应该使用”class-continuation分类“来实现。</li>
+<li>“class-continuation分类“和普通的分类不同，他必须定义在所拓展的那个类的实现文件里，这是唯一能声明实例变量的分类，而且此分类没有特定的实现文件。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//EOCPerson.m</span><br><span class="line">@interface EOCPerson () &#123;</span><br><span class="line">    //实例变量</span><br><span class="line">&#125;</span><br><span class="line">//方法和属性</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>实例变量也可以声明到实现块里，语法上和”class-continuation分类“里定义一样。</p>
+<ul>
+<li>编写Objective-C++代码的时候，使用”class-continuation分类“也更为有效。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//EOCClass.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">#include &quot;SomeCppClass.h&quot;</span><br><span class="line"></span><br><span class="line">@interface EOCClass : NSObject &#123;</span><br><span class="line">@private</span><br><span class="line">    SomeCppClass _cppDemo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>假如一个类的头文件声明如上，那么其实现文件应该是<code>EOCClass.mm</code>，表示告诉编译器应该将此文件使用Objective-C++的方式进行编译，但是由于头文件里包含了CPP文件，那么如果其他引入该头文件的类，都需要使用<code>.mm</code>的拓展名，这样并不是非常合适。</p>
+<p>最好的解决方案就是使用”class-continuation分类“。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//EOCClass.h</span><br><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line"></span><br><span class="line">@interface EOCClass : NSObject </span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">//EOCClass.m</span><br><span class="line">#import &quot;EOCClass.h&quot;</span><br><span class="line">#include &quot;SomeCppClass.h&quot;</span><br><span class="line"></span><br><span class="line">@interface EOCClass () &#123;</span><br><span class="line">    SomeCppClass _cppDemo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation EOCClass</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>这样其头文件就不会出现CPP文件了，使用头文件的人也不会意识到这个底层的实现使用了CPP的代码，很好的隐藏了实现细节。</p>
+<ul>
+<li>“class-continuation分类“还有一种用法就是将在public接口中声明为“只读”的属性扩展为“可读写”，以便在类内部设置其值。因为这样可以不用直接访问实例变量，而是通过设置访问方法来做，就可以触发KVO通知。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@interface EOCPerson : NSObject&lt;NSCopying&gt;</span><br><span class="line"></span><br><span class="line">@property(nonatomic, copy, readonly) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy, readonly) NSString *lastName;</span><br><span class="line"></span><br><span class="line">- (instancetype)initWithFirstName:(NSString *)firstName</span><br><span class="line">                      andlastName:(NSString *)lastName;</span><br><span class="line">@end</span><br><span class="line">    </span><br><span class="line">@interface EOCPerson ()</span><br><span class="line">    </span><br><span class="line">@property(nonatomic, copy, readwrite) NSString *firstName;</span><br><span class="line">@property(nonatomic, copy, readwrite) NSString *lastName;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<ul>
+<li>“class-continuation分类“还可以定义私有的协议。有时由于对象所遵从的某个协议在某个私有API中，所以可能不太想在公共接口中泄露这一信息。</li>
+</ul>
+<h4 id="第28条：通过协议提供匿名对象"><a href="#第28条：通过协议提供匿名对象" class="headerlink" title="第28条：通过协议提供匿名对象"></a>第28条：通过协议提供匿名对象</h4><ul>
+<li>协议定义了一系列方法，遵从此协议的对象应该实现它们，于是可以用协议把自己所写的API之中的实现细节隐藏起来，将返回的对象设计为遵从此协议的纯id类型，这样想要隐藏的类名就不会出现在API之中了。这一概念常常被称为“匿名对象”。在委托里，经常定义匿名对象，例如：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic, weak) id&lt;EOCDelegate&gt; delegate;</span><br></pre></td></tr></table></figure>
+<p>该属性是<code>id&lt;EOCDelegate</code>的，实际上任何类的对象都能充当这一属性，只需要遵循<code>EOCDelegate</code>即可。</p>
+<ul>
+<li><code>NSDictionary</code>也有应用这一概念，在可变版本的字典里，设置键值对所用的方法的签名是：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)setObject:(id)object forKey:(id&lt;NSCopying&gt;)key;</span><br></pre></td></tr></table></figure>
+<p>表示键值对的参数都可以是任意类型，key参数可以视为匿名对象，字典不关心key对象的所属的具体类，字典对象只需要确定能给此实例发送拷贝消息就可以。</p>
+<ul>
+<li><p>匿名对象的作用主要是：</p>
+<ul>
+<li><p>隐藏类型名称。</p>
+</li>
+<li><p>对于不关心具体类型，只是关心是否能响应特定方法的情况，可以使用匿名对象。</p>
+</li>
+</ul>
+</li>
+</ul>
+  	
+
+	  </div>     
+	  
+
+	<div class="post-footer">    
+
+ 
+
+	
+<script id="-mob-share" 
+src="http://f1.webshare.mob.com/code/mob-share.js?appkey=21d601593a1de"></script>
+	
+	<span class="share-btn">
+	<span class="iconfont icon-share"></span>
+	</span>
+
+
+	<div class="-mob-share sildeUpMin">
+		   
+			<span  data-hover="qq">               
+            <a class="iconfont  icon-share-qq -mob-share-qq"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weixin">               
+            <a class="iconfont  icon-share-weixin -mob-share-weixin"
+			></a>
+			</span>
+     	   
+			<span  data-hover="weibo">               
+            <a class="iconfont  icon-share-weibo -mob-share-weibo"
+			></a>
+			</span>
+     	   
+			<span  data-hover="douban">               
+            <a class="iconfont  icon-share-douban -mob-share-douban"
+			></a>
+			</span>
+     	   
+			<span  data-hover="facebook">               
+            <a class="iconfont  icon-share-facebook -mob-share-facebook"
+			></a>
+			</span>
+     	   
+			<span  data-hover="twitter">               
+            <a class="iconfont  icon-share-twitter -mob-share-twitter"
+			></a>
+			</span>
+     	   
+			<span  data-hover="tumblr">               
+            <a class="iconfont  icon-share-tumblr -mob-share-tumblr"
+			></a>
+			</span>
+     	   
+			<span  data-hover="google">               
+            <a class="iconfont  icon-share-google -mob-share-google"
+			></a>
+			</span>
+     	   
+	</div>
+	
+
+
+
+
+
+  <nav class="post-nav">
+
+      
+  
+    
+  
+
+  
+
+  <a href="/2018/11/13/effective-Objective-C2-0总结与笔记-第三章/">         
+
+    <span class="right" data-hover="effective Objective-C 2.0 总结与笔记（第三章）—— 接口与API设计">Next </span>  
+
+  </a>
+
+  
+  </nav>  
+
+</div> 
+	
+
+
+    <div id="comment">   
+    </div>
+
+    <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+
+    <script src='//unpkg.com/valine@v1.1.8-beta/dist/Valine.min.js'></script>
+
+    <script>
+        new Valine({
+        el: '#comment',
+        notify:false, 
+        verify:false, 
+        app_id: 'cFM0eCo0CQ9xmBXmHi1eltol-gzGzoHsz',
+        app_key: 'oh9tizsnvV2vNvWgqEvoNtQO',  
+        path:window.location.pathname, 
+        avatar:'mm' ,
+        guest_info:['nick','mail']
+        });
+    </script>
+	
+
+</article>
+
+
+
+	<div id="toc" >		
+
+		<div class="toc-container">	
+
+		<span class="toc-contents iconfont icon-close"> 
+			<span>Contents</span>
+		</span>
+
+		<ul class="toc-list"></ul>
+
+		</div>
+
+	</div>
+
+
+        </section> 
+
+    </div>        
+
+    
+    
+    <div id="backTop" class="iconfont icon-backtotop sildeUpMin"></div> 
+
+    
+
+        
+        <div class="search-container sildeUpMin">
+            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+              <span class="search-cancel iconfont icon-cancel"></span>
+              <div id="search-result" class="search-result"></div>
+        </div>
+ 
+
+     <div class="mobile-menu">      
+
+      
+      <img class="mobile-menu-icon" src= "/images/favicon.png" >   
+      
+
+         
+            
+
+            <a class="mobile-menu-link" href="/">Home
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/archives">Archives
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/categories">Categories
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/tags">Tags
+            </a>
+            
+         
+            
+
+            <a class="mobile-menu-link" href="/about">About
+            </a>
+            
+         
+                          
+
+            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            
+         
+      
+</div>     
+
+
+    <footer id="footer">
+	   
+   	 
+
+	  	
+   	
+	   
+      	 
+
+	
+	
+
+	 <div>
+	 	&copy;
+				
+		2017-
+		
+		2018			
+	
+		
+		PengGuodong	 
+
+	 </div>
+	
+   
+   	 <div>
+	
+	 <a href="http://hexo.io/" target="_blank">Hexo</a>
+
+	 Theme
+
+	 <a href="https://github.com/Lemonreds/hexo-theme-Nayo" target="_blank">Nayo</a> 
+
+	 </div>	
+
+
+	
+	
+</footer>    
+    
+
+<!-- Baidu Analytics -->
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?636802045446222199ae541e32c8133e"; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+
+
+ 
+    
+    
+    <script src="/main.bundle.js"></script>        
+  </body>        
+</html>
