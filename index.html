@@ -28,31 +28,31 @@
               
             
 
-              <a class="header-menu-link" id="header-menu-home" href="/">Home</a>     
+              <a class="header-menu-link" id="header-menu-home" href="/">首页</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-archives" href="/archives">Archives</a>     
+              <a class="header-menu-link" id="header-menu-archives" href="/archives">归档</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-categories" href="/categories">Categories</a>     
+              <a class="header-menu-link" id="header-menu-categories" href="/categories">分类</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-tags" href="/tags">Tags</a>     
+              <a class="header-menu-link" id="header-menu-tags" href="/tags">标签</a>     
 
             
             
             
 
-              <a class="header-menu-link" id="header-menu-about" href="/about">About</a>     
+              <a class="header-menu-link" id="header-menu-about" href="/about">关于</a>     
 
             
             
@@ -116,16 +116,117 @@
 	
   	
 
-	       
+	   <h3 id="第五章：内存管理"><a href="#第五章：内存管理" class="headerlink" title="第五章：内存管理"></a>第五章：内存管理</h3><p>​    内存管理是Objective-C里重要的概念，要写出内存使用效率高又没有bug的代码，就需要掌握其内存管理的种种细节。Objective-C的内存管理因为有自动引用计数，所以并不复杂，ARC几乎把所有的内存管理的事情都交给编译器决定，作为开发者只需要专注于业务逻辑。</p>
+<h4 id="第29条：理解引用计数"><a href="#第29条：理解引用计数" class="headerlink" title="第29条：理解引用计数"></a>第29条：理解引用计数</h4><ul>
+<li>Objective-C对象使用引用计数来管理内存，每个对象都有一个可以递增或者递减的计数器，如果想使对象继续存活就要递增其引用计数，用完了之后就需要递减。</li>
+<li>在ARC中，所有与引用计数有关的方法的无法编译。虽然不能直接调用，但是理解这些方法能够帮助我们去理解引用计数的概念，ARC也是一种引用计数机制。</li>
+<li>引用计数的原理：NSObject协议生命了3个方法用于操作计数器</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">retain: 递增保留计数</span><br><span class="line">release: 递减保留计数</span><br><span class="line">autorealease: 待稍后清理&quot;自动释放池&quot;时，再递减保留计数</span><br></pre></td></tr></table></figure>
+<ul>
+<li>保留计数至少为1，当对象被初始化之后，对象的引用计数为1，然后如果被强引用，那么表示其他对象想令其继续存活，就可以保留（引用计数+1），等到用完之后，再释放（引用计数-1），当引用计数降至0的时候，那么对象所占的内存也许被回收，一般为了保证不会出现可能指向无效对象的指针（悬挂指针），可以在realease之后清空指针。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NSNumber *number = [[NSNumber alloc] initWithInt:1337];</span><br><span class="line">[array addObject:number];</span><br><span class="line">[number release];</span><br><span class="line">number = nil;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>属性存取方法的内存管理：如果属性为<code>strong</code>的修饰符修饰，那么设置的属性值会保留：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)setFoo:(id)foo &#123;</span><br><span class="line">    [foo retain];//保留新值</span><br><span class="line">    [_foo release];//释放旧值</span><br><span class="line">    _foo = foo;//让实例变量指向新值</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>自动释放池：调用autorelease会在稍后递减引用计数，通常是下一次事件循环（event loop），也有可能更早。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">使用以下的方法会让引用计数+1，而没有释放操作</span><br><span class="line">*/</span><br><span class="line">- (NSString *)stringValue &#123;</span><br><span class="line">    NSString *str = [NSString stringWithFormat:@&quot;Test String Value&quot;];</span><br><span class="line">    return str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line">使用autorelease能够很好的避免这种情况，给调用者留下足够的时间。</span><br><span class="line">*/</span><br><span class="line">- (NSString *)stringValue &#123;</span><br><span class="line">    NSString *str = [NSString stringWithFormat:@&quot;Test String Value&quot;];</span><br><span class="line">    return [str autorelease];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>保留环，如果几个对象相互引用，这样会导致内存泄漏，因为循环中的对象其引用计数不会降为0。通常的解决方案是使用弱引用代替强引用。</li>
+</ul>
+<h4 id="第30条：以ARC简化引用计数"><a href="#第30条：以ARC简化引用计数" class="headerlink" title="第30条：以ARC简化引用计数"></a>第30条：以ARC简化引用计数</h4><ul>
+<li>ARC就是自动引用计数，引用计数实际上还是要执行的，只不过保留和释放操作都是由ARC自动为你添加，所以不能直接在ARC下调用内存管理相关的方法：<code>retain</code>、<code>release</code>、<code>autorelease</code>、<code>dealloc</code>。而且ARC调用的并不是Objective-C的这些方法，而是和这些方法等效的C语言版本，这样可以节省更多的CPU周期。</li>
+<li>使用ARC必须遵循的方法命名规则：如果使用以下词语开头的方法，其返回对象归调用者所有：<code>alloc</code>、<code>new</code>、<code>copy</code>、<code>mutableCopy</code>。归调用者所有的意思是：调用上述四种方法的那段代码要负责释放所返回的对象。</li>
+<li>若方法名不以上述四个词语开头，则表示其返回的对象并不归调用者所有，这种情况下所返回的对象会自动释放。</li>
+<li>ARC具有向后兼容的特性，他可以兼容那些不使用ARC的代码。ARC有特殊的函数能优化函数：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">+ (EOCPerson *)personWithName:(NSString *)name &#123;</span><br><span class="line">    EOCPerson *person = [[EOCPerson alloc] init];</span><br><span class="line">    person.name = name;</span><br><span class="line">    objc_autoreleaseReturnValue(person);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//code using EOCPerson Class</span><br><span class="line">EOCPerson *tmp = [EOCPerson personWithName:@&quot;GDGD&quot;];</span><br><span class="line">_myperson = objc_retainAutoreleasedReturnValue(tmp);</span><br><span class="line"></span><br><span class="line">id objc_autoreleaseReturnValue(id object) &#123;</span><br><span class="line">    if (/* caller will retain object */) &#123;</span><br><span class="line">        set_flag(object);//设置标志位，表示对象要执行retain操作</span><br><span class="line">        return object; // No autorelease;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        return [object autorelease];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">id objc_retainautoreleasedReturnValue(id object) &#123;</span><br><span class="line">    if (get_flag(object)) &#123;</span><br><span class="line">        clear_flag(object);</span><br><span class="line">        return object;//No retain;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        return [object retain];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    将内存管理交给编译器和运行期组件来做，代码可以得到多种优化，上面只是其中一种。</p>
+<ul>
+<li>变量的内存管理语义：ARC会用一种安全的方式来设置，先保留新值，在释放旧值，最后设置实例变量。而且使用了ARC之后无需考虑这些情况。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">__strong：默认语义，保留此值;</span><br><span class="line">__unsafe_unretained：不保留此值，这样可能不安全，等到再次使用变量的时候，对象可能已经被回收了;</span><br><span class="line">__weak：不保留此值，但是变量可以安全使用，如果对象被回收，那变量也会自动清空;</span><br><span class="line">__autoreleasing：把对象按引用传递给方法的时候，使用这个特殊的修饰符，在返回时自动释放;</span><br></pre></td></tr></table></figure>
+<p>​    使用<code>__weak</code>和<code>__unsafe_unretained</code>可以打破保留环。</p>
+<ul>
+<li>在手动引用计数的时候，可以这样编写<code>dealloc</code>方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc &#123;</span><br><span class="line">    [_foo release];</span><br><span class="line">    [_bar release];</span><br><span class="line">    [super dealloc];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    在ARC里不能直接调用<code>dealloc</code>，但是非Objective-C对象还是需要清理，可以这样写<code>dealloc</code>方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc &#123;</span><br><span class="line">    CFRelease(_coreFoundationObject);</span><br><span class="line">    free(_heapAllocatedMemoryBlob);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果不使用ARC，可以覆写内存管理方法。例如将单例模式下的<code>release</code>方法替换为空操作。</li>
+</ul>
+<h4 id="第31条：在dealloc方法中只释放引用并解除监听"><a href="#第31条：在dealloc方法中只释放引用并解除监听" class="headerlink" title="第31条：在dealloc方法中只释放引用并解除监听"></a>第31条：在dealloc方法中只释放引用并解除监听</h4><ul>
+<li>对象在声明周期结束后，会被系统回收，就需要执行<code>dealloc</code>方法了，这个方法在对象的引用计数降为0的时候被执行。</li>
+<li><code>dealloc</code>主要做以下几个事情：<ul>
+<li>释放所有的Objective-C对象，ARC会通过自动生成的.cxx_destruct方法在<code>dealloc</code>中自动添加这些释放方法。</li>
+<li>手动释放非Objective-C对象。</li>
+<li>将配置过的观测行为都清理掉，如果把通知发给了释放的对象，那么会令应用程序崩溃。</li>
+</ul>
+</li>
+<li>在iOS系统里，应用程序终止时则会调用<code>UIApplicationDelegate</code>中的下述方法：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)applicationWillTerminate:(UIApplication *)application</span><br></pre></td></tr></table></figure>
+<ul>
+<li>尽量不要在<code>dealloc</code>里调用其他方法。执行异步任务的方法不应该在<code>dealloc</code>里调用，只能在正常状态下执行的方法也不应在<code>dealloc</code>里调用，因为此时对象已经处于正在回收的状态了。</li>
+</ul>
+<h4 id="第32条：编写“异常安全代码”时留意内存管理问题"><a href="#第32条：编写“异常安全代码”时留意内存管理问题" class="headerlink" title="第32条：编写“异常安全代码”时留意内存管理问题"></a>第32条：编写“异常安全代码”时留意内存管理问题</h4><ul>
+<li>在Objective-C的错误模型里，异常应该在发生严重错误后抛出。</li>
+<li>如果使用手动引用计数，就需要手动处理异常的时候的内存管理。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@try &#123;</span><br><span class="line">    EOCSomeClass *object = [[EOCSomeClass alloc] init];</span><br><span class="line">    [object doSomething];</span><br><span class="line">    //如果把释放放在这里的话，那么可能在doSomething发生异常，导致内存泄漏</span><br><span class="line">&#125;</span><br><span class="line">@catch(...) &#123;</span><br><span class="line">    NSLog(@&quot;...&quot;);</span><br><span class="line">&#125;</span><br><span class="line">@finally &#123;</span><br><span class="line">    [object release];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在ARC里，由于不能手动管理内存，所以如果异常出现对象并不会被释放，这样可能出现异常泄漏，虽然也可以开启手动内存管理，但是默认不开启的原因是因为：在Objective-C中，只有引用程序因异常状况而终止时才应该抛出异常，如果应用程序终止了，是否发生内存泄漏就已经无关紧要了。所以如果去处理反而会影响运行效率。</li>
+</ul>
+<h4 id="第33条：以弱引用避免保留环"><a href="#第33条：以弱引用避免保留环" class="headerlink" title="第33条：以弱引用避免保留环"></a>第33条：以弱引用避免保留环</h4><ul>
+<li>如果对象之间以某种方式互相引用，从而形成环，因为Objective-C采用引用计数的内存管理机制，这样就会导致内存泄漏。</li>
+<li>一个最简单的保留环：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;Foundation/Foundation.h&gt;</span><br><span class="line">@class EOCClassA;</span><br><span class="line">@class EOCClassB;</span><br><span class="line"></span><br><span class="line">@interface EOCClassA : NSObject</span><br><span class="line">@property (nonatomic, strong) EOCClassB *other;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface EOCClassB : NSObject</span><br><span class="line">@property (nonatomic, strong) EOCClassA *other;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<p>​    避免保留环最佳方式就是弱引用，这种引用表示非拥有关系，不会让引用计数+1。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic, unsafe_unretained) EOCClassA *other;</span><br><span class="line">//或者</span><br><span class="line">@property (nonatomic, weak) EOCClassA *other;</span><br></pre></td></tr></table></figure>
+<p>属性特质的<code>unsafe_unretained</code>表明属性可能不安全，如果系统已经把属性所指的对象回收了，那么在其上调用方法可能会导致应用程序崩溃，因为本对象不保留属性对象，因此有可能为系统所回收。</p>
+<p>使用<code>weak</code>的话，就可以避免这种情况，它的作用和<code>unsafe_unretained</code>相同，但是在属性被系统回收后，属性值会自动设置为nil。</p>
+<p>也就是说：当只想<code>EOCClassA</code>实例的引用移除后，<code>unsafe_unretained</code>属性仍然指向被回收的那个实例，但是<code>weak</code>指向nil。</p>
+    
 	  
 </div>
 
 
 
+
+	<div class="article-info">
+		
+
+	<span class="post-meta">		
+	<span class="iconfont icon-category"></span>
+		<a class="category-link" href="/categories/iOS/">iOS</a>
+	</span>		
+	
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/iOS/">iOS</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		4611
+	</span>
+		
+	</div>
 		
 
 		
-    <a class="article-readmore" href="/2018/11/17/effective-Objective-C2-0总结与笔记-第五章/">Continue</a> 
+    <a class="article-readmore" href="/2018/11/17/effective-Objective-C2-0总结与笔记-第五章/">阅读更多</a> 
     	
 </article>     
      	
@@ -255,7 +356,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/11/15/effective-Objective-C2-0总结与笔记-第四章/">Continue</a> 
+    <a class="article-readmore" href="/2018/11/15/effective-Objective-C2-0总结与笔记-第四章/">阅读更多</a> 
     	
 </article>     
      	
@@ -420,7 +521,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/11/13/effective-Objective-C2-0总结与笔记-第三章/">Continue</a> 
+    <a class="article-readmore" href="/2018/11/13/effective-Objective-C2-0总结与笔记-第三章/">阅读更多</a> 
     	
 </article>     
      	
@@ -650,7 +751,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/11/10/effective-Objective-C2.0总结与笔记-第二章/">Continue</a> 
+    <a class="article-readmore" href="/2018/11/10/effective-Objective-C2.0总结与笔记-第二章/">阅读更多</a> 
     	
 </article>     
      	
@@ -762,7 +863,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/11/09/effective-Objective-C-2-0-总结与笔记（第一章）/">Continue</a> 
+    <a class="article-readmore" href="/2018/11/09/effective-Objective-C-2-0-总结与笔记（第一章）/">阅读更多</a> 
     	
 </article>     
      	
@@ -866,7 +967,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/06/07/day10-ios学习日记/">Continue</a> 
+    <a class="article-readmore" href="/2018/06/07/day10-ios学习日记/">阅读更多</a> 
     	
 </article>     
      	
@@ -953,7 +1054,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/06/07/day9-ios学习日记/">Continue</a> 
+    <a class="article-readmore" href="/2018/06/07/day9-ios学习日记/">阅读更多</a> 
     	
 </article>     
      	
@@ -1056,7 +1157,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/06/06/day8-ios学习日记/">Continue</a> 
+    <a class="article-readmore" href="/2018/06/06/day8-ios学习日记/">阅读更多</a> 
     	
 </article>     
      	
@@ -1149,7 +1250,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/05/25/day7-ios学习笔记/">Continue</a> 
+    <a class="article-readmore" href="/2018/05/25/day7-ios学习笔记/">阅读更多</a> 
     	
 </article>     
      	
@@ -1230,7 +1331,7 @@
 		
 
 		
-    <a class="article-readmore" href="/2018/05/25/day6-ios学习笔记/">Continue</a> 
+    <a class="article-readmore" href="/2018/05/25/day6-ios学习笔记/">阅读更多</a> 
     	
 </article>     
      	
@@ -1239,7 +1340,7 @@
  
 
   <nav class="paginator scrollIn">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
   </nav>
   
 
@@ -1256,7 +1357,7 @@
 
         
         <div class="search-container sildeUpMin">
-            <input type="text" placeholder="Typing Something here." id="search-input" class="search-input">  
+            <input type="text" placeholder="输入你想搜索的" id="search-input" class="search-input">  
               <span class="search-cancel iconfont icon-cancel"></span>
               <div id="search-result" class="search-result"></div>
         </div>
@@ -1271,37 +1372,37 @@
          
             
 
-            <a class="mobile-menu-link" href="/">Home
+            <a class="mobile-menu-link" href="/">首页
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/archives">Archives
+            <a class="mobile-menu-link" href="/archives">归档
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/categories">Categories
+            <a class="mobile-menu-link" href="/categories">分类
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/tags">Tags
+            <a class="mobile-menu-link" href="/tags">标签
             </a>
             
          
             
 
-            <a class="mobile-menu-link" href="/about">About
+            <a class="mobile-menu-link" href="/about">关于
             </a>
             
          
                           
 
-            <a class="mobile-menu-link mobile-menu-search" href="#">Search </a>                 
+            <a class="mobile-menu-link mobile-menu-search" href="#">搜索 </a>                 
             
          
       
