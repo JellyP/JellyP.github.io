@@ -110,7 +110,7 @@
 
 
 	<span class="post-words"><span class="iconfont icon-words"></span>
-		4611
+		6160
 	</span>
 		
 	
@@ -200,6 +200,41 @@
 <p>属性特质的<code>unsafe_unretained</code>表明属性可能不安全，如果系统已经把属性所指的对象回收了，那么在其上调用方法可能会导致应用程序崩溃，因为本对象不保留属性对象，因此有可能为系统所回收。</p>
 <p>使用<code>weak</code>的话，就可以避免这种情况，它的作用和<code>unsafe_unretained</code>相同，但是在属性被系统回收后，属性值会自动设置为nil。</p>
 <p>也就是说：当只想<code>EOCClassA</code>实例的引用移除后，<code>unsafe_unretained</code>属性仍然指向被回收的那个实例，但是<code>weak</code>指向nil。</p>
+<h4 id="第34条：以“自动释放池块”降低内存峰值"><a href="#第34条：以“自动释放池块”降低内存峰值" class="headerlink" title="第34条：以“自动释放池块”降低内存峰值"></a>第34条：以“自动释放池块”降低内存峰值</h4><ul>
+<li><p>释放对象有两种方式：</p>
+<ul>
+<li>调用release方法，使其引用计数立即递减。</li>
+<li>调用autorelease方法，将其加入“自动释放池”中。清空自动释放池的时候，系统会向其中的对象发送release消息。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//自动释放池的方法：</span><br><span class="line">@autoreleasepool &#123;</span><br><span class="line">    //...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>一般来说不需要自己创建自动释放池，通常只需要在main函数里使用自动释放池来包裹应用程序的主入口点。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int main(int argc, char * argv[]) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​    这个池可以理解为最外围捕捉全部自动释放对象所用的池。</p>
+<ul>
+<li><p>自动释放池可以嵌套，它于左花括号处创建，并对应右花括号处自动清空，位于自动释放池内的对象，在范围的末尾处收到release消息。自动释放池嵌套使用的好处是可以控制应用程序的内存峰值，使其不至过高。</p>
+<p>如果要从数据库里读取数据，那么可能在读取的时候会有新对象创建并加入自动释放池，这样所有对象要等到for循环执行完才会释放，导致内存过高。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">//通过下面的方式，加入EOCPerson在创建的时候同时还有很多临时对象的创建，那么内存中会有很多不必要的临时对象没有被释放，导致内存过高</span><br><span class="line">NSArray *databaseRecords = /* record from database */;</span><br><span class="line">NSMutableArray *people = [NSMutableArray new];</span><br><span class="line">for (NSDictionary *record in databaseRecords) &#123;</span><br><span class="line">    EOCPerson *person = [[EOCPerson alloc] initWithRecord:record];</span><br><span class="line">    [people addObject:person];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//要解决这个问题，增加一个自动释放池就可以</span><br><span class="line">NSArray *databaseRecords = /* record from database */;</span><br><span class="line">NSMutableArray *people = [NSMutableArray new];</span><br><span class="line">for (NSDictionary *record in databaseRecords) &#123;</span><br><span class="line">    @autoreleasepool &#123;</span><br><span class="line">        EOCPerson *person = [[EOCPerson alloc] initWithRecord:record];</span><br><span class="line">    	[people addObject:person];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//这样循环中自动释放的对象就会放在这个池子，而不是线程的主池里</span><br></pre></td></tr></table></figure>
+<ul>
+<li>自动释放池的也有开销，尽量不要建立额外的自动释放池。<code>@autoreleasepool</code>的方式能够更方便的创建出自动释放池。</li>
+</ul>
+<h4 id="第35条：用”僵尸对象“调试内存管理问题"><a href="#第35条：用”僵尸对象“调试内存管理问题" class="headerlink" title="第35条：用”僵尸对象“调试内存管理问题"></a>第35条：用”僵尸对象“调试内存管理问题</h4><ul>
+<li><p>主要是使用instrument来进行调试，这里不做详述，贴一个我觉得写的不错的博客吧。</p>
+<p><a href="https://www.jianshu.com/p/f6e6b4f21ca2" target="_blank" rel="noopener">iOS 僵尸对象调试</a></p>
+</li>
+</ul>
+<h4 id="第36条：不要使用retainCount"><a href="#第36条：不要使用retainCount" class="headerlink" title="第36条：不要使用retainCount"></a>第36条：不要使用retainCount</h4><ul>
+<li>NSObject协议里定义了一个方法，可以查询当前的引用计数，这个方法在ARC中是不可用的。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (NSUInteger)retainCount</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个方法是无用的，因为所返回的引用计数只是某个时间点上的值，并未考虑到系统会稍后把自动释放池清空，因而不会将后续的释放操作从返回值里减去。</li>
+<li>同时这个方法可能永远不返回0，因为可能在保留计数还是1的时候，就被系统回收了。</li>
+</ul>
   	
 
 	  </div>     
