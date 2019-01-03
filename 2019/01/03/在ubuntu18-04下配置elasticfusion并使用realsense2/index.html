@@ -147,7 +147,7 @@
 <h3 id="ElasticFusion的数据集测试"><a href="#ElasticFusion的数据集测试" class="headerlink" title="ElasticFusion的数据集测试"></a>ElasticFusion的数据集测试</h3><p>手头上暂时没有realsense，所以需要使用数据集来进行运行代码。由于ElasticFusion提供的数据集我一直无法打开，所以另辟蹊径看看能否使用其他的数据集。</p>
 <p>​    ElasticFusion的数据集格式为klg，是一个由深度颜色信息转成的二进制文件（包含rgb-d数据）。经过google发现我们可以通过<a href="https://github.com/HTLife/png_to_klg" target="_blank" rel="noopener">png_to klg</a>来转换rgbd数据。</p>
 <p>​    首先是下载rgb-d数据，这里使用<a href="https://vision.in.tum.de/data/datasets/rgbd-dataset/download" target="_blank" rel="noopener">TUM的数据集</a>，然后数据集里面有关于深度和颜色的信息：</p>
-<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/Users/guodongpeng/Desktop/Blog/source/_posts/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 10-55-56 的屏幕截图.png" alt="数据集文件展示"></p>
+<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 10-55-56 的屏幕截图.png" alt="数据集文件展示"></p>
 <p>​    先在png_to_klg目录下运行生成associations.txt（基于python2）：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./associate.py depth.txt rgb.txt  &gt; associations.txt</span><br></pre></td></tr></table></figure>
 <p>​    然后进入png_to_klg目录：</p>
