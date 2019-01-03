@@ -104,6 +104,106 @@
 	   
 	<div class="article-header">
 	    
+	     <a class="article-title"  href="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/">在ubuntu18.04下配置elasticfusion并使用realsense2</a>  
+	       
+		 
+
+		 <time>2019-01-03 </time>    
+	</div>
+
+
+    <div class="post-content article-excerpt">	
+	
+  	
+
+	   <h3 id="ElasticFusion的编译"><a href="#ElasticFusion的编译" class="headerlink" title="ElasticFusion的编译"></a>ElasticFusion的编译</h3><p>源码来自<a href="https://github.com/mp3guy/ElasticFusion" target="_blank" rel="noopener">ElasticFusion</a>。</p>
+<p>虽然网上很多教程，但是大部分是基于16.04的，而我装的系统是教新的18.04，所以中间编译其实遇到了很多的困难。</p>
+<p>1、安装依赖项：</p>
+<p>根据官方的介绍，我们可以利用如下指令进行安装依赖：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install -y cmake-qt-gui git build-essential libusb-1.0-0-dev libudev-dev openjdk-7-jdk freeglut3-dev libglew-dev cuda-7-5 libsuitesparse-dev libeigen3-dev zlib1g-dev libjpeg-dev</span><br></pre></td></tr></table></figure>
+<p>然而需要注意的是openjdk-7-jdk以及从库里删除了，是无法直接安装的，而且cuda我是之前安装了9.0的版本，所以这里也略过，所以修正后的指令应该是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install -y cmake-qt-gui git build-essential libusb-1.0-0-dev libudev-dev openjdk-8-jdk freeglut3-dev libglew-dev libsuitesparse-dev libeigen3-dev zlib1g-dev libjpeg-dev</span><br></pre></td></tr></table></figure>
+<p><a href="https://blog.csdn.net/u010801439/article/details/80483036" target="_blank" rel="noopener">真实机下 ubuntu 18.04 安装GPU +CUDA+cuDNN 以及其版本选择</a></p>
+<p>2、安装OpenNI2</p>
+<p>打开终端，输入如下的指令，这里没有遇到太大的问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/occipital/OpenNI2 </span><br><span class="line">cd OpenNI2 </span><br><span class="line">make -j8 </span><br><span class="line">sudo make install </span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>3、安装Pangolin</p>
+<p>打开终端，输入如下指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/stevenlovegrove/Pangolin.git</span><br><span class="line">cd Pangolin</span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">cmake ..</span><br><span class="line">cmake --build .</span><br></pre></td></tr></table></figure>
+<p>在这里遇到了两个小问题，首先是make编译的时候，发现报错的地方非常多，而且是在函数编译的地方出错了，后面google后无果。怀疑是编译的gcc和g++环境有问题，因为之前安装cuda的时候把gcc和g++降级了，后面发现这个虽然官方的github上说是需要C++11，可是在CmakeList里面却是C++14，所以这里重新升级了gcc和g++版本又尝试了下，编译成功。</p>
+<p>4、安装ElasticFusion</p>
+<p>ElasticFusion里主要有3个需要编译的文件夹，分别是Core，GPUTest，GUI。在这里按照顺序对三者进行编译。</p>
+<p>Core的编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd ElasticFusion</span><br><span class="line">cd Core</span><br><span class="line">cd src</span><br><span class="line">mkdir build &amp;&amp; cd build</span><br><span class="line">cmake ..</span><br><span class="line">make -j8</span><br><span class="line">sudo make install</span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是，作者可能调整过目录，所以需要先进入<code>src</code>文件夹进行编译，然后再把编译好的<code>build</code>文件夹复制到<code>Core</code>目录下（因为GPUTest的编译是依赖于<code>Core/build</code>的）。</p>
+<p>GUITest的编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd ElasticFusion</span><br><span class="line">cd GPUTest</span><br><span class="line">cd src</span><br><span class="line">mkdir build &amp;&amp; cd build</span><br><span class="line">cmake ..</span><br><span class="line">make -j8</span><br><span class="line">sudo make install</span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>这里需要<code>Core/build</code>的编译结果，然而我们需要在<code>Core/src</code>目录下生成build，所以可以复制到对应目录，否则编译报错。</p>
+<p>GUI的编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd ElasticFusion</span><br><span class="line">cd GUI</span><br><span class="line">cd src</span><br><span class="line">mkdir build &amp;&amp; cd build</span><br><span class="line">cmake ..</span><br><span class="line">make -j8</span><br><span class="line">sudo make install</span><br><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>这一步直接按照步骤即可。</p>
+<h3 id="ElasticFusion的数据集测试"><a href="#ElasticFusion的数据集测试" class="headerlink" title="ElasticFusion的数据集测试"></a>ElasticFusion的数据集测试</h3><p>手头上暂时没有realsense，所以需要使用数据集来进行运行代码。由于ElasticFusion提供的数据集我一直无法打开，所以另辟蹊径看看能否使用其他的数据集。</p>
+<p>​    ElasticFusion的数据集格式为klg，是一个由深度颜色信息转成的二进制文件（包含rgb-d数据）。经过google发现我们可以通过<a href="https://github.com/HTLife/png_to_klg" target="_blank" rel="noopener">png_to klg</a>来转换rgbd数据。</p>
+<p>​    首先是下载rgb-d数据，这里使用<a href="https://vision.in.tum.de/data/datasets/rgbd-dataset/download" target="_blank" rel="noopener">TUM的数据集</a>，然后数据集里面有关于深度和颜色的信息：</p>
+<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/Users/guodongpeng/Desktop/Blog/source/_posts/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 10-55-56 的屏幕截图.png" alt="数据集文件展示"></p>
+<p>​    先在png_to_klg目录下运行生成associations.txt（基于python2）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./associate.py depth.txt rgb.txt  &gt; associations.txt</span><br></pre></td></tr></table></figure>
+<p>​    然后进入png_to_klg目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir build $ cd build </span><br><span class="line">cmake .. </span><br><span class="line">make </span><br><span class="line">./pngtoklg -w &apos;数据集的目录&apos; -o &apos;生成klg的存储路径&apos; -t</span><br></pre></td></tr></table></figure>
+<p>​    最后进入ElasticFusio/GUI/build/中，使用ElasticFusion进行运行数据集：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./ElasticFusion -l fr1_xyz.klg</span><br></pre></td></tr></table></figure>
+<p>​    效果展示：</p>
+<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 11-09-04 的屏幕截图.png" alt="效果展示1"></p>
+<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 11-09-10 的屏幕截图.png" alt="效果展示2"></p>
+<p><img src="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/2018-12-16 11-09-36 的屏幕截图.png" alt="效果展示3"></p>
+<h3 id="使用realsense运行Elasticfusion"><a href="#使用realsense运行Elasticfusion" class="headerlink" title="使用realsense运行Elasticfusion"></a>使用realsense运行Elasticfusion</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">设备：Intel realsense D435</span><br></pre></td></tr></table></figure>
+<h4 id="Elasticfusion代码修改支持realsense2"><a href="#Elasticfusion代码修改支持realsense2" class="headerlink" title="Elasticfusion代码修改支持realsense2"></a>Elasticfusion代码修改支持realsense2</h4><p>由于Elasticfusion是基于1代的realsense的，我们的设备是2代realsense，所以代码并不完全适用，我们需要先修改代码。</p>
+<p>根据github上的pull request：<a href="https://github.com/mp3guy/ElasticFusion/pull/161" target="_blank" rel="noopener">Upgrade librealsense 2 support and add Ubuntu 18.04 install script</a></p>
+<p>我们修改五个文件即可，略过（也可以直接下载那个节点的代码）。</p>
+<h4 id="librealsense2的驱动安装-基于Ubuntu18-04"><a href="#librealsense2的驱动安装-基于Ubuntu18-04" class="headerlink" title="librealsense2的驱动安装 (基于Ubuntu18.04)"></a>librealsense2的驱动安装 (基于Ubuntu18.04)</h4><p><a href="https://github.com/IntelRealSense/librealsense/blob/master/doc/installation.md" target="_blank" rel="noopener">官方安装指南</a></p>
+<p>我的整理和遇到的一些问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"># ⾸先克隆代码：</span><br><span class="line">git clone https://github.com/IntelRealSense/librealsense.git</span><br><span class="line"></span><br><span class="line"># 更新ubuntu资源，获取最新稳定内核</span><br><span class="line">sudo apt-get update &amp;&amp; sudo apt-get upgrade &amp;&amp; sudo apt-get dist-upgrade</span><br><span class="line"></span><br><span class="line"># 安装依赖</span><br><span class="line">sudo apt-get install git libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev</span><br><span class="line">sudo apt-get install libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev</span><br><span class="line"></span><br><span class="line"># 编译源码</span><br><span class="line">cd librealsense</span><br><span class="line">mkdir build &amp;&amp; cd build</span><br><span class="line">sudo cmake ..</span><br><span class="line">sudo make &amp;&amp; sudo make install</span><br><span class="line"></span><br><span class="line"># 安装权限脚本</span><br><span class="line">sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/</span><br><span class="line">sudo udevadm control --reload-rules &amp;&amp; udevadm trigger</span><br><span class="line"></span><br><span class="line"># 查看内核版本</span><br><span class="line">uname -r</span><br><span class="line"></span><br><span class="line"># 编译脚本</span><br><span class="line">### 根据github的issue，可能出现编译video使⽤的情况，可以⽤下⾯这⼏条来解决</span><br><span class="line">    sudo modprobe -r uvcvideo</span><br><span class="line">    sudo modprobe -r videobuf2_core</span><br><span class="line">    sudo modprobe -r videodev</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./scripts/patch-realsense-ubuntu-lts.sh</span><br><span class="line">cd ./script</span><br><span class="line">./patch-arch.sh</span><br><span class="line">chmod +x patch-arch.sh # 如果直接运⾏没有权限则先运⾏这个语句</span><br><span class="line"></span><br><span class="line">### 在这⾥可能如果你的内核是4.15.0这样的版本的话可能会出现404 not found，通过查询sh脚本发现连接的下载</span><br><span class="line">地址对于最后⼀位是0的情况没有列出，而是⽤4.15来表⽰，导致找不到这样的⽂件，所以可以通过修改sh脚本的⽅式</span><br><span class="line">来编译。</span><br><span class="line">将 SRC_VERSION_ID=linux-$SRC_VERSION_ID 改为 SRC_VERSION_ID=4.15</span><br><span class="line"></span><br><span class="line">如果进入example里能运行成功demo则证明驱动安装成功。也可以用realsense-viewer检验。</span><br></pre></td></tr></table></figure>
+<p>对于frame not received的问题，可以这样解决：<a href="https://www.intel.com/content/dam/support/us/en/documents/emerging-technologies/intel-realsense-technology/Linux-RealSense-D400-DFU-Guide.pdf" target="_blank" rel="noopener">Intel参考文档</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 添加下载源</span><br><span class="line">echo &apos;deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo xenial main&apos; |</span><br><span class="line">sudo tee /etc/apt/sources.list.d/realsense-public.list</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install intel-realsense-dfu*</span><br><span class="line"></span><br><span class="line"># 下载最新的bin</span><br><span class="line">https://downloadcenter.intel.com/download/28377/Latest-Firmware-for-Intel-RealSenseD400-Product-Family?v=t</span><br><span class="line"></span><br><span class="line"># 链接realsense D435</span><br><span class="line"># 解压下载的bin⽂件</span><br><span class="line">lsusb #查看连接的realsense D435在什么位置</span><br><span class="line">intel-realsense-dfu -b 002 -d 002 -f -i ~/Intel/Signed_Image_UVC_5_10_13_0.bin</span><br><span class="line"># -b the number of bus</span><br><span class="line"># -d the number of device in the bus</span><br><span class="line"></span><br><span class="line"># 再次进⼊librealsense⽬录</span><br><span class="line">realsense-viewer # 可以使⽤</span><br></pre></td></tr></table></figure>
+<h5 id="最后进入Elasticfusion-GUI-src-build里，运行-Elasticfusion-即可。"><a href="#最后进入Elasticfusion-GUI-src-build里，运行-Elasticfusion-即可。" class="headerlink" title="最后进入Elasticfusion/GUI/src/build里，运行./Elasticfusion 即可。"></a>最后进入Elasticfusion/GUI/src/build里，运行./Elasticfusion 即可。</h5>    
+	  
+</div>
+
+
+
+
+	<div class="article-info">
+			
+
+
+				
+	<span class="post-meta">
+	<span class="iconfont icon-tag"></span>
+		<a class="tag-link" href="/tags/3D-modeling/">3D-modeling</a> <a class="tag-link" href="/tags/elasticfusion/">elasticfusion</a>
+	</span>			
+	
+
+
+
+	<span class="post-words"><span class="iconfont icon-words"></span>
+		4200
+	</span>
+		
+	</div>
+		
+
+		
+    <a class="article-readmore" href="/2019/01/03/在ubuntu18-04下配置elasticfusion并使用realsense2/">阅读更多</a> 
+    	
+</article>     
+     	
+      	  	
+
+  		
+    	<article class="article">		
+	   
+	<div class="article-header">
+	    
 	     <a class="article-title"  href="/2018/11/23/effective-Objective-C2-0总结与笔记-第六章/">Effective Objective-C 2.0 总结与笔记（第六章）—— 块与大中枢派发</a>  
 	       
 		 
@@ -1410,99 +1510,6 @@
     	
 </article>     
      	
-      	  	
-
-  		
-    	<article class="article">		
-	   
-	<div class="article-header">
-	    
-	     <a class="article-title"  href="/2018/05/25/day7-ios学习笔记/">day7:iOS学习笔记</a>  
-	       
-		 
-
-		 <time>2018-05-25 </time>    
-	</div>
-
-
-    <div class="post-content article-excerpt">	
-	
-  	
-
-	   <p>第15章</p>
-<ul>
-<li><p>固化是由ios sdk提供的一种保存和读取对象的机制，固化某个对象的时候，会将该对象的所有属性存入指定的文件中，解固某个对象的时候，会从制定的文件中读取相应的数据，然后根据数据还原对象。</p>
-</li>
-<li><p>为了实现固化和解固，相应对象的类需要遵循NSCoding协议，其中有两个必须要实现的方法：encodeWithCoder(_: )和init(coder: )。</p>
-</li>
-<li><p>NSCoder会将要固化的类转换成键值对的形式写入指定的文件中。</p>
-</li>
-<li><p>每个应用都有自己的应用沙盒，应用的数据都存储在应用沙盒中。</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Documents</span>/ 		存储应用产生的需要保存的数据，可以进行备份。</span><br><span class="line"><span class="type">Library</span>/<span class="type">Caches</span>/ 	存储临时数据，保存在本机中，即应用缓存，不会备份。</span><br><span class="line"><span class="type">Library</span>/<span class="type">Perferences</span> 	存放应用设置和<span class="type">NSUserdefaults</span>的数据，会同步。</span><br><span class="line">tmp/ 	存放临时数据，应用没有运行的时候可以进行清除。</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建文件URL的demo如下：urls(for:in:)这个函数是用来在用户文件夹中查找相应的文件夹，在IOS中，in里的参数都是使用.userDomainMask，然后选择找到的第一个文件夹，然后在其中创建一个叫做”items.archive”的文件，注意是appending不是append，查阅api文档可以得知appendingPathComponent是有返回参数的，而appendPathComponent只是单纯的动作。</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">z    <span class="keyword">let</span> itemArchiveURL : <span class="type">URL</span> = &#123;</span><br><span class="line">        <span class="keyword">let</span> documentsDirectories = <span class="type">FileManager</span>.<span class="keyword">default</span>.urls(<span class="keyword">for</span>: .documentDirectory, <span class="keyword">in</span>: .userDomainMask)</span><br><span class="line">        <span class="keyword">let</span> documentDirectory = documentsDirectories.first!</span><br><span class="line">        <span class="keyword">return</span> documentDirectory.appendingPathComponent(<span class="string">"items.archive"</span>)</span><br><span class="line">    &#125;()</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>为了保存应用的信息，可以调用NSKeyedArchiver.archiveRootObject(obj, to File:)，这段代码能够将要保存的对象存放到目标文件中，具体到原理是利用同一个NSKeyedArchiver对象作为参数，来让所有的对象(已经实现了NSCoding协议)发送encodeWithCoder消息，而每一个对象也会向其子对象发送该参数并发送encodeWithCoder消息。当所有对象完成编码后，NSKeyedArchiver对象会将数据写入文件中。这也是固化的过程了。</p>
-</li>
-<li><p>每个类（包括自己建立）都有一个初始化方法，一般情况下，为了加载已经存储的数据，可以利用解固的方式: 借助NSKeyedUnarchiver来实现，</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">init</span>()&#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">let</span> archivedItems = <span class="type">NSKeyedUnarchiver</span>.unarchiveObject(withFile: itemArchiveURL.path) <span class="keyword">as</span>? [<span class="type">Item</span>] &#123;</span><br><span class="line">            allItems += archivedItems</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在应用切换的时候，app的状态切换如下所示，即调用AppDelegate中的方法：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">打开应用，会调用: application(<span class="number">_</span>:didFinishLaunchingWithOptions:)和applicationDidBecomeActive</span><br><span class="line">按下home键，会调用: applicationWillResignActive和applicationDidEnterBackground</span><br><span class="line">重新回到应用，会调用:applicationWillEnterForeground和applicationDidBecomeActive</span><br><span class="line">双击home键到切换应用界面类似按下home键的操作。</span><br><span class="line">按下锁屏，会调用:applicationWillResignActive和applicationDidEnterBackground</span><br><span class="line">在切换应用界面将应用终止，系统会终止应用，但应用的委托对象不会收到任何信息。</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>guard能够让代码更简洁，让方法在不满足条件的时候提前跳出，只有当表达式为true的时候，才会执行表达式，具体语法为: </p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">guard</span> <span class="keyword">let</span> expression <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>错误处理代码：</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> throwing expression</span><br><span class="line">&#125; <span class="keyword">catch</span> pattern &#123;</span><br><span class="line">    statements</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>第16章</p>
-<p>为了在不同的界面显示不同的内容，即适配横屏和竖屏，我们需要专门定制某个界面。</p>
-<ul>
-<li>SizeClass有四种组合，可以在main.storyboard中直接进行预览。</li>
-<li>定制特定的视图的时候，可以在对应部件中设置显示条件。</li>
-<li>如果是要改上下布局为左右布局，可以将整体放在UIStackView中，更方便进行操作。</li>
-</ul>
-    
-	  
-</div>
-
-
-
-
-	<div class="article-info">
-		
-
-	<span class="post-meta">		
-	<span class="iconfont icon-category"></span>
-		<a class="category-link" href="/categories/iOS/">iOS</a>
-	</span>		
-	
-
-
-				
-	<span class="post-meta">
-	<span class="iconfont icon-tag"></span>
-		<a class="tag-link" href="/tags/iOS/">iOS</a> <a class="tag-link" href="/tags/笔记/">笔记</a>
-	</span>			
-	
-
-
-
-	<span class="post-words"><span class="iconfont icon-words"></span>
-		2091
-	</span>
-		
-	</div>
-		
-
-		
-    <a class="article-readmore" href="/2018/05/25/day7-ios学习笔记/">阅读更多</a> 
-    	
-</article>     
-     	
   
 
  
@@ -1594,7 +1601,7 @@
 				
 		2017-
 		
-		2018			
+		2019			
 	
 		
 		PengGuodong	 
